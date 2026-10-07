@@ -247,6 +247,28 @@ button{position:relative;overflow:hidden}
 .mbtn{overflow:visible}
 button:hover{filter:brightness(1.12) saturate(1.1)}
 #btnTheme{padding:8px 12px;font-size:15px}
+#btnSettings{padding:8px 12px;font-size:15px}
+body.no-anim *,body.no-anim *::before,body.no-anim *::after{animation:none!important;transition:none!important}
+#greet{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(80,50,160,.35);
+  margin-bottom:6px;animation:greetIn .6s cubic-bezier(.2,.8,.3,1) both}
+@keyframes greetIn{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
+/* réglages */
+#settings{position:fixed;inset:0;z-index:998;display:none;align-items:center;justify-content:center;
+  padding:18px;background:rgba(40,25,90,.45);backdrop-filter:blur(6px)}
+#settings.open{display:flex;animation:pop .25s ease}
+.set-card{background:var(--card,#fff);border-radius:24px;padding:24px;width:100%;max-width:520px;
+  max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(50,20,120,.4)}
+.set-card h3{font-size:16px;color:#2b1e63;margin-bottom:10px}
+.set-sec{margin:16px 0;padding-top:14px;border-top:1.5px solid #ece6f8}
+.themeRow{display:flex;flex-wrap:wrap;gap:7px}
+.swatch{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s}
+.swatch:hover{transform:scale(1.15)}
+.swatch.sel{border-color:#2b1e63;transform:scale(1.12)}
+.toolToggle{display:flex;flex-wrap:wrap;gap:6px;max-height:200px;overflow:auto;padding:4px 0}
+.toolToggle label{display:flex;align-items:center;gap:5px;background:var(--input,#f6f4fb);border:1.5px solid #e2def5;
+  border-radius:11px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;margin:0;transition:.15s}
+.toolToggle input{width:auto;margin:0}
+.toolToggle label.off{opacity:.4;text-decoration:line-through}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>try{var __t=localStorage.getItem("nova_theme");if(__t)document.documentElement.dataset.theme=__t;}catch(e){}</script>
@@ -269,6 +291,7 @@ button:hover{filter:brightness(1.12) saturate(1.1)}
     <div style="width:76px;height:76px;margin:0 auto 10px;border-radius:22px;background:linear-gradient(135deg,#ff5c8a,#a18cd1);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(161,90,209,.45);transform:rotate(-4deg)">
       <svg width="48" height="48" viewBox="0 0 64 64"><rect x="4" y="20" width="56" height="36" rx="8" fill="white"/><rect x="22" y="10" width="20" height="12" rx="4" fill="none" stroke="white" stroke-width="5"/><rect x="4" y="30" width="56" height="6" fill="rgba(0,0,0,.15)"/><circle cx="32" cy="42" r="7" fill="none" stroke="#ff5c8a" stroke-width="4"/><rect x="10" y="28" width="8" height="14" rx="3" fill="#ff5c8a"/><rect x="46" y="28" width="8" height="14" rx="3" fill="#a18cd1"/></svg>
     </div>
+    <p id="greet"></p>
     <h2>Ma Boîte à Outils</h2>
     <p id="heroSub">101 OUTILS · SAUVEGARDE AUTOMATIQUE · 100% HORS-LIGNE · MOBILE & PC</p>
   </div>
@@ -1250,7 +1273,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     const showErr=(html)=>{eEl.style.display="";eEl.innerHTML=html;};
     const showStatus=(html)=>{const s=$("ad_status");s.style.display="";s.innerHTML=html;};
     if(!sb)return showErr("⚠️ Cloud non chargé — rechargez la page (connexion requise).");
-    let allRows=[],curUser=null,curTool=null;
+    let allRows=[],allDrive=[],curUser=null,curTool=null;
     const KEYNAME={todo:"✅ Ma to-do",notes:"📒 Bloc-notes",pw_vault:"🔐 Coffre de mots de passe",pw_cfg:"🔐 Réglages mots de passe",usage:"📊 Outils les plus utilisés",pix_size:"🎨 Réglages pixel art",pomo_state:"🍅 Pomodoro",occ2:"🔎 Compter un mot",favs:"⭐ Favoris"};
     function keyLabel(key){
       if(KEYNAME[key])return KEYNAME[key];
@@ -1364,9 +1387,36 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         c.addEventListener("click",()=>{curTool=L;drawTools();drawView(groups[L]);});
         tEl.appendChild(c);
       });
-      if(curTool&&groups[curTool])drawView(groups[curTool]);
-      else vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
+      /* Drive du compte (images, y compris supprimées) */
+      const uidRow=rows.find(r=>r.user_id);
+      if(uidRow){
+        const drows=allDrive.filter(d=>d.user_id===uidRow.user_id);
+        if(drows.length){
+          const c=document.createElement("div");
+          c.className="chip"+(curTool==="__drive"?" sel":"");
+          c.textContent="🖼️ Drive ("+drows.length+")";
+          c.addEventListener("click",()=>{curTool="__drive";drawTools();drawDrive(drows);});
+          tEl.appendChild(c);
+        }
+      }
+      if(curTool&&curTool!=="__drive"&&groups[curTool])drawView(groups[curTool]);
+      else if(curTool!=="__drive")vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
     }
+    function drawDrive(drows){
+      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:#fff'>"+
+        "<div style='font-size:11px;color:#6b6489;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px'>🖼️ Images du Drive"+(drows.some(d=>d.deleted)?" · <span style='color:#e0306a'>corbeille incluse</span>":"")+"</div>"+
+        "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px'>"+
+        drows.map(function(d){
+          const url=sb.storage.from("drive").getPublicUrl(d.user_id+"/"+d.name).data.publicUrl;
+          return "<div style='position:relative;background:#f4f2fb;border:1.5px solid "+(d.deleted?"#f3c9d6":"#ece6f8")+";border-radius:11px;overflow:hidden"+(d.deleted?";opacity:.65":"")+"'>"+
+            "<img src='"+url+"' style='width:100%;height:72px;object-fit:cover;display:block;background:#f4f2fb' loading='lazy'>"+
+            "<div style='padding:3px 6px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700'>"+esc(d.name)+"</div>"+
+            "<div style='padding:0 6px 4px;font-size:9px;color:#6b6489'>"+humanSize(d.size)+(d.deleted?" · <b style='color:#e0306a'>supprimée</b>":"")+"</div>"+
+            "<a href='"+url+"' download='"+esc(d.name)+"' style='position:absolute;top:4px;right:4px;text-decoration:none;border:none;border-radius:7px;background:#fff;padding:2px 7px;font-size:11px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)'>⬇️</a>"+
+            "</div>";
+        }).join("")+"</div></div>";
+    }
+    function humanSize(b){b=b||0;return b>1048576?(b/1048576).toFixed(1)+" Mo":(b/1024).toFixed(0)+" Ko";}
     async function render(){
       try{
         eEl.style.display="none";eEl.textContent="";
@@ -1387,6 +1437,11 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
           }
           allRows=(r2.data||[]).map(r=>({key:r.key,value:r.value,email:null,user_id:r.user_id}));
         }else allRows=data||[];
+        /* Drive : images de tous les comptes (supprimées incluses) */
+        let dr=await sb.from("drive_files").select("user_id,name,size,created_at,deleted");
+        if(dr.error){const dr2=await sb.from("drive_files").select("user_id,name,size,created_at");
+          allDrive=dr2.error?[]:(dr2.data||[]).map(d=>({...d,deleted:false}));}
+        else allDrive=dr.data||[];
         const nbAccounts=allRows.map(acctKey).filter((v,i,a)=>a.indexOf(v)===i).length;
         showStatus("✅ Connecté en admin · <b>"+nbAccounts+"</b> compte(s) · <b>"+allRows.length+"</b> entrée(s) dans la table"+
           (nbAccounts<=1?" · ℹ️ si d'autres comptes n'apparaissent pas : soit ils n'ont encore rien enregistré avec un outil, soit il faut exécuter le SQL admin ci-dessous (voir erreur)":""));
@@ -1439,6 +1494,8 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       '<div class="out" id="drv_bar" style="display:none"><div id="drv_fill" style="height:8px;border-radius:6px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:0"></div><div id="drv_txt" style="font-size:11px;margin-top:4px"></div></div>'+
       '<div style="margin-top:14px;font-weight:800;color:#2b1e63;font-size:13px">🖼️ Mes images</div>'+
       '<div id="drv_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px"></div>'+
+      '<div id="drv_trashWrap" style="display:none;margin-top:14px"><div style="font-weight:800;color:#2b1e63;font-size:13px">🗑️ Corbeille <span id="drv_trashN" style="color:#6b6489;font-weight:600"></span> <button class="ghost" id="drv_restoreAll" style="font-size:10px;padding:5px 10px;margin-left:8px">♻️ Tout restaurer</button></div>'+
+      '<div id="drv_trash" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px"></div></div>'+
       '<div class="out" id="drv_o" style="margin-top:10px">—</div></div>'};
   GEN.push({meta:meta,init:function(){
     const sb=window.__sb,gEl=$("drv_grid"),o=$("drv_o"),bar=$("drv_bar"),fill=$("drv_fill"),txt=$("drv_txt");
@@ -1454,9 +1511,33 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     function human(b){return b>1048576?(b/1048576).toFixed(1)+" Mo":(b/1024).toFixed(0)+" Ko";}
     async function refresh(){
       if(!(await me()))return;
-      const {data,error}=await sb.from("drive_files").select("name,size,created_at").order("created_at",{ascending:false});
-      if(error){o.innerHTML="⚠️ "+esc(error.message)+"<br><span style='font-size:11px'>Créez la table drive_files (SQL fourni) puis réessayez.</span>";return;}
-      const files=data||[];
+      let {data,error}=await sb.from("drive_files").select("name,size,created_at,deleted").order("created_at",{ascending:false});
+      if(error){const r2=await sb.from("drive_files").select("name,size,created_at").order("created_at",{ascending:false});
+        if(r2.error){o.innerHTML="⚠️ "+esc(r2.error.message)+"<br><span style='font-size:11px'>Créez la table drive_files (SQL fourni) puis réessayez.</span>";return;}
+        data=(r2.data||[]).map(x=>({name:x.name,size:x.size,created_at:x.created_at,deleted:false}));}
+      const files=(data||[]).filter(f=>!f.deleted);
+      const trash=(data||[]).filter(f=>f.deleted);
+      const tw=$("drv_trashWrap"),tg=$("drv_trash");
+      tg.innerHTML="";
+      $("drv_trashN").textContent="("+trash.length+")";
+      tw.style.display=trash.length?"":"none";
+      trash.forEach(function(f){
+        const c=document.createElement("div");
+        c.style.cssText="position:relative;border:1.5px dashed #d9cfe8;border-radius:10px;overflow:hidden;opacity:.75";
+        c.innerHTML="<img style='width:100%;height:56px;object-fit:cover;display:block;background:#f4f2fb;filter:grayscale(.7)'>"+
+          "<div style='padding:3px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"+esc(f.name)+"</div>"+
+          "<button class='rs' style='position:absolute;top:3px;right:3px;border:none;border-radius:7px;background:#e6f9ef;color:#00a583;font-size:10px;padding:2px 6px;cursor:pointer'>♻️</button>";
+        c.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
+        c.querySelector(".rs").addEventListener("click",async()=>{
+          await sb.from("drive_files").update({deleted:false}).eq("name",f.name).eq("user_id",uid);
+          refresh();
+        });
+        tg.appendChild(c);
+      });
+      $("drv_restoreAll").onclick=async()=>{
+        await sb.from("drive_files").update({deleted:false}).eq("user_id",uid);
+        refresh();
+      };
       const used=files.reduce((s,f)=>s+(f.size||0),0);
       bar.style.display="";
       fill.style.width=Math.min(100,used/LIMIT*100)+"%";
@@ -1479,8 +1560,13 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
           document.body.appendChild(a);a.click();a.remove();
         });
         cell.querySelector(".rm").addEventListener("click",async()=>{
-          await sb.storage.from("drive").remove([uid+"/"+f.name]);
-          await sb.from("drive_files").delete().eq("name",f.name);
+          const {error:uErr}=await sb.from("drive_files").update({deleted:true}).eq("name",f.name).eq("user_id",uid);
+          if(uErr&&(uErr.message||"").indexOf("deleted")>=0){
+            /* colonne absente : ancienne suppression + SQL pour activer la corbeille */
+            await sb.storage.from("drive").remove([uid+"/"+f.name]);
+            await sb.from("drive_files").delete().eq("name",f.name);
+            o.innerHTML="🗑️ Supprimé. <span style='font-size:11px'>Pour garder les photos supprimées dans une corbeille, exécute dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:6px;border-radius:8px;font-size:10px;margin-top:4px'>alter table drive_files add column if not exists deleted boolean default false;</code></span>";
+          }
           refresh();
         });
         gEl.appendChild(cell);
@@ -1584,7 +1670,9 @@ const iconQueue=[];
 function buildMenu(){
   window.__menuBuilt=false;
   menuEl.innerHTML="";$("cats").innerHTML="";iconQueue.length=0;
-  const LIST=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
+  const LIST0=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
+  const HID=(function(){try{return new Set(JSON.parse(localStorage.getItem("nova_hidden")||"[]"));}catch(e){return new Set();}})();
+  const LIST=LIST0.filter(a=>!HID.has(a.meta.id));
   const FAVS=new Set(lsGet("favs",[]));
   const ORDERED=[...LIST].sort((x,y)=>{
     const fx=FAVS.has(x.meta.id)?1:0,fy=FAVS.has(y.meta.id)?1:0;
@@ -2584,28 +2672,97 @@ INITS.pomo=function(){
   render();
 };
 
-/* ===== THÈMES (bouton 🎨 dans la barre du haut) ===== */
+/* ===== THÈMES + RÉGLAGES + SALUTATION ===== */
 (function(){
   const THEMES=[["","🍬 Bonbon"],["ocean","🌊 Océan"],["coucher","🌅 Coucher de soleil"],["foret","🌿 Forêt"],["neon","🌌 Nuit néon"],["arciel","🌈 Arc-en-ciel"]];
-  let i=0;
-  try{const cur=localStorage.getItem("nova_theme")||"";const f=THEMES.findIndex(t=>t[0]===cur);if(f>=0)i=f;}catch(e){}
-  function apply(){if(THEMES[i][0])document.documentElement.dataset.theme=THEMES[i][0];else delete document.documentElement.dataset.theme;
-    try{localStorage.setItem("nova_theme",THEMES[i][0]);}catch(e){}}
-  const btn=document.createElement("button");
-  btn.id="btnTheme";btn.className="ghost";btn.title="Changer de thème";btn.textContent="🎨";
-  btn.style.marginLeft="auto";
+  const SWATCH={ "":"linear-gradient(135deg,#ff9a9e,#a18cd1,#fbc2eb,#8fd3f4)",ocean:"linear-gradient(135deg,#0093e9,#80d0c7,#89f7fe,#4facfe)",
+    coucher:"linear-gradient(135deg,#ff5e62,#ff9966,#fa709a,#fee140)",foret:"linear-gradient(135deg,#134e5e,#71b280,#a8e063,#56ab2f)",
+    neon:"linear-gradient(135deg,#0f0c29,#302b63,#ff0090,#5a34ff)",arciel:"linear-gradient(135deg,#ff9a9e,#f6d365,#84fab0,#8fd3f4)"};
+  function curTheme(){try{return localStorage.getItem("nova_theme")||"";}catch(e){return "";}}
+  function setTheme(t){
+    if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;
+    try{localStorage.setItem("nova_theme",t);}catch(e){}
+    document.querySelectorAll(".swatch").forEach(s=>s.classList.toggle("sel",s.dataset.t===t));
+  }
+  /* salutation personnalisée en fonction de l'heure */
+  function greet(){
+    const h=new Date().getHours();
+    let g;
+    if(h>=5&&h<12)g="Bonjour";
+    else if(h<17)g="Bon après-midi";
+    else if(h<22)g="Bonsoir";
+    else g="Bonsoir, couche-tard 🌙";
+    let name="";try{name=localStorage.getItem("nova_prenom")||"";}catch(e){}
+    $("greet").textContent=g+(name?" "+name:"")+" 👋";
+  }
+  greet();setInterval(greet,60000);
+  /* boutons 🎨 + ⚙️ dans la barre */
   const chip=$("acctChip");
-  chip.parentNode.insertBefore(btn,chip);
-  chip.style.marginLeft="0";
-  btn.addEventListener("click",()=>{
-    i=(i+1)%THEMES.length;apply();
-    const old=$("themeToast");if(old)old.remove();
-    const t=document.createElement("div");t.id="themeToast";t.textContent="🎨 Thème : "+THEMES[i][1];
-    document.body.appendChild(t);
-    setTimeout(()=>{if(t.parentNode)t.remove();},2000);
+  const bT=document.createElement("button");bT.id="btnTheme";bT.className="ghost";bT.title="Changer de thème";bT.textContent="🎨";
+  const bS=document.createElement("button");bS.id="btnSettings";bS.className="ghost";bS.title="Réglages";bS.textContent="⚙️";
+  chip.parentNode.insertBefore(bS,chip);chip.parentNode.insertBefore(bT,bS);
+  /* modal réglages */
+  const mod=document.createElement("div");mod.id="settings";
+  let toolBoxes="";
+  ALL.forEach(a=>{toolBoxes+='<label data-id="'+a.meta.id+'"><input type="checkbox" checked> '+a.meta.ico+' '+a.meta.name+'</label>';});
+  mod.innerHTML='<div class="set-card">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center"><h3>⚙️ Réglages</h3>'+
+    '<button class="ghost" id="setClose" style="margin:0;padding:7px 12px">✕</button></div>'+
+    '<div class="set-sec" style="border-top:none;padding-top:0"><label>👤 Ton prénom (pour la salutation)</label>'+
+    '<div class="row" style="margin-top:6px"><input id="setName" placeholder="ex. Tatami" maxlength="20"><button id="setSaveName" style="margin:0">OK</button></div></div>'+
+    '<div class="set-sec"><label>🎨 Thème</label><div class="themeRow" id="themeRow" style="margin-top:8px">'+
+      THEMES.map(t=>'<div class="swatch'+(t[0]===curTheme()?" sel":"")+'" data-t="'+t[0]+'" title="'+t[1]+'" style="background:'+SWATCH[t[0]]+'"></div>').join("")+
+    '</div><div id="themeName" style="font-size:11px;font-weight:700;color:#6b6489;margin-top:6px">'+(THEMES.find(t=>t[0]===curTheme())||THEMES[0])[1]+'</div></div>'+
+    '<div class="set-sec"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="setAnim" style="width:auto;margin:0"> ✨ Animations (tuiles, fond, effets)</label></div>'+
+    '<div class="set-sec"><label>🧰 Outils affichés <span style="font-weight:400;color:#6b6489">(décocher pour masquer)</span></label>'+
+    '<div class="toolToggle" id="setTools" style="margin-top:8px">'+toolBoxes+'</div>'+
+    '<button class="ghost" id="setAllTools" style="font-size:11px;padding:7px 12px;margin-top:8px">Tout afficher</button></div>'+
+    '</div>';
+  document.body.appendChild(mod);
+  try{document.body.classList.toggle("no-anim",localStorage.getItem("nova_noanim")==="1");}catch(e){}
+  $("setAnim").checked=!document.body.classList.contains("no-anim");
+  const HID=()=>{try{return new Set(JSON.parse(localStorage.getItem("nova_hidden")||"[]"));}catch(e){return new Set();}};
+  function syncToolBoxes(){$("setTools").querySelectorAll("label").forEach(l=>{
+    const off=HID().has(l.dataset.id);l.querySelector("input").checked=!off;l.classList.toggle("off",off);});}
+  syncToolBoxes();
+  $("setTools").addEventListener("change",e=>{
+    const l=e.target.closest("label");if(!l)return;
+    const s=HID();
+    if(e.target.checked)s.delete(l.dataset.id);else s.add(l.dataset.id);
+    try{localStorage.setItem("nova_hidden",JSON.stringify([...s]));}catch(e2){}
+    syncToolBoxes();buildMenu();applyFilters();
   });
-  apply();
-})();
+  $("setAllTools").addEventListener("click",()=>{try{localStorage.setItem("nova_hidden","[]");}catch(e){}syncToolBoxes();buildMenu();applyFilters();});
+  $("setAnim").addEventListener("change",e=>{
+    document.body.classList.toggle("no-anim",!e.target.checked);
+    try{localStorage.setItem("nova_noanim",e.target.checked?"":"1");}catch(e2){}
+  });
+  bT.addEventListener("click",()=>{
+    let i=THEMES.findIndex(t=>t[0]===curTheme());i=(i+1)%THEMES.length;setTheme(THEMES[i][0]);
+    const old=document.getElementById("themeToast");if(old)old.remove();
+    const t=document.createElement("div");t.id="themeToast";t.textContent="🎨 Thème : "+THEMES[i][1];
+    document.body.appendChild(t);setTimeout(()=>{if(t.parentNode)t.remove();},2000);
+    const tn=$("themeName");if(tn)tn.textContent=THEMES[i][1];
+  });
+  $("themeRow").addEventListener("click",e=>{
+    const s=e.target.closest(".swatch");if(!s)return;
+    setTheme(s.dataset.t);
+    $("themeName").textContent=(THEMES.find(t=>t[0]===s.dataset.t)||THEMES[0])[1];
+  });
+  bS.addEventListener("click",()=>{try{$("setName").value=localStorage.getItem("nova_prenom")||"";}catch(e){}
+    syncToolBoxes();mod.classList.add("open");});
+  $("setClose").addEventListener("click",()=>mod.classList.remove("open"));
+  mod.addEventListener("click",e=>{if(e.target===mod)mod.classList.remove("open");});
+  $("setSaveName").addEventListener("click",()=>{
+    const v=$("setName").value.trim().slice(0,20);
+    try{localStorage.setItem("nova_prenom",v);}catch(e){}
+    greet();
+    const old=document.getElementById("themeToast");if(old)old.remove();
+    const t=document.createElement("div");t.id="themeToast";t.textContent=v?("👋 Salut "+v+" !"):"👋 Prénom retiré";
+    document.body.appendChild(t);setTimeout(()=>{if(t.parentNode)t.remove();},2000);
+  });
+  setTheme(curTheme());
+})();;
 
 /* ===== FOND RÉACTIF À LA SOURIS ===== */
 (function(){
