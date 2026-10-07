@@ -30,10 +30,10 @@ body{color:var(--txt);min-height:100vh;overflow-x:hidden}
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(0deg,rgba(255,255,255,.35),rgba(255,255,255,.35))}
 /* ===== PORTE DE CONNEXION ===== */
-#authGate{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+#authGate{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;
   padding:20px;background:linear-gradient(135deg,rgba(255,154,158,.92),rgba(161,140,209,.92),rgba(139,205,244,.92));
   backdrop-filter:blur(6px)}
-body:not(.locked) #authGate{display:none}
+#authGate.open{display:flex}
 body.locked{overflow:hidden}
 .gate-card{background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.8);
   border-radius:28px;padding:34px 30px;width:100%;max-width:400px;text-align:center;
@@ -134,11 +134,12 @@ button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5p
 .citycard small{display:block;font-size:10px;color:#6b6489;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
 .citycard b{display:block;font-size:20px;color:#4b2fd4;margin-top:3px;font-variant-numeric:tabular-nums}
 /* favoris */
-.mbtn{position:relative}
-.fav{position:absolute;top:8px;right:10px;background:none;border:none;font-size:17px;cursor:pointer;
-  opacity:.3;padding:2px;line-height:1;transition:.15s}
-.fav:hover{opacity:.8;transform:scale(1.15)}
-.fav.on{opacity:1;filter:drop-shadow(0 2px 4px rgba(255,190,0,.6))}
+.favtile{outline:2.5px solid #ffd44d;outline-offset:-2.5px}
+.fav{position:absolute;top:8px;right:10px;background:rgba(255,255,255,.85);border:none;border-radius:50%;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;
+  opacity:.45;padding:0;line-height:1;transition:.15s}
+.fav:hover{opacity:1;transform:scale(1.18);background:#fff}
+.fav.on{opacity:1;background:#fff4d6;box-shadow:0 2px 8px rgba(255,190,0,.5)}
 .big{font-size:22px;font-weight:800;color:#4b2fd4}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .chip{padding:8px 14px;border-radius:22px;font-size:12px;border:1.5px solid #e2def5;
@@ -1328,30 +1329,35 @@ function buildMenu(){
   const FAVS=new Set(lsGet("favs",[]));
   const ORDERED=[...LIST].sort((x,y)=>{
     const fx=FAVS.has(x.meta.id)?1:0,fy=FAVS.has(y.meta.id)?1:0;
-    if(fx!==fy)return fy-fx;                    /* favoris d'abord */
-    return useScore(y.meta.id)-useScore(x.meta.id); /* puis les plus utilisés */
+    if(fx!==fy)return fy-fx;
+    return useScore(y.meta.id)-useScore(x.meta.id);
   });
   ORDERED.forEach(function(a){
   const t=a.meta;
   const b=document.createElement("button");
-  b.className="mbtn "+t.cls;
+  b.className="mbtn "+t.cls+(FAVS.has(t.id)?" favtile":"");
   b.type="button";
   b.dataset.cat=t.cat;
+  b.dataset.fav=FAVS.has(t.id)?"1":"";
   b.dataset.s=(t.name+" "+t.desc+" "+t.brief+" "+t.cat).toLowerCase();
-  if(FAVS.has(t.id))b.dataset.fav="1";
   b.innerHTML='<span class="ico"></span><b>'+t.name+'</b><small>'+t.desc+'</small>'+
-    '<span class="fav'+(FAVS.has(t.id)?" on":"")+'" data-id="'+t.id+'">'+(FAVS.has(t.id)?"⭐":"☆")+'</span>';
+    '<span class="fav'+(FAVS.has(t.id)?" on":"")+'" data-id="'+t.id+'" title="Ajouter aux favoris">'+(FAVS.has(t.id)?"⭐":"☆")+'</span>';
   iconQueue.push([b,t.ico]);
-  b.querySelector(".fav").addEventListener("click",function(ev){
-    ev.stopPropagation();
-    const id=this.dataset.id;
-    if(FAVS.has(id))FAVS.delete(id);else FAVS.add(id);
-    lsSet("favs",[...FAVS]);
-    this.classList.toggle("on",FAVS.has(id));
-    this.textContent=FAVS.has(id)?"⭐":"☆";
-    b.dataset.fav=FAVS.has(id)?"1":"";
+  b.addEventListener("click",ev=>{
+    const f=ev.target.closest(".fav");
+    if(f){                     /* clic sur l'étoile = favori, PAS d'ouverture */
+      ev.stopPropagation();
+      const id=f.dataset.id;
+      if(FAVS.has(id))FAVS.delete(id);else FAVS.add(id);
+      lsSet("favs",[...FAVS]);
+      f.classList.toggle("on",FAVS.has(id));
+      f.textContent=FAVS.has(id)?"⭐":"☆";
+      b.classList.toggle("favtile",FAVS.has(id));
+      b.dataset.fav=FAVS.has(id)?"1":"";
+      return;
+    }
+    go(t.id);
   });
-  b.addEventListener("click",()=>go(t.id));
   menuEl.appendChild(b);
   });
   /* Emojis affichés progressivement → la grille s'affiche bien plus vite */
@@ -1433,12 +1439,12 @@ function go(id){
   scrollTo(0,0);
   if(!initDone.has(id)){
     initDone.add(id);
-    try{
-      if(found.rich)INITS[id]&&INITS[id]();
-      else{
-        GEN.forEach(g=>{if(g.meta.id===id)g.init();});
-      }
-    }catch(err){console.error(err);}
+    const it=found.rich?INITS[id]:null;
+    const gi=found.rich?null:GEN.find(g=>g.meta.id===id);
+    requestAnimationFrame(()=>{try{
+      if(it)it();
+      else if(gi)gi.init();
+    }catch(err){console.error("init "+id,err);}});
   }
 }
 function goHome(){
@@ -1519,28 +1525,36 @@ document.body.classList.add("locked");
       await pushAll();
     },1200);
   };
-  function unlock(email){
-    window.__email=email;
+  function unlock(){
+    window.__email=null;
     buildMenu();
     document.body.classList.remove("locked");
     document.body.classList.add("authed");
-    const e=$("sb_email");
-    e.textContent=email;
-    if(email===ADMIN_EMAIL)e.innerHTML=email+' <span style="color:#e0306a">👑</span>';
   }
   let booted=false;
   async function onSessionChange(){
     const {data}=await sb.auth.getSession();
     const s=data&&data.session;
     if(s){
-      unlock(s.user.email);
+      window.__email=s.user.email;
+      buildMenu();
+      document.body.classList.remove("locked");
+      document.body.classList.add("authed");
+      const e=$("sb_email");
+      e.textContent=s.user.email;
+      if(s.user.email===ADMIN_EMAIL)e.innerHTML=s.user.email+' <span style="color:#e0306a">👑</span>';
+      $("sb_chpw").style.display="";
       const n=await pullAll();
       await pushAll();
       if(!booted&&n>0)setTimeout(()=>location.reload(),800);
       booted=true;
     }else{
-      document.body.classList.add("locked");
+      /* pas connecté : accès libre quand même, juste sans synchro cloud */
+      window.__email=null;
+      buildMenu();
+      document.body.classList.remove("locked");
       document.body.classList.remove("authed");
+      $("sb_chpw").style.display="none";
     }
   }
   sb.auth.onAuthStateChange(()=>{onSessionChange();});
