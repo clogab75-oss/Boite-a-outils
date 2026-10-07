@@ -156,10 +156,32 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <div id="menu"></div>
 </div>
 
+<div id="authCard" class="tool-card" style="display:none">
+  <h3>☁️ Mon compte</h3>
+  <div id="sb_logged" style="display:none">
+    <div style="font-size:14px">Connecté : <b id="sb_email" style="color:#00a583"></b></div>
+    <div style="font-size:12px;color:#6b6489;margin:4px 0 10px">☁️ Vos données sont synchronisées avec votre compte</div>
+    <button class="green" id="sb_sync">🔄 Synchroniser maintenant</button>
+    <button class="ghost" id="sb_logout">Se déconnecter</button>
+    <div class="out" id="sb_status" style="margin-top:8px">—</div>
+  </div>
+  <div id="sb_form">
+    <div style="font-size:12px;color:#6b6489;margin-bottom:10px">Créez un compte pour retrouver vos données sur tous vos appareils. Sur un même PC, vous restez connecté.</div>
+    <div class="row">
+      <div style="flex:1.4"><label>Adresse e-mail</label><input type="email" id="sb_mail" placeholder="vous@exemple.fr"></div>
+      <div style="flex:1"><label>Mot de passe (6+ car.)</label><input type="password" id="sb_pass" placeholder="••••••"></div>
+    </div>
+    <button class="green" id="sb_login">Se connecter</button>
+    <button class="ghost" id="sb_signup">Créer un compte</button>
+    <div class="out" id="sb_msg" style="margin-top:8px">—</div>
+  </div>
+</div>
+
 <div id="pages"></div>
 
-<footer>MA BOÎTE À OUTILS — VOS DONNÉES RESTENT DANS VOTRE NAVIGATEUR</footer>
+<footer>MA BOÎTE À OUTILS — DONNÉES LOCALES + SYNCHRO CLOUD FACULTATIVE</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -175,6 +197,7 @@ function lsGet(key,def){
 function lsSet(key,val){
   try{localStorage.setItem("nova_"+key,JSON.stringify(val));}catch(e){}
   flashSaved();
+  if(window.__sbOnSave)try{window.__sbOnSave(key,val);}catch(e){}
 }
 function flashSaved(){
   const t=$("savedTag");
@@ -1057,6 +1080,68 @@ txtTool("url","🌐","URL encoder/décoder","%20 et compagnie","dev","Encodez ou
   }});
 })();
 
+/* ===== Sauvegarde & restauration (export fichier) ===== */
+(function(){
+  const meta={id:"backup",ico:"💾",name:"Sauvegarde & restauration",desc:"Exporter / importer tout",cat:"securite",cls:nextCls(),
+    brief:"Exportez TOUTES les données de vos outils (to-do, notes, champs, coffre…) dans un fichier, et restaurez-les sur un autre appareil ou navigateur.",
+    html:'<p style="font-size:13px;color:#6b6489;margin-bottom:10px">Vos données vivent dans ce navigateur. Exportez-les régulièrement pour ne jamais les perdre, ou pour les transférer sur un autre appareil.</p>'+
+      '<button class="green" id="bk_export">⬇️ Exporter mes données (.json)</button>'+
+      '<button class="ghost" id="bk_copy">📋 Copier la sauvegarde (presse-papiers)</button>'+
+      '<div style="margin-top:14px"><label>Restaurer depuis un fichier</label>'+
+      '<input type="file" id="bk_file" accept=".json,application/json"></div>'+
+      '<button class="ghost" id="bk_import">⬆️ Importer la sauvegarde</button>'+
+      '<div class="out" id="bk_o">—</div>'+
+      '<div class="save-note">⚠️ L\'import remplace les données actuelles</div>'};
+  GEN.push({meta:meta,init:function(){
+    const o=$("bk_o");
+    function collect(){
+      const data={},ts=[];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k&&k.indexOf("nova_")===0){data[k]=localStorage.getItem(k);ts.push(k);}
+      }
+      return {app:"boite-a-outils",date:new Date().toISOString(),items:ts.length,data:data};
+    }
+    function refresh(){
+      const c=collect();
+      o.innerHTML="📦 <b>"+c.items+" donnée(s)</b> enregistrée(s) dans ce navigateur"+(c.items?"":" — utilisez encore quelques outils !")+
+        "<br><span style='color:#6b6489;font-size:11px'>Le fichier exporté contient vos mots de passe du coffre, notes, listes… Gardez-le privé.</span>";
+    }
+    $("bk_export").addEventListener("click",()=>{
+      const c=collect();
+      const blob=new Blob([JSON.stringify(c,null,2)],{type:"application/json"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download="ma-boite-a-outils-"+c.date.slice(0,10)+".json";
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      o.innerHTML="✅ Fichier téléchargé : <b>"+a.download+"</b> ("+c.items+" données) — gardez-le en sécurité !";
+    });
+    $("bk_copy").addEventListener("click",async()=>{
+      const s=JSON.stringify(collect());
+      try{await navigator.clipboard.writeText(s);o.textContent="✅ Sauvegarde copiée dans le presse-papiers !";}
+      catch(e){o.textContent="⚠️ Copie impossible ici — utilisez l'export fichier.";}
+    });
+    $("bk_import").addEventListener("click",()=>{
+      const f=$("bk_file").files[0];
+      if(!f){o.textContent="Choisissez d'abord un fichier .json.";return;}
+      const rd=new FileReader();
+      rd.onload=()=>{
+        try{
+          const j=JSON.parse(rd.result);
+          if(!j||typeof j!=="object"||!j.data)throw new Error("format");
+          let n=0;
+          Object.keys(j.data).forEach(k=>{if(k.indexOf("nova_")===0){localStorage.setItem(k,j.data[k]);n++;}});
+          o.innerHTML="✅ <b>"+n+" donnée(s)</b> restaurée(s). Rechargez la page pour tout voir à jour.";
+          setTimeout(()=>location.reload(),1200);
+        }catch(e){o.textContent="⚠️ Fichier invalide — utilisez un fichier exporté par cet outil.";}
+      };
+      rd.readAsText(f);
+    });
+    refresh();
+  }});
+})();
+
 /* ===== Listes copiables ===== */
 listTool("spec","§","Caractères spéciaux","Symboles à copier","texte","Tous ces symboles se copient en un clic.",
   ["©|copyright","®","™","§","¶","†","‡","•","…","‰","€","£","¥","¢","±","×","÷","≈","≠","≤","≥","→","←","↔","⇒","∞","√","∑","∆","∂","∫","π","µ","Ω","°","′","″","¹","²","³","½","¼","¾","⅓","№","∅","≈","¡","¿","«","»","“","”","–","—","·","†"]);
@@ -1184,6 +1269,107 @@ addEventListener("hashchange",()=>{
   else if(!id)goHome();
 },{passive:true});
 if(location.hash&&ALL.some(a=>"#"+a.meta.id===location.hash))go(location.hash.slice(1));
+
+/* ===== COMPTE & SYNCHRO CLOUD (Supabase) ===== */
+const SB_URL="",SB_KEY="";   /* ← colle ici l'URL du projet et la clé "anon" */
+(function(){
+  const card=$("authCard");
+  if(!SB_URL||!SB_KEY||!window.supabase)return;
+  card.style.display="";
+  const sb=window.supabase.createClient(SB_URL,SB_KEY);
+  const msg=$("sb_msg"),status=$("sb_status");
+  const say=(el,t)=>{el.textContent=t;};
+  const fullKey=k=>"nova_"+k;
+  function collectRows(){
+    const rows=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.indexOf("nova_")===0){try{rows.push({key:k.slice(5),value:JSON.parse(localStorage.getItem(k))});}catch(e){}}
+    }
+    return rows;
+  }
+  async function pushAll(){
+    const u=(await sb.auth.getUser()).data.user;
+    if(!u)return say(status,"Non connecté.");
+    const rows=collectRows();
+    if(!rows.length)return say(status,"Rien à envoyer.");
+    const CHUNK=200;
+    for(let i=0;i<rows.length;i+=CHUNK){
+      const {error}=await sb.from("tool_data").upsert(
+        rows.slice(i,i+CHUNK).map(r=>({user_id:u.id,key:r.key,value:r.value})),
+        {onConflict:"user_id,key"});
+      if(error)return say(status,"⚠️ Erreur d'envoi : "+error.message);
+    }
+    say(status,"✅ "+rows.length+" donnée(s) envoyée(s) dans le cloud.");
+  }
+  async function pullAll(){
+    const u=(await sb.auth.getUser()).data.user;
+    if(!u)return false;
+    const {data,error}=await sb.from("tool_data").select("key,value");
+    if(error||!data)return false;
+    let n=0;
+    data.forEach(r=>{
+      const k=fullKey(r.key);
+      const s=JSON.stringify(r.value);
+      if(localStorage.getItem(k)!==s){localStorage.setItem(k,s);n++;}
+    });
+    return n;
+  }
+  let pushTimer=null;
+  window.__sbOnSave=function(){
+    if(pushTimer)clearTimeout(pushTimer);
+    pushTimer=setTimeout(async()=>{
+      const u=(await sb.auth.getUser()).data.user;
+      if(!u)return;
+      const rows=collectRows();
+      for(let i=0;i<rows.length;i+=200){
+        await sb.from("tool_data").upsert(
+          rows.slice(i,i+200).map(r=>({user_id:u.id,key:r.key,value:r.value})),
+          {onConflict:"user_id,key"});
+      }
+    },3000);
+  };
+  async function showLogged(email){
+    $("sb_form").style.display="none";
+    $("sb_logged").style.display="";
+    $("sb_email").textContent=email;
+    say(status,"Prêt.");
+  }
+  async function onSessionChange(){
+    const {data}=await sb.auth.getSession();
+    const s=data&&data.session;
+    if(s){await showLogged(s.user.email);
+      const n=await pullAll();
+      await pushAll();
+      if(n>0)say(status,"✅ "+n+" donnée(s) récupérée(s) du cloud — rechargement…"),setTimeout(()=>location.reload(),1000);
+    }else{
+      $("sb_form").style.display="";
+      $("sb_logged").style.display="none";
+    }
+  }
+  sb.auth.onAuthStateChange(()=>{onSessionChange();});
+  $("sb_login").addEventListener("click",async()=>{
+    const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
+    if(!m||p.length<6)return say(msg,"E-mail + mot de passe (6 caractères min.) requis.");
+    say(msg,"Connexion…");
+    const {error}=await sb.auth.signInWithPassword({email:m,password:p});
+    say(msg,error?("⚠️ "+(error.message||"Échec de connexion")):"✅ Connecté !");
+  });
+  $("sb_signup").addEventListener("click",async()=>{
+    const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
+    if(!m||p.length<6)return say(msg,"E-mail + mot de passe (6 caractères min.) requis.");
+    say(msg,"Création du compte…");
+    const {error}=await sb.auth.signUp({email:m,password:p});
+    say(msg,error?("⚠️ "+error.message):"✅ Compte créé ! Vérifiez votre boîte mail si un e-mail de confirmation est demandé, puis connectez-vous.");
+  });
+  $("sb_sync").addEventListener("click",async()=>{
+    say(status,"🔄 Synchronisation…");
+    await pullAll();
+    await pushAll();
+  });
+  $("sb_logout").addEventListener("click",async()=>{await sb.auth.signOut();location.reload();});
+  onSessionChange();
+})();
 
 const INITS={};
 
