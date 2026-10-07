@@ -1187,78 +1187,69 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       }
       return "📄 "+key;
     }
+    /* rendu "mini-page" : on affiche le contenu comme dans le vrai outil */
+    function miniField(label,val){
+      return "<div style='display:flex;gap:10px;padding:7px 10px;background:#f6f4fb;border-radius:10px;margin-top:6px;align-items:baseline'>"+
+        "<span style='font-size:11px;color:#6b6489;font-weight:800;white-space:nowrap;min-width:120px'>"+esc(label)+"</span>"+
+        "<span style='flex:1;font-size:13px;word-break:break-word;white-space:pre-wrap'>"+esc(val)+"</span></div>";
+    }
     function renderValue(v){
       if(v===null||v===undefined||v==="")return "<i style='color:#6b6489'>(vide)</i>";
-      if(typeof v==="string")return "<div style='white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
+      if(typeof v==="string")return "<div style='background:#f6f4fb;border-radius:12px;padding:10px 12px;white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
       if(Array.isArray(v)){
         if(!v.length)return "<i style='color:#6b6489'>(liste vide)</i>";
-        return "<div style='display:flex;flex-direction:column;gap:6px'>"+v.map(function(x){
+        /* to-do ? */
+        if(v[0]&&typeof v[0]==="object"&&("t" in v[0]||"done" in v[0])){
+          return "<div>"+v.map(function(x){
+            return "<div style='display:flex;gap:8px;padding:6px 10px;align-items:center;background:#f6f4fb;border-radius:10px;margin-top:6px'>"+
+              "<span>"+(x.done?"✅":"⬜")+"</span><span style='flex:1;font-size:13px;word-break:break-word;"+(x.done?"text-decoration:line-through;color:#9b93b5":"")+"'>"+esc(x.t||"")+"</span></div>";
+          }).join("")+"</div>";
+        }
+        /* coffre de mots de passe ? */
+        if(v[0]&&typeof v[0]==="object"&&("pass" in v[0]||"name" in v[0])){
+          return "<table style='width:100%;font-size:12px;border-collapse:collapse;margin-top:6px'>"+
+            "<tr style='color:#6b6489;font-size:10px;text-transform:uppercase'><th style='text-align:left;padding:4px 8px'>Nom</th><th style='text-align:left;padding:4px 8px'>Mot de passe</th></tr>"+
+            v.map(function(x){return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;font-weight:700'>"+esc(x.name||"")+"</td>"+
+              "<td style='padding:5px 8px;border-top:1px solid #eee;font-family:monospace'>"+esc(x.pass||"")+"</td></tr>";}).join("")+"</table>";
+        }
+        return v.map(function(x){
           const s=typeof x==="string"?x:JSON.stringify(x);
-          return "<div style='background:#f6f4fb;border-radius:10px;padding:8px 12px;word-break:break-word;white-space:pre-wrap'>"+esc(s)+"</div>";
-        }).join("")+"</div>";
+          return "<div style='background:#f6f4fb;border-radius:10px;padding:8px 12px;margin-top:6px;word-break:break-word;white-space:pre-wrap'>"+esc(s)+"</div>";
+        }).join("");
       }
       if(typeof v==="object"){
+        /* statistiques d'usage ? */
         const ks=Object.keys(v);
-        if(ks.length===1&&typeof v[ks[0]]!=="object")return renderValue(v[ks[0]]);
+        if(ks.length&&ks.every(k=>v[k]&&typeof v[k]==="object"&&"n" in v[k])){
+          const rows=ks.map(k=>({k:k,n:v[k].n,last:v[k].last})).sort((a,b)=>b.n-a.n).slice(0,15);
+          const max=rows[0]?rows[0].n:1;
+          return "<div>"+rows.map(function(rw){
+            const t=ALL.find(a=>a.meta.id===rw.k);
+            const lab=t?t.meta.ico+" "+t.meta.name:rw.k;
+            return "<div style='margin-top:6px'><div style='display:flex;justify-content:space-between;font-size:11px;color:#3b3166'><span>"+esc(lab)+"</span><b>"+rw.n+"×</b></div>"+
+              "<div style='height:6px;border-radius:4px;background:#eee6f7;overflow:hidden'><div style='height:100%;border-radius:4px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:"+(rw.n/max*100)+"%'></div></div></div>";
+          }).join("")+"</div>";
+        }
+        /* champs d'un calculateur ? */
+        if(ks.length&&ks.every(k=>typeof v[k]!=="object")){
+          return "<div style='display:flex;flex-wrap:wrap'>"+ks.map(function(k){
+            const st=String(v[k]);
+            return "<span style='background:#f6f4fb;border-radius:10px;padding:5px 10px;margin:4px 6px 0 0;font-size:12px'><b style='color:#6b6489'>"+esc(k)+"</b> : "+esc(st)+"</span>";
+          }).join("")+"</div>";
+        }
         return "<table style='width:100%;font-size:12px;border-collapse:collapse'>"+ks.map(function(k){
-          return "<tr><td style='padding:4px 8px;border-top:1px solid #eee;color:#6b6489;font-weight:700;white-space:nowrap;vertical-align:top'>"+esc(k)+
-            "</td><td style='padding:4px 8px;border-top:1px solid #eee;word-break:break-word'>"+renderValue(v[k])+"</td></tr>";
+          return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;color:#6b6489;font-weight:700;white-space:nowrap;vertical-align:top;width:130px'>"+esc(k)+
+            "</td><td style='padding:5px 8px;border-top:1px solid #eee;word-break:break-word'>"+renderValue(v[k])+"</td></tr>";
         }).join("")+"</table>";
       }
       return esc(String(v));
     }
-    function sqlHelp(msg){
-      eEl.style.display="";
-      eEl.innerHTML="⚠️ <b>"+esc(msg)+"</b><br>Exécute dans <b>Supabase → SQL Editor</b> :"+
-        "<code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
-        "create table if not exists tool_data (\n"+
-        "  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,\n"+
-        "  key text not null, value jsonb, email text, updated_at timestamptz default now(),\n"+
-        "  primary key (user_id, key));\n"+
-        "alter table tool_data enable row level security;\n"+
-        "create policy own_rows on tool_data for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\n"+
-        "create policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = 'clogab75@gmail.com');\n"+
-        "alter publication supabase_realtime add table tool_data;</code>"+
-        "<br>Puis clique sur Actualiser.";
-    }
-    async function isAdmin(){
-      const {data}=await sb.auth.getUser();
-      const u=data&&data.user;
-      return !!(u&&u.email===ADMIN_EMAIL);
-    }
-    function drawUsers(){
-      const users=[];
-      allRows.forEach(function(r){const em=r.email||"(inconnu)";if(users.indexOf(em)<0)users.push(em);});
-      uEl.innerHTML="";
-      users.forEach(function(em){
-        const c=document.createElement("div");
-        c.className="chip"+(em===curUser?" sel":"");
-        c.textContent=(em===ADMIN_EMAIL?"👑 ":"")+em+" ("+allRows.filter(r=>(r.email||"(inconnu)")===em).length+")";
-        c.addEventListener("click",()=>{curUser=em;curTool=null;drawUsers();drawTools();});
-        uEl.appendChild(c);
-      });
-      tWrap.style.display=curUser?"":"none";
-    }
-    function drawTools(){
-      const rows=allRows.filter(r=>(r.email||"(inconnu)")===curUser);
-      const groups={};
-      rows.forEach(function(r){const L=keyLabel(r.key);if(!groups[L])groups[L]=[];groups[L].push(r);});
-      tEl.innerHTML="";
-      Object.keys(groups).forEach(function(L){
-        const c=document.createElement("div");
-        c.className="chip"+(L===curTool?" sel":"");
-        c.textContent=L+" ("+groups[L].length+")";
-        c.addEventListener("click",()=>{curTool=L;drawTools();drawView(groups[L]);});
-        tEl.appendChild(c);
-      });
-      if(curTool&&groups[curTool])drawView(groups[curTool]);
-      else vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
-    }
     function drawView(rows){
-      vEl.innerHTML=rows.map(function(r){
-        const d=r.updated_at?(" · maj "+String(r.updated_at).replace("T"," ").slice(0,16)):"";
-        return "<div style='margin-bottom:14px'><div style='font-size:11px;color:#6b6489;font-weight:700'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
-      }).join("");
+      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:#fff'>"+
+        rows.map(function(r){
+          const d=r.updated_at?(" · maj "+String(r.updated_at).replace("T"," ").slice(0,16)):"";
+          return "<div style='margin-bottom:16px'><div style='font-size:11px;color:#6b6489;font-weight:800;text-transform:uppercase;letter-spacing:.5px'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
+        }).join("")+"</div>";
     }
     async function render(){
       if(!(await isAdmin())){eEl.style.display="";eEl.textContent="⛔ Réservé à l'administrateur.";return;}
@@ -1334,7 +1325,12 @@ function buildMenu(){
   if(window.__menuBuilt)return;window.__menuBuilt=true;
   const iconQueue=[];
   const LIST=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
-  const ORDERED=[...LIST].sort((x,y)=>useScore(y.meta.id)-useScore(x.meta.id));
+  const FAVS=new Set(lsGet("favs",[]));
+  const ORDERED=[...LIST].sort((x,y)=>{
+    const fx=FAVS.has(x.meta.id)?1:0,fy=FAVS.has(y.meta.id)?1:0;
+    if(fx!==fy)return fy-fx;                    /* favoris d'abord */
+    return useScore(y.meta.id)-useScore(x.meta.id); /* puis les plus utilisés */
+  });
   ORDERED.forEach(function(a){
   const t=a.meta;
   const b=document.createElement("button");
@@ -1342,8 +1338,19 @@ function buildMenu(){
   b.type="button";
   b.dataset.cat=t.cat;
   b.dataset.s=(t.name+" "+t.desc+" "+t.brief+" "+t.cat).toLowerCase();
-  b.innerHTML='<span class="ico"></span><b>'+t.name+'</b><small>'+t.desc+'</small>';
+  if(FAVS.has(t.id))b.dataset.fav="1";
+  b.innerHTML='<span class="ico"></span><b>'+t.name+'</b><small>'+t.desc+'</small>'+
+    '<span class="fav'+(FAVS.has(t.id)?" on":"")+'" data-id="'+t.id+'">'+(FAVS.has(t.id)?"⭐":"☆")+'</span>';
   iconQueue.push([b,t.ico]);
+  b.querySelector(".fav").addEventListener("click",function(ev){
+    ev.stopPropagation();
+    const id=this.dataset.id;
+    if(FAVS.has(id))FAVS.delete(id);else FAVS.add(id);
+    lsSet("favs",[...FAVS]);
+    this.classList.toggle("on",FAVS.has(id));
+    this.textContent=FAVS.has(id)?"⭐":"☆";
+    b.dataset.fav=FAVS.has(id)?"1":"";
+  });
   b.addEventListener("click",()=>go(t.id));
   menuEl.appendChild(b);
   });
@@ -1357,6 +1364,9 @@ function buildMenu(){
     if(iconQueue.length)setTimeout(flush,25);
   })();
   const cats=$("cats");
+  const f=document.createElement("div");
+  f.className="chip";f.dataset.c="__fav";f.textContent="⭐ Favoris ("+LIST.filter(a=>FAVS.has(a.meta.id)).length+")";
+  cats.appendChild(f);
   const b=document.createElement("div");
   b.className="chip sel";b.textContent="⭐ Tous ("+LIST.length+")";b.dataset.c="*";
   cats.appendChild(b);
