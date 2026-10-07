@@ -1349,7 +1349,16 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       setTimeout(()=>URL.revokeObjectURL(a.href),5000);
     });
     render();
-    sb.channel("adm-rt").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},()=>render()).subscribe();
+    if(!window.__admRT){
+      window.__admRT=true;
+      let lastRt=0;
+      sb.channel("adm-rt").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},()=>{
+        const now=Date.now();
+        if(now-lastRt<5000)return;   /* anti-tempête : 1 refresh temps réel max toutes les 5 s */
+        lastRt=now;
+        render();
+      }).subscribe();
+    }
   }});
 })();
 
@@ -1439,13 +1448,21 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         if(!error){
           await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});
           used+=blob.size;
+        }else if((error.message||"").indexOf("Bucket not found")>=0){
+          try{await sb.storage.createBucket("drive",{public:true});}catch(e){}
+          const {error:e2}=await sb.storage.from("drive").upload(uid+"/"+f.name,blob,{upsert:true});
+          if(e2)o.innerHTML="⚠️ <b>Bucket « drive » introuvable.</b> Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>insert into storage.buckets (id, name, public) values ('drive','drive',true);</code><br>Puis Stockage → drive → Policies → « New policy » → lecture publique (authenticated full access).";
+          else{await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});used+=blob.size;}
         }else o.innerHTML="⚠️ "+esc(f.name)+" : "+esc(error.message);
       }
       pending=[];$("drv_file").value="";
       refresh();
     });
     refresh();
-    sb.channel("drv-rt").on("postgres_changes",{event:"*",schema:"public",table:"drive_files"},()=>refresh()).subscribe();
+    if(!window.__drvRT){
+      window.__drvRT=true;
+      sb.channel("drv-rt").on("postgres_changes",{event:"*",schema:"public",table:"drive_files"},()=>refresh()).subscribe();
+    }
   }});
 })();
 
