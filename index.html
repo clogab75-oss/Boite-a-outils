@@ -707,7 +707,7 @@ calcTool("echelle","🗺️","Échelle de carte","1:n → distance réelle","mes
 
 /* ===== Argent (complément) ===== */
 calcTool("prixkg","🏷️","Prix au kilo","Comparer au poids","argent","Prix au kilo/litre pour comparer les produits.",
-  [["p","Prix payé (€)",3.5],["kg","Poids (kg)",500,"g si <100"],
+  [["p","Prix payé (€)",3.5],["kg","Poids (kg)",500,"g si <100"]],
   v=>{let kg=v["kg"];if(kg&&kg<100)kg=kg/1000;
     return "Prix au kilo : <b style='color:#00a583'>"+fmt(v.p/kg,2)+" €/kg</b>";},
   {note:"Astuce : si le poids est en grammes, tapez-le tel quel (< 100 ⇒ converti en kg)"});
@@ -739,7 +739,7 @@ calcTool("livret","🏦","Épargne (Livret A style)","Intérêts annuels","argen
     return "Solde après "+v.y+" ans : <b style='color:#00a583'>"+fmt(bal,2)+" €</b><br>"+
       "Total versé : <b>"+fmt(v.c+v.m*n,2)+" €</b> · Intérêts : <b style='color:#00a583'>"+fmt(bal-v.c-v.m*n,2)+" €</b>";});
 calcTool("objectif","🎯","Objectif d'épargne","Combien par mois ?","argent","Mensualité nécessaire pour atteindre un objectif.",
-  [["o","Objectif (€)",10000],["m","Dans combien de mois",24],["r","Taux annuel (%)",3)],
+  [["o","Objectif (€)",10000],["m","Dans combien de mois",24],["r","Taux annuel (%)",3]],
   v=>{const rm=v.r/100/12;
     const mens=rm===0?v.o/v.m:v.o*rm/(Math.pow(1+rm,v.m)-1);
     return "Épargner <b style='color:#00a583'>"+fmt(mens,2)+" €/mois</b> pendant "+v.m+" mois<br>"+
@@ -761,7 +761,7 @@ calcTool("tauxh","⏰","Taux horaire","Salaire → €/heure","argent","Votre sa
     return "Taux horaire : <b style='color:#00a583'>"+fmt(th,2)+" €/h</b><br>"+
       fmt(v.h*52/12,1)+" h/mois · "+fmt(v.h,0)+" h/semaine";});
 calcTool("augsal","🚀","Augmentation de salaire","Nouveau salaire","argent","Simulez une augmentation en % ou en €.",
-  [["s","Salaire actuel (€)",2000],["p","Augmentation (%)",5)],
+  [["s","Salaire actuel (€)",2000],["p","Augmentation (%)",5]],
   v=>{const d=v.s*v.p/100;
     return "Nouveau salaire : <b style='color:#00a583'>"+fmt(v.s+d,2)+" €/mois</b><br>"+
       "Gain : <b>+"+fmt(d,2)+" €/mois</b> = +"+fmt(d*12,0)+" €/an<br>"+
@@ -1020,7 +1020,6 @@ txtTool("palind","🪞","Palindrome ?","Texte miroir","fun","Vérifiez si un mot
     if(!c)return "Tapez quelque chose !";
     const rev=[...c].reverse().join("");
     return c===rev?"<b style='color:#00a583'>OUI, c'est un palindrome ✅</b>":"<b>Non ❌</b> — à l'envers : « "+rev+" »";},"Vérifier");
-    const w=lsGet("occ_w","");if(!w)return "Tapez d'abord le mot à chercher ci-dessous.";
 txtTool("dedup","🧹","Doublons de lignes","Dédupliquage","texte","Supprimez les lignes en double d'une liste.",
   s=>{const lines=s.split("\n"),seen=new Set(),out=[];
     lines.forEach(l=>{if(!seen.has(l)){seen.add(l);out.push(l);}});
