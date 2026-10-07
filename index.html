@@ -167,7 +167,7 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
 }
 </style>
 </head>
-<body>
+<body class="locked">
 <div id="bgFx"></div>
 <div id="bgGlow"></div>
 
@@ -214,8 +214,6 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
 
 <footer>MA BOÎTE À OUTILS — DONNÉES LOCALES + SYNCHRO CLOUD FACULTATIVE</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -1053,7 +1051,11 @@ txtTool("url","🌐","URL encoder/décoder","%20 et compagnie","dev","Encodez ou
     });
     $("v2a_go").addEventListener("click",async()=>{
       if(!buf)return $("v2a_o").textContent="Choisissez d'abord une vidéo.";
-      const o=$("v2a_o");o.textContent="⚙️ Analyse de la piste audio…";
+      const o=$("v2a_o");
+      if(!window.lamejs){o.textContent="⏳ Chargement du moteur audio…";
+        const ok=await window.__loadScript("https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js");
+        if(!ok||!window.lamejs)return o.textContent="⚠️ Moteur audio inaccessible — vérifiez la connexion puis réessayez.";}
+      o.textContent="⚙️ Analyse de la piste audio…";
       try{
         const AC=new(window.AudioContext||window.webkitAudioContext)();
         const ab=await AC.decodeAudioData(buf);
@@ -1160,19 +1162,39 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     async function render(){
       if(!(await isAdmin())){o.textContent="⛔ Réservé à l'administrateur.";return;}
       const {data,error}=await sb.from("tool_data").select("key,value,email,updated_at").order("email");
-      if(error){o.textContent="⚠️ "+error.message+" — exécutez le SQL admin fourni dans Supabase.";return;}
+      if(error){
+        const r2=await sb.from("tool_data").select("key,value");
+        if(r2.error){
+          o.innerHTML="⚠️ <b>Accès admin impossible :</b> "+esc(error.message)+
+            "<br><br>Pour l'activer, va dans <b>Supabase → SQL Editor</b> et exécute :"+
+            "<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
+            esc("alter table tool_data add column if not exists email text;")+"\\n"+
+            esc("alter table tool_data add column if not exists updated_at timestamptz default now();")+"\\n"+
+            esc("update tool_data t set email = u.email from auth.users u where u.id = t.user_id;")+"\\n"+
+            esc("create policy \\"admin read all\\" on tool_data for select using (auth.jwt()->>'email' = 'clogab75@gmail.com');")+
+            "</code>Puis clique sur Actualiser.";
+          return;
+        }
+        o.innerHTML="⚠️ Colonnes e-mail absentes — exécute le SQL admin (voir message). Affichage de vos propres données :"+
+          listRows((r2.data||[]).map(r=>({key:r.key,value:r.value,email:"(vous)"})));
+        allRows=r2.data||[];
+        return;
+      }
       allRows=data||[];
       if(!allRows.length){o.textContent="Aucune donnée pour le moment.";return;}
+      o.innerHTML=listRows(allRows);
+    }
+    function listRows(rows){
       const users={};
-      allRows.forEach(r=>{const em=r.email||"(comptes anciens)";if(!users[em])users[em]=[];users[em].push(r);});
-      o.innerHTML=Object.keys(users).map(function(em){
-        const rows=users[em];
-        let last="";rows.forEach(r=>{if(r.updated_at&&r.updated_at>last)last=r.updated_at;});
+      rows.forEach(r=>{const em=r.email||"(inconnu)";if(!users[em])users[em]=[];users[em].push(r);});
+      return Object.keys(users).map(function(em){
+        const urs=users[em];
+        let last="";urs.forEach(r=>{if(r.updated_at&&r.updated_at>last)last=r.updated_at;});
         return '<details style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:800;color:#2b1e63">'+
-          (em===ADMIN_EMAIL?"👑 ":"👤 ")+esc(em)+' — '+rows.length+' donnée(s)'+
+          (em===ADMIN_EMAIL?"👑 ":"👤 ")+esc(em)+' — '+urs.length+' donnée(s)'+
           (last?' · maj '+String(last).replace("T"," ").slice(0,16):'')+'</summary>'+
           '<table style="width:100%;font-size:11px;border-collapse:collapse">'+
-          rows.map(r=>'<tr><td style="padding:3px 6px;border-top:1px solid #eee;color:#6b6489;white-space:nowrap">'+esc(r.key)+
+          urs.map(r=>'<tr><td style="padding:3px 6px;border-top:1px solid #eee;color:#6b6489;white-space:nowrap">'+esc(r.key)+
           '</td><td style="padding:3px 6px;border-top:1px solid #eee;word-break:break-all">'+esc(typeof r.value==="object"?JSON.stringify(r.value):String(r.value)).slice(0,300)+'</td></tr>').join("")+
           '</table></details>';
       }).join("");
@@ -1238,6 +1260,7 @@ function bumpUse(id){
 const menuEl=$("menu"),pagesEl=$("pages"),initDone=new Set();
 function buildMenu(){
   if(window.__menuBuilt)return;window.__menuBuilt=true;
+  const iconQueue=[];
   const LIST=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
   const ORDERED=[...LIST].sort((x,y)=>useScore(y.meta.id)-useScore(x.meta.id));
   ORDERED.forEach(function(a){
@@ -1247,10 +1270,20 @@ function buildMenu(){
   b.type="button";
   b.dataset.cat=t.cat;
   b.dataset.s=(t.name+" "+t.desc+" "+t.brief+" "+t.cat).toLowerCase();
-  b.innerHTML='<span class="ico">'+t.ico+'</span><b>'+t.name+'</b><small>'+t.desc+'</small>';
+  b.innerHTML='<span class="ico"></span><b>'+t.name+'</b><small>'+t.desc+'</small>';
+  iconQueue.push([b,t.ico]);
   b.addEventListener("click",()=>go(t.id));
   menuEl.appendChild(b);
   });
+  /* Emojis affichés progressivement → la grille s'affiche bien plus vite */
+  (function flush(){
+    const start=performance.now();
+    while(iconQueue.length&&performance.now()-start<8){
+      const it=iconQueue.shift();
+      it[0].querySelector(".ico").textContent=it[1];
+    }
+    if(iconQueue.length)setTimeout(flush,25);
+  })();
   const cats=$("cats");
   const b=document.createElement("div");
   b.className="chip sel";b.textContent="⭐ Tous ("+LIST.length+")";b.dataset.c="*";
