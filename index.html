@@ -18,6 +18,7 @@
   --btnA:#ff5c8a;--btnB:#a18cd1;--acc:#e0306a;--accB:#7c5cd6;
   --card:rgba(255,255,255,.9);--panel:rgba(255,255,255,.88);--panelB:rgba(255,255,255,.82);
   --input:#faf9ff;--out:#faf9ff;
+  --tile:#f6f4fb;--card2:#fff;--head:#2b1e63;--body:#3b3166;--bord:#e5defa;
   font-family:"Segoe UI",Inter,system-ui,sans-serif;
 }
 /* ===== THÈMES ===== */
@@ -37,7 +38,8 @@
   --glow1:rgba(255,0,128,.5);--glow2:rgba(80,60,255,.55);--glowC:rgba(255,60,200,.28);
   --btnA:#ff0090;--btnB:#5a34ff;--acc:#ff5ecb;--accB:#9a8bff;
   --txt:#f2f0ff;--dim:#a8a2d8;--card:rgba(28,24,64,.9);--panel:rgba(20,16,48,.92);
-  --panelB:rgba(30,25,66,.88);--input:#251f52;--out:#241e4e}
+  --panelB:rgba(30,25,66,.88);--input:#251f52;--out:#241e4e;
+  --tile:#241e4e;--card2:#2b2460;--head:#f2f0ff;--body:#d9d4ff;--bord:rgba(154,139,255,.35)}
 [data-theme="arciel"]{--g1:#ff9a9e;--g2:#a18cd1;--g3:#f6d365;--g4:#84fab0;
   --glow1:rgba(255,236,120,.6);--glow2:rgba(132,250,176,.55);--glowC:rgba(246,211,101,.35);
   --btnA:#fa709a;--btnB:#8fd3f4;--acc:#d4527a;--accB:#6a7bd6;
@@ -47,6 +49,19 @@
 [data-theme="neon"] .out b{color:#ffd166}
 [data-theme="neon"] .chip{background:rgba(40,34,84,.9);color:#d9d4ff;border-color:rgba(255,255,255,.15)}
 [data-theme="neon"] input:focus,[data-theme="neon"] select:focus,[data-theme="neon"] textarea:focus{border-color:#9a8bff;background:#2b2460}
+[data-theme="neon"] .gate-card{background:rgba(28,24,64,.96);border-color:rgba(154,139,255,.3)}
+[data-theme="neon"] .gate-card h2,[data-theme="neon"] .gate-card .sub,[data-theme="neon"] .set-card h3{color:#f2f0ff}
+[data-theme="neon"] .set-card{background:#241e4e;color:#d9d4ff}
+[data-theme="neon"] .toolToggle label{background:#251f52;border-color:rgba(154,139,255,.35)}
+[data-theme="neon"] .mbtn .ico{background:rgba(255,255,255,.09)!important;box-shadow:inset 0 -3px 8px rgba(0,0,0,.25)}
+[data-theme="neon"] .fav{background:rgba(40,34,84,.9)}
+[data-theme="neon"] .fav.on{background:#4b3f7d}
+[data-theme="neon"] .swatch.sel{border-color:#9a8bff}
+[data-theme="neon"] .animBtn{background:rgba(40,34,84,.9);color:#d9d4ff;border-color:rgba(154,139,255,.35)}
+[data-theme="neon"] .animBtn.sel{background:linear-gradient(135deg,#ff0090,#5a34ff);color:#fff;border-color:transparent}
+[data-theme="neon"] ::selection{background:#5a34ff}
+[data-theme="neon"] .big,[data-theme="neon"] .gate-card input{color:#f2f0ff}
+[data-theme="neon"] .gate-card input{background:#251f52;border-color:rgba(154,139,255,.35)}
 html{scroll-behavior:smooth}
 body{color:var(--txt);min-height:100vh;overflow-x:hidden}
 #bgFx{position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3),var(--g4));
@@ -79,27 +94,27 @@ body.locked{overflow:hidden}
   border-radius:28px;padding:34px 30px;width:100%;max-width:400px;text-align:center;
   box-shadow:0 30px 80px rgba(60,30,120,.45);animation:gateIn .5s cubic-bezier(.2,1.2,.3,1)}
 @keyframes gateIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
-.gate-card h2{font-size:24px;font-weight:900;color:#2b1e63;margin:14px 0 4px}
-.gate-card .sub{font-size:13px;color:#6b6489;margin-bottom:20px}
-.gate-card input{width:100%;font-size:15px;padding:13px 16px;border-radius:14px;border:1.5px solid #e2def5;
-  margin:6px 0;background:#fff;color:var(--txt);outline:none;font-family:inherit;transition:.2s}
+.gate-card h2{font-size:24px;font-weight:900;color:var(--head,#2b1e63);margin:14px 0 4px}
+.gate-card .sub{font-size:13px;color:var(--dim,#6b6489);margin-bottom:20px}
+.gate-card input{width:100%;font-size:15px;padding:13px 16px;border-radius:14px;border:1.5px solid var(--bord,#e2def5);
+  margin:6px 0;background:var(--card2,#fff);color:var(--txt);outline:none;font-family:inherit;transition:.2s}
 .gate-card input:focus{border-color:#a18cd1;box-shadow:0 0 0 4px rgba(161,140,209,.2)}
 .gate-card .btn{width:100%;margin-top:12px;padding:13px;font-size:15px;border-radius:14px;border:none;
   font-weight:800;cursor:pointer;font-family:inherit;transition:.2s}
 .btnP{background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;box-shadow:0 8px 24px rgba(161,90,209,.4)}
 .btnP:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(161,90,209,.5)}
-.btnG{background:none;color:#6b6489}
+.btnG{background:none;color:var(--dim,#6b6489)}
 .btnG:hover{background:rgba(161,140,209,.12)}
-#sb_msg{margin-top:14px;font-size:13px;font-weight:600;color:#3a2f6b;min-height:18px}
+#sb_msg{margin-top:14px;font-size:13px;font-weight:600;color:var(--body,#3a2f6b);min-height:18px}
 #acctChip{display:flex;margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
-  border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:700;color:#3a2f6b;
+  border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:700;color:var(--body,#3a2f6b);
   align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
 #acctChip button{border:none;background:#ffe0ea;color:#e0306a;font-size:10px;font-weight:800;
   border-radius:999px;padding:4px 10px;cursor:pointer}
 #topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
   padding:12px 16px;background:var(--panel);
   border-bottom:1px solid rgba(255,255,255,.6)}
-#topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:#2b1e63;white-space:nowrap;background:linear-gradient(90deg,#e0306a,#7c5cd6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:var(--head,#2b1e63);white-space:nowrap;background:linear-gradient(90deg,#e0306a,#7c5cd6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 #btnHome{display:none;background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;border:none;
   border-radius:14px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(161,140,209,.5)}
 body.inTool #btnHome{display:inline-block}
@@ -113,13 +128,13 @@ body.inTool #home{display:none}
 #hero h2{font-size:clamp(26px,5.5vw,44px);font-weight:900;letter-spacing:-.5px;
   background:linear-gradient(90deg,#fff,#ffe0f0 45%,#d9c8ff);-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 18px rgba(90,60,180,.5))}
-#hero p{color:#3a2f6b;margin-top:10px;font-size:13px;letter-spacing:1.5px;font-weight:700}
+#hero p{color:var(--body,#3a2f6b);margin-top:10px;font-size:13px;letter-spacing:1.5px;font-weight:700}
 #searchWrap{max-width:560px;margin:16px auto 0;position:relative}
 #search{font-size:16px;padding:13px 44px 13px 18px;border-radius:16px;width:100%;
   background:var(--card);border:1.5px solid rgba(255,255,255,.7);color:var(--txt);
   box-shadow:0 8px 24px rgba(80,50,160,.18);outline:none;font-family:inherit}
 #search:focus{border-color:#a18cd1;box-shadow:0 0 0 4px rgba(161,140,209,.2)}
-#searchCount{font-size:11px;color:#3a2f6b;margin-top:8px;font-weight:700;min-height:14px}
+#searchCount{font-size:11px;color:var(--body,#3a2f6b);margin-top:8px;font-weight:700;min-height:14px}
 #cats{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:14px auto 18px;max-width:900px}
 #cats .chip{font-size:11px}
 #menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
@@ -133,13 +148,13 @@ body.inTool #home{display:none}
 .mbtn .ico{font-size:30px;width:58px;height:58px;border-radius:19px;display:flex;align-items:center;justify-content:center;
   box-shadow:inset 0 -3px 8px rgba(0,0,0,.06);transition:.3s cubic-bezier(.2,.8,.3,1)}
 .mbtn:hover .ico{transform:rotate(-10deg) scale(1.15)}
-.mbtn b{font-size:13px;color:#2b1e63}
+.mbtn b{font-size:13px;color:var(--head,#2b1e63)}
 .mbtn small{font-size:10px;color:var(--dim);line-height:1.3}
 .c1 .ico{background:#ffd6e3}.c2 .ico{background:#ffedb8}.c3 .ico{background:#c9f0ff}
 .c4 .ico{background:#cdf5d2}.c5 .ico{background:#e4d5ff}.c6 .ico{background:#ffdfd0}
 .c7 .ico{background:#d6e6ff}.c8 .ico{background:#ffe9c2}.c9 .ico{background:#c8f7e3}
 .c10 .ico{background:#eed2ff}.c11 .ico{background:#ffd6ec}.c12 .ico{background:#ccf1ff}
-.c13 .ico{background:#fff3bf}.c14 .ico{background:#e0f2c9}.c15 .ico{background:#f4d6ff}
+.c13 .ico{background:var(--card2,#fff)3bf}.c14 .ico{background:#e0f2c9}.c15 .ico{background:#f4d6ff}
 .c16 .ico{background:#c9eaff}.c17 .ico{background:#ffe0c2}.c18 .ico{background:#d9f7ef}
 .c19 .ico{background:#f7d6d6}.c20 .ico{background:#d6f7f0}.c21 .ico{background:#ffeacc}
 .c22 .ico{background:#e6d6ff}.c23 .ico{background:#ffd9e0}.c24 .ico{background:#dff5cc}
@@ -147,51 +162,51 @@ body.inTool #home{display:none}
 @keyframes pop{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .tool-card{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(80,50,160,.2);
   padding:22px;margin-bottom:16px;backdrop-filter:blur(8px)}
-.tool-card h3{font-size:18px;color:#2b1e63}
+.tool-card h3{font-size:18px;color:var(--head,#2b1e63)}
 .tool-card .desc{color:var(--dim);font-size:12px;margin:4px 0 14px;font-weight:600}
-label{display:block;font-size:12px;color:#584d80;margin:12px 0 5px;font-weight:700}
-input,select,textarea{width:100%;background:var(--input);border:1.5px solid #e2def5;color:var(--txt);
+label{display:block;font-size:12px;color:var(--dim,#584d80);margin:12px 0 5px;font-weight:700}
+input,select,textarea{width:100%;background:var(--input);border:1.5px solid var(--bord,#e2def5);color:var(--txt);
   padding:11px 13px;border-radius:13px;font-size:15px;outline:none;font-family:inherit;transition:.15s}
-input:focus,select:focus,textarea:focus{border-color:#a18cd1;background:#fff;box-shadow:0 0 0 3px rgba(161,140,209,.25)}
+input:focus,select:focus,textarea:focus{border-color:#a18cd1;background:var(--card2,#fff);box-shadow:0 0 0 3px rgba(161,140,209,.25)}
 textarea{resize:vertical;min-height:80px}
 button{background:linear-gradient(135deg,var(--btnB),var(--btnA));color:#fff;border:none;border-radius:13px;
   padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;transition:.15s;font-family:inherit;
   box-shadow:0 5px 16px rgba(140,110,220,.35)}
 button:hover{filter:brightness(1.1);transform:translateY(-1px)}
 button:active{transform:scale(.96)}
-button.ghost{background:rgba(255,255,255,.85);color:#2b1e63;box-shadow:0 3px 10px rgba(80,50,160,.15)}
+button.ghost{background:rgba(255,255,255,.85);color:var(--head,#2b1e63);box-shadow:0 3px 10px rgba(80,50,160,.15)}
 button.green{background:linear-gradient(135deg,#00d4a0,#00a583);box-shadow:0 5px 16px rgba(0,180,140,.35)}
 button.pink{background:linear-gradient(135deg,#ff6f9c,#e0306a);box-shadow:0 5px 16px rgba(255,90,140,.4)}
 button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5px 16px rgba(255,150,60,.4)}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
-.out{background:var(--out);border:1.5px solid #e5defa;border-radius:14px;padding:14px 16px;margin-top:14px;
-  font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:#3b3166;line-height:1.65}
+.out{background:var(--out);border:1.5px solid var(--bord,#e5defa);border-radius:14px;padding:14px 16px;margin-top:14px;
+  font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:var(--body,#3b3166);line-height:1.65}
 .out b{color:#4b2fd4}
 /* grille de cartes (heure mondiale, etc.) */
 .citygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px}
-.citycard{background:#fff;border:1.5px solid #e8e2f7;border-radius:14px;padding:10px 8px;text-align:center;
+.citycard{background:var(--card2,#fff);border:1.5px solid #e8e2f7;border-radius:14px;padding:10px 8px;text-align:center;
   box-shadow:0 3px 10px rgba(80,50,160,.08)}
-.citycard small{display:block;font-size:10px;color:#6b6489;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.citycard small{display:block;font-size:10px;color:var(--dim,#6b6489);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
 .citycard b{display:block;font-size:20px;color:#4b2fd4;margin-top:3px;font-variant-numeric:tabular-nums}
 /* favoris */
 .favtile{outline:2.5px solid #ffd44d;outline-offset:-2.5px}
 .fav{position:absolute;top:8px;right:10px;background:rgba(255,255,255,.85);border:none;border-radius:50%;
   width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;
   opacity:.45;padding:0;line-height:1;transition:.15s}
-.fav:hover{opacity:1;transform:scale(1.18);background:#fff}
-.fav.on{opacity:1;background:#fff4d6;box-shadow:0 2px 8px rgba(255,190,0,.5)}
+.fav:hover{opacity:1;transform:scale(1.18);background:var(--card2,#fff)}
+.fav.on{opacity:1;background:var(--card2,#fff)4d6;box-shadow:0 2px 8px rgba(255,190,0,.5)}
 .big{font-size:22px;font-weight:800;color:#4b2fd4}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-.chip{padding:8px 14px;border-radius:22px;font-size:12px;border:1.5px solid #e2def5;
-  background:#fff;color:#6b6489;cursor:pointer;font-weight:700;transition:.12s}
+.chip{padding:8px 14px;border-radius:22px;font-size:12px;border:1.5px solid var(--bord,#e2def5);
+  background:var(--card2,#fff);color:var(--dim,#6b6489);cursor:pointer;font-weight:700;transition:.12s}
 .chip:hover{border-color:#a18cd1}
 .chip.sel{background:linear-gradient(135deg,#8f7bff,#c47bff);color:#fff;border-color:transparent;
   box-shadow:0 4px 12px rgba(140,110,220,.4)}
 .swatch{display:inline-block;width:42px;height:42px;border-radius:12px;border:2px solid #fff;cursor:pointer;margin:3px;
   box-shadow:0 3px 8px rgba(0,0,0,.2)}
-#pixCanvas{image-rendering:pixelated;max-width:100%;border:1px solid #e2def5;border-radius:12px;background:
+#pixCanvas{image-rendering:pixelated;max-width:100%;border:1px solid var(--bord,#e2def5);border-radius:12px;background:
   repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px}
-.todo-item{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #ece6f8;
+.todo-item{display:flex;align-items:center;gap:12px;background:var(--card2,#fff);border:1.5px solid var(--bord,#ece6f8);
   border-radius:14px;padding:11px 14px;margin-top:8px;box-shadow:0 2px 8px rgba(80,50,160,.06);
   transition:.15s;animation:todoIn .25s ease both}
 @keyframes todoIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -204,22 +219,22 @@ button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5p
   border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;transition:.15s}
 .todo-item .del:hover{background:#ffccd9;transform:rotate(90deg)}
 .kbdrow{display:flex;gap:6px;margin-top:6px}
-.kbd{padding:14px 0;flex:1;min-width:52px;text-align:center;background:#f4f1ff;border:1px solid #e2def5;
+.kbd{padding:14px 0;flex:1;min-width:52px;text-align:center;background:var(--tile,#f4f1ff);border:1px solid var(--bord,#e2def5);
   border-radius:13px;font-size:17px;cursor:pointer;font-weight:800;transition:.08s}
 .kbd:active{background:#a18cd1;color:#fff}
 .kbd.op{color:#7a5cd8}
 .kbd.eq{background:linear-gradient(135deg,#8f7bff,#a18cd1);color:#fff}
-#calcOut{text-align:right;font-size:26px;font-weight:800;min-height:32px;padding:14px;background:#f4f1ff;border-radius:13px;color:#3b3166}
+#calcOut{text-align:right;font-size:26px;font-weight:800;min-height:32px;padding:14px;background:var(--tile,#f4f1ff);border-radius:13px;color:var(--body,#3b3166)}
 .save-note{font-size:10px;color:#00a583;font-weight:700;letter-spacing:.5px;margin-top:8px}
-footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacing:1.5px;font-weight:700}
-#gradPrev{height:80px;border-radius:14px;margin-top:12px;border:1px solid #e2def5}
+footer{text-align:center;color:var(--dim,#4b3f7d);font-size:10px;padding:28px;letter-spacing:1.5px;font-weight:700}
+#gradPrev{height:80px;border-radius:14px;margin-top:12px;border:1px solid var(--bord,#e2def5)}
 .notes-area{min-height:220px;font-size:15px;line-height:1.6}
 #typeArea{background:#f6f3ff;border-radius:13px;padding:16px;font-size:16px;line-height:1.7;margin-top:12px;min-height:80px}
 #typeArea .ok{color:#00a583;font-weight:700}
 #typeArea .bad{color:#e0306a;text-decoration:underline}
 #pomoTime{font-size:52px;font-weight:900;text-align:center;color:#4b2fd8;margin:10px 0}
 .symgrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.sym{padding:9px 12px;border-radius:11px;background:#f4f1ff;border:1px solid #e2def5;font-size:17px;cursor:pointer;transition:.1s}
+.sym{padding:9px 12px;border-radius:11px;background:var(--tile,#f4f1ff);border:1px solid var(--bord,#e2def5);font-size:17px;cursor:pointer;transition:.1s}
 .sym:hover{background:#a18cd1;color:#fff;transform:scale(1.1)}
 @media(max-width:600px){
   #menu{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -271,7 +286,7 @@ body.inTool #home{display:none}
 @keyframes pageOutL{to{opacity:0;transform:translateX(-60px)}}
 html[data-anim="none"] #home.slideL,html[data-anim="none"] #home.slideR,
 html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:none!important}
-#greet{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(80,50,160,.35);
+#greet{font-size:15px;font-weight:800;color:var(--head,#2b1e63);text-shadow:0 1px 8px rgba(255,255,255,.5);
   margin-bottom:6px;animation:greetIn .6s cubic-bezier(.2,.8,.3,1) both}
 @keyframes greetIn{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
 /* réglages */
@@ -280,17 +295,17 @@ html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:no
 #settings.open{display:flex;animation:pop .25s ease}
 .set-card{background:var(--card,#fff);border-radius:24px;padding:24px;width:100%;max-width:520px;
   max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(50,20,120,.4)}
-.set-card h3{font-size:16px;color:#2b1e63;margin-bottom:10px}
-.set-sec{margin:16px 0;padding-top:14px;border-top:1.5px solid #ece6f8}
+.set-card h3{font-size:16px;color:var(--head,#2b1e63);margin-bottom:10px}
+.set-sec{margin:16px 0;padding-top:14px;border-top:1.5px solid var(--bord,#ece6f8)}
 .themeRow{display:flex;flex-wrap:wrap;gap:7px}
 .swatch{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s}
 .swatch:hover{transform:scale(1.15)}
-.swatch.sel{border-color:#2b1e63;transform:scale(1.12)}
+.swatch.sel{border-color:var(--head,#2b1e63);transform:scale(1.12)}
 .animRow{display:flex;gap:7px;margin-top:8px}
 .animBtn{flex:1;font-size:11px;padding:9px 4px;margin:0;text-align:center}
 .animBtn.sel{background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;border:1.5px solid transparent}
 .toolToggle{display:flex;flex-wrap:wrap;gap:6px;max-height:200px;overflow:auto;padding:4px 0}
-.toolToggle label{display:flex;align-items:center;gap:5px;background:var(--input,#f6f4fb);border:1.5px solid #e2def5;
+.toolToggle label{display:flex;align-items:center;gap:5px;background:var(--input,var(--tile,#f6f4fb));border:1.5px solid var(--bord,#e2def5);
   border-radius:11px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;margin:0;transition:.15s}
 .toolToggle input{width:auto;margin:0}
 .toolToggle label.off{opacity:.4;text-decoration:line-through}
@@ -860,7 +875,7 @@ calcTool("brutnet","💼","Brut → net","Salaire estimé France","argent","Esti
   v=>{const net=v.b*.78,netC=v.b*.75;
     return "Estimation nette (non-cadre, ≈22% de charges) : <b style='color:#00a583'>"+fmt(net,0)+" €/mois</b><br>"+
       "Estimation nette (cadre, ≈25%) : <b>"+fmt(netC,0)+" €/mois</b><br>"+
-      "Annuel brut : "+fmt(v.b*12,0)+" € · <span style='color:#6b6489;font-size:11px'>estimation indicative, hors spécificités</span>";});
+      "Annuel brut : "+fmt(v.b*12,0)+" € · <span style='color:var(--dim,#6b6489);font-size:11px'>estimation indicative, hors spécificités</span>";});
 calcTool("tauxh","⏰","Taux horaire","Salaire → €/heure","argent","Votre salaire ramené au taux horaire.",
   [["s","Salaire net mensuel (€)",1800],["h","Heures par semaine",35]],
   v=>{const th=v.s/(v.h*52/12);
@@ -899,7 +914,7 @@ calcTool("beton","🧱","Béton","Volume nécessaire","maison","Volume de béton
   v=>{const m3=v.s*v.e/100;
     return "Volume : <b style='color:#00a583'>"+fmt(m3,3)+" m³</b><br>"+
       "Poids approximatif : <b>"+fmt(m3*2.4,2)+" tonnes</b><br>"+
-      "<span style='color:#6b6489;font-size:11px'>≈ "+fmt(m3*350/25,0)+" sacs de ciment de 25 kg (indicatif)</span>";});
+      "<span style='color:var(--dim,#6b6489);font-size:11px'>≈ "+fmt(m3*350/25,0)+" sacs de ciment de 25 kg (indicatif)</span>";});
 calcTool("peinture","🎨","Peinture","Litres nécessaires","maison","Quantité de peinture selon surface, couches et rendement.",
   [["s","Surface (m²)",30],["c","Nombre de couches",2],["r","Rendement (m²/L)",10]],
   v=>{const l=v.s*v.c/v.r;
@@ -950,7 +965,7 @@ calcTool("sommeil","😴","Cycles de sommeil","À quelle heure se coucher ?","sa
       "🌕 6 cycles (9 h) → couchez-vous à <b style='color:#00a583'>"+t(wm-6*90-15)+"</b><br>"+
       "🌗 5 cycles (7 h 30) → <b>"+t(wm-5*90-15)+"</b><br>"+
       "🌑 4 cycles (6 h) → <b>"+t(wm-4*90-15)+"</b><br>"+
-      "<span style='color:#6b6489;font-size:11px'>inclut 15 min d'endormissement</span>";},
+      "<span style='color:var(--dim,#6b6489);font-size:11px'>inclut 15 min d'endormissement</span>";},
   {note:"Le sommeil fonctionne par cycles de 90 min : se réveiller entre les cycles est plus reposant."});
 calcTool("run","🏃","Calories de course","Course à pied","sante","Calories brûlées en course à pied.",
   [["w","Poids (kg)",70],["d","Distance (km)",5]],
@@ -1060,7 +1075,7 @@ actTool("rnd","🎰","Nombre aléatoire","Entre min et max","fun","Tirez un nomb
   (m,v)=>{
     const mn=Math.ceil(+v.mn),mx=Math.floor(+v.mx);
     if(mx<mn)return "Maximum ≥ minimum !";
-    return "<b style='font-size:32px'>"+(mn+Math.floor(Math.random()*(mx-mn+1)))+"</b> <span style='color:#6b6489'>(entre "+mn+" et "+mx+")</span>";});
+    return "<b style='font-size:32px'>"+(mn+Math.floor(Math.random()*(mx-mn+1)))+"</b> <span style='color:var(--dim,#6b6489)'>(entre "+mn+" et "+mx+")</span>";});
 
 /* ===== Texte / dev ===== */
 txtTool("slug","🔗","Slug d'URL","Texte → slug","dev","Transformez un titre en slug d'URL propre.",
@@ -1110,7 +1125,7 @@ txtTool("url","🌐","URL encoder/décoder","%20 et compagnie","dev","Encodez ou
 (function(){
   const meta={id:"backup",ico:"💾",name:"Sauvegarde & restauration",desc:"Exporter / importer tout",cat:"securite",cls:nextCls(),
     brief:"Exportez TOUTES les données de vos outils (to-do, notes, champs, coffre…) dans un fichier, et restaurez-les sur un autre appareil ou navigateur.",
-    html:'<p style="font-size:13px;color:#6b6489;margin-bottom:10px">Vos données vivent dans ce navigateur. Exportez-les régulièrement pour ne jamais les perdre, ou pour les transférer sur un autre appareil.</p>'+
+    html:'<p style="font-size:13px;color:var(--dim,#6b6489);margin-bottom:10px">Vos données vivent dans ce navigateur. Exportez-les régulièrement pour ne jamais les perdre, ou pour les transférer sur un autre appareil.</p>'+
       '<button class="green" id="bk_export">⬇️ Exporter mes données (.json)</button>'+
       '<button class="ghost" id="bk_copy">📋 Copier la sauvegarde (presse-papiers)</button>'+
       '<div style="margin-top:14px"><label>Restaurer depuis un fichier</label>'+
@@ -1131,7 +1146,7 @@ txtTool("url","🌐","URL encoder/décoder","%20 et compagnie","dev","Encodez ou
     function refresh(){
       const c=collect();
       o.innerHTML="📦 <b>"+c.items+" donnée(s)</b> enregistrée(s) dans ce navigateur"+(c.items?"":" — utilisez encore quelques outils !")+
-        "<br><span style='color:#6b6489;font-size:11px'>Le fichier exporté contient vos mots de passe du coffre, notes, listes… Gardez-le privé.</span>";
+        "<br><span style='color:var(--dim,#6b6489);font-size:11px'>Le fichier exporté contient vos mots de passe du coffre, notes, listes… Gardez-le privé.</span>";
     }
     $("bk_export").addEventListener("click",()=>{
       const c=collect();
@@ -1275,7 +1290,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
   v=>{const sec=v.n*v.d/20;
     return v.n+" répéteur(s) à "+v.d+" tick(s) = <b style='color:#00a583'>"+sec.toFixed(2)+" s</b> ("+v.n*v.d+" ticks)<br>"+
       "Pour "+v.t+" s : <b>"+Math.ceil(v.t*20/v.d)+" répéteur(s)</b> à "+v.d+" tick(s)<br>"+
-      "<span style='color:#6b6489;font-size:11px'>1 tick = 1/20 s · le comparateur ajoute aussi 1 tick</span>";});
+      "<span style='color:var(--dim,#6b6489);font-size:11px'>1 tick = 1/20 s · le comparateur ajoute aussi 1 tick</span>";});
 
 /* ===== Panneau admin (tous les comptes, temps réel) ===== */
 (function(){
@@ -1284,10 +1299,10 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     html:'<button class="green" id="ad_refresh">🔄 Actualiser</button>'+
       '<button class="ghost" id="ad_export">⬇️ Exporter tout (.json)</button>'+
       '<div id="ad_status" class="out" style="display:none;margin-top:10px;font-size:12px"></div>'+
-      '<div style="margin-top:16px;font-weight:800;color:#2b1e63;font-size:13px">👤 Comptes</div>'+
+      '<div style="margin-top:16px;font-weight:800;color:var(--head,#2b1e63);font-size:13px">👤 Comptes</div>'+
       '<div id="ad_users" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px"></div>'+
       '<div id="ad_toolsWrap" style="display:none">'+
-      '<div style="margin-top:16px;font-weight:800;color:#2b1e63;font-size:13px">🧰 Ce que ce compte a enregistré</div>'+
+      '<div style="margin-top:16px;font-weight:800;color:var(--head,#2b1e63);font-size:13px">🧰 Ce que ce compte a enregistré</div>'+
       '<div id="ad_tools" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px"></div>'+
       '<div class="out" id="ad_view" style="margin-top:12px;max-height:340px;overflow:auto">Cliquez sur un outil pour voir le contenu.</div>'+
       '</div>'+
@@ -1312,30 +1327,30 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       return "📄 "+key;
     }
     function miniField(label,val){
-      return "<div style='display:flex;gap:10px;padding:7px 10px;background:#f6f4fb;border-radius:10px;margin-top:6px;align-items:baseline'>"+
-        "<span style='font-size:11px;color:#6b6489;font-weight:800;white-space:nowrap;min-width:120px'>"+esc(label)+"</span>"+
+      return "<div style='display:flex;gap:10px;padding:7px 10px;background:var(--tile,#f6f4fb);border-radius:10px;margin-top:6px;align-items:baseline'>"+
+        "<span style='font-size:11px;color:var(--dim,#6b6489);font-weight:800;white-space:nowrap;min-width:120px'>"+esc(label)+"</span>"+
         "<span style='flex:1;font-size:13px;word-break:break-word;white-space:pre-wrap'>"+esc(val)+"</span></div>";
     }
     function renderValue(v){
-      if(v===null||v===undefined||v==="")return "<i style='color:#6b6489'>(vide)</i>";
-      if(typeof v==="string")return "<div style='background:#f6f4fb;border-radius:12px;padding:10px 12px;white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
+      if(v===null||v===undefined||v==="")return "<i style='color:var(--dim,#6b6489)'>(vide)</i>";
+      if(typeof v==="string")return "<div style='background:var(--tile,#f6f4fb);border-radius:12px;padding:10px 12px;white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
       if(Array.isArray(v)){
-        if(!v.length)return "<i style='color:#6b6489'>(liste vide)</i>";
+        if(!v.length)return "<i style='color:var(--dim,#6b6489)'>(liste vide)</i>";
         if(v[0]&&typeof v[0]==="object"&&("t" in v[0]||"done" in v[0])){
           return "<div>"+v.map(function(x){
-            return "<div style='display:flex;gap:8px;padding:6px 10px;align-items:center;background:#f6f4fb;border-radius:10px;margin-top:6px'>"+
+            return "<div style='display:flex;gap:8px;padding:6px 10px;align-items:center;background:var(--tile,#f6f4fb);border-radius:10px;margin-top:6px'>"+
               "<span>"+(x.done?"✅":"⬜")+"</span><span style='flex:1;font-size:13px;word-break:break-word;"+(x.done?"text-decoration:line-through;color:#9b93b5":"")+"'>"+esc(x.t||x.txt||"")+"</span></div>";
           }).join("")+"</div>";
         }
         if(v[0]&&typeof v[0]==="object"&&("pass" in v[0]||"pwd" in v[0])){
           return "<table style='width:100%;font-size:12px;border-collapse:collapse;margin-top:6px'>"+
-            "<tr style='color:#6b6489;font-size:10px;text-transform:uppercase'><th style='text-align:left;padding:4px 8px'>Nom</th><th style='text-align:left;padding:4px 8px'>Mot de passe</th></tr>"+
+            "<tr style='color:var(--dim,#6b6489);font-size:10px;text-transform:uppercase'><th style='text-align:left;padding:4px 8px'>Nom</th><th style='text-align:left;padding:4px 8px'>Mot de passe</th></tr>"+
             v.map(function(x){return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;font-weight:700'>"+esc(x.name||x.site||"")+"</td>"+
               "<td style='padding:5px 8px;border-top:1px solid #eee;font-family:monospace'>"+esc(x.pass||x.pwd||"")+"</td></tr>";}).join("")+"</table>";
         }
         return v.map(function(x){
           const s=typeof x==="string"?x:JSON.stringify(x);
-          return "<div style='background:#f6f4fb;border-radius:10px;padding:8px 12px;margin-top:6px;word-break:break-word;white-space:pre-wrap'>"+esc(s)+"</div>";
+          return "<div style='background:var(--tile,#f6f4fb);border-radius:10px;padding:8px 12px;margin-top:6px;word-break:break-word;white-space:pre-wrap'>"+esc(s)+"</div>";
         }).join("");
       }
       if(typeof v==="object"){
@@ -1346,33 +1361,33 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
           return "<div>"+rows.map(function(rw){
             const t=ALL.find(a=>a.meta.id===rw.k);
             const lab=t?t.meta.ico+" "+t.meta.name:rw.k;
-            return "<div style='margin-top:6px'><div style='display:flex;justify-content:space-between;font-size:11px;color:#3b3166'><span>"+esc(lab)+"</span><b>"+rw.n+"×</b></div>"+
+            return "<div style='margin-top:6px'><div style='display:flex;justify-content:space-between;font-size:11px;color:var(--body,#3b3166)'><span>"+esc(lab)+"</span><b>"+rw.n+"×</b></div>"+
               "<div style='height:6px;border-radius:4px;background:#eee6f7;overflow:hidden'><div style='height:100%;border-radius:4px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:"+(rw.n/max*100)+"%'></div></div></div>";
           }).join("")+"</div>";
         }
         if(ks.length&&ks.every(k=>typeof v[k]!=="object")){
           return "<div style='display:flex;flex-wrap:wrap'>"+ks.map(function(k){
-            return "<span style='background:#f6f4fb;border-radius:10px;padding:5px 10px;margin:4px 6px 0 0;font-size:12px'><b style='color:#6b6489'>"+esc(k)+"</b> : "+esc(String(v[k]))+"</span>";
+            return "<span style='background:var(--tile,#f6f4fb);border-radius:10px;padding:5px 10px;margin:4px 6px 0 0;font-size:12px'><b style='color:var(--dim,#6b6489)'>"+esc(k)+"</b> : "+esc(String(v[k]))+"</span>";
           }).join("")+"</div>";
         }
         return "<table style='width:100%;font-size:12px;border-collapse:collapse'>"+ks.map(function(k){
-          return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;color:#6b6489;font-weight:700;white-space:nowrap;vertical-align:top;width:130px'>"+esc(k)+
+          return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;color:var(--dim,#6b6489);font-weight:700;white-space:nowrap;vertical-align:top;width:130px'>"+esc(k)+
             "</td><td style='padding:5px 8px;border-top:1px solid #eee;word-break:break-word'>"+renderValue(v[k])+"</td></tr>";
         }).join("")+"</table>";
       }
       return esc(String(v));
     }
     function drawView(rows){
-      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:#fff'>"+
+      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:var(--card2,#fff)'>"+
         rows.map(function(r){
           const d=r.updated_at?(" · maj "+String(r.updated_at).replace("T"," ").slice(0,16)):"";
-          return "<div style='margin-bottom:16px'><div style='font-size:11px;color:#6b6489;font-weight:800;text-transform:uppercase;letter-spacing:.5px'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
+          return "<div style='margin-bottom:16px'><div style='font-size:11px;color:var(--dim,#6b6489);font-weight:800;text-transform:uppercase;letter-spacing:.5px'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
         }).join("")+"</div>";
     }
     function sqlHelp(msg){
       showErr("⚠️ <b>Accès admin refusé :</b> "+esc(msg)+
         "<br>Pour l'activer, va dans <b>Supabase → SQL Editor</b> et exécute ce bloc complet :"+
-        "<code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
+        "<code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
         "create table if not exists tool_data (\n  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,\n  key text not null, value jsonb, email text,\n  updated_at timestamptz default now(), primary key (user_id, key));\n"+
         "alter table tool_data enable row level security;\n"+
         "drop policy if exists own_rows on tool_data;\n"+
@@ -1390,7 +1405,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       const users=[];
       allRows.forEach(function(r){const em=acctKey(r);if(users.indexOf(em)<0)users.push(em);});
       uEl.innerHTML="";
-      if(!users.length){uEl.innerHTML="<div style='color:#6b6489;font-size:12px'>Aucun compte avec des données pour l'instant.</div>";return;}
+      if(!users.length){uEl.innerHTML="<div style='color:var(--dim,#6b6489);font-size:12px'>Aucun compte avec des données pour l'instant.</div>";return;}
       users.forEach(function(em){
         const c=document.createElement("div");
         c.className="chip"+(em===curUser?" sel":"");
@@ -1428,16 +1443,16 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       else if(curTool!=="__drive")vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
     }
     function drawDrive(drows){
-      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:#fff'>"+
-        "<div style='font-size:11px;color:#6b6489;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px'>🖼️ Images du Drive"+(drows.some(d=>d.deleted)?" · <span style='color:#e0306a'>corbeille incluse</span>":"")+"</div>"+
+      vEl.innerHTML="<div class='tool-card' style='padding:14px;margin:0;box-shadow:none;background:var(--card2,#fff)'>"+
+        "<div style='font-size:11px;color:var(--dim,#6b6489);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px'>🖼️ Images du Drive"+(drows.some(d=>d.deleted)?" · <span style='color:#e0306a'>corbeille incluse</span>":"")+"</div>"+
         "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px'>"+
         drows.map(function(d){
           const url=sb.storage.from("drive").getPublicUrl(d.user_id+"/"+d.name).data.publicUrl;
-          return "<div style='position:relative;background:#f4f2fb;border:1.5px solid "+(d.deleted?"#f3c9d6":"#ece6f8")+";border-radius:11px;overflow:hidden"+(d.deleted?";opacity:.65":"")+"'>"+
-            "<img src='"+url+"' style='width:100%;height:72px;object-fit:cover;display:block;background:#f4f2fb' loading='lazy'>"+
+          return "<div style='position:relative;background:var(--tile,#f4f2fb);border:1.5px solid "+(d.deleted?"#f3c9d6":"var(--bord,#ece6f8)")+";border-radius:11px;overflow:hidden"+(d.deleted?";opacity:.65":"")+"'>"+
+            "<img src='"+url+"' style='width:100%;height:72px;object-fit:cover;display:block;background:var(--tile,#f4f2fb)' loading='lazy'>"+
             "<div style='padding:3px 6px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700'>"+esc(d.name)+"</div>"+
-            "<div style='padding:0 6px 4px;font-size:9px;color:#6b6489'>"+humanSize(d.size)+(d.deleted?" · <b style='color:#e0306a'>supprimée</b>":"")+"</div>"+
-            "<a href='"+url+"' download='"+esc(d.name)+"' style='position:absolute;top:4px;right:4px;text-decoration:none;border:none;border-radius:7px;background:#fff;padding:2px 7px;font-size:11px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)'>⬇️</a>"+
+            "<div style='padding:0 6px 4px;font-size:9px;color:var(--dim,#6b6489)'>"+humanSize(d.size)+(d.deleted?" · <b style='color:#e0306a'>supprimée</b>":"")+"</div>"+
+            "<a href='"+url+"' download='"+esc(d.name)+"' style='position:absolute;top:4px;right:4px;text-decoration:none;border:none;border-radius:7px;background:var(--card2,#fff);padding:2px 7px;font-size:11px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)'>⬇️</a>"+
             "</div>";
         }).join("")+"</div></div>";
     }
@@ -1470,7 +1485,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         const nbAccounts=allRows.map(acctKey).filter((v,i,a)=>a.indexOf(v)===i).length;
         showStatus("✅ Connecté en admin · <b>"+nbAccounts+"</b> compte(s) · <b>"+allRows.length+"</b> entrée(s) dans la table"+
           (nbAccounts<=1?" · ℹ️ si d'autres comptes n'apparaissent pas : soit ils n'ont encore rien enregistré avec un outil, soit il faut exécuter le SQL admin ci-dessous (voir erreur)":""));
-        if(nbAccounts<=1&&allRows.length)showErr("ℹ️ Seul votre compte apparaît. Si d'autres comptes existent : ils doivent <b>utiliser un outil</b> (une donnée est alors créée), et la règle SQL <code>admin_read_all</code> doit être exécutée dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>drop policy if exists admin_read_all on tool_data;\ncreate policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code>");
+        if(nbAccounts<=1&&allRows.length)showErr("ℹ️ Seul votre compte apparaît. Si d'autres comptes existent : ils doivent <b>utiliser un outil</b> (une donnée est alors créée), et la règle SQL <code>admin_read_all</code> doit être exécutée dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>drop policy if exists admin_read_all on tool_data;\ncreate policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code>");
         if(!allRows.length){
           uEl.innerHTML="";
           return showErr("ℹ️ La table est accessible mais vide : aucun compte n'a encore utilisé d'outil (ou la synchro n'a pas encore tourné — utilisez un outil, attendez 2 s, Actualiser).");
@@ -1517,9 +1532,9 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       '<div class="save-note">📏 Limite : 100 Mo par compte · les images de plus de 5 Mo sont compressées automatiquement</div>'+
       '<button class="green" id="drv_up">⬆️ Envoyer</button>'+
       '<div class="out" id="drv_bar" style="display:none"><div id="drv_fill" style="height:8px;border-radius:6px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:0"></div><div id="drv_txt" style="font-size:11px;margin-top:4px"></div></div>'+
-      '<div style="margin-top:14px;font-weight:800;color:#2b1e63;font-size:13px">🖼️ Mes images</div>'+
+      '<div style="margin-top:14px;font-weight:800;color:var(--head,#2b1e63);font-size:13px">🖼️ Mes images</div>'+
       '<div id="drv_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px"></div>'+
-      '<div id="drv_trashWrap" style="display:none;margin-top:14px"><div style="font-weight:800;color:#2b1e63;font-size:13px">🗑️ Corbeille <span id="drv_trashN" style="color:#6b6489;font-weight:600"></span> <button class="ghost" id="drv_restoreAll" style="font-size:10px;padding:5px 10px;margin-left:8px">♻️ Tout restaurer</button></div>'+
+      '<div id="drv_trashWrap" style="display:none;margin-top:14px"><div style="font-weight:800;color:var(--head,#2b1e63);font-size:13px">🗑️ Corbeille <span id="drv_trashN" style="color:var(--dim,#6b6489);font-weight:600"></span> <button class="ghost" id="drv_restoreAll" style="font-size:10px;padding:5px 10px;margin-left:8px">♻️ Tout restaurer</button></div>'+
       '<div id="drv_trash" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px"></div></div>'+
       '<div class="out" id="drv_o" style="margin-top:10px">—</div></div>'};
   GEN.push({meta:meta,init:function(){
@@ -1549,7 +1564,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       trash.forEach(function(f){
         const c=document.createElement("div");
         c.style.cssText="position:relative;border:1.5px dashed #d9cfe8;border-radius:10px;overflow:hidden;opacity:.75";
-        c.innerHTML="<img style='width:100%;height:56px;object-fit:cover;display:block;background:#f4f2fb;filter:grayscale(.7)'>"+
+        c.innerHTML="<img style='width:100%;height:56px;object-fit:cover;display:block;background:var(--tile,#f4f2fb);filter:grayscale(.7)'>"+
           "<div style='padding:3px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"+esc(f.name)+"</div>"+
           "<button class='rs' style='position:absolute;top:3px;right:3px;border:none;border-radius:7px;background:#e6f9ef;color:#00a583;font-size:10px;padding:2px 6px;cursor:pointer'>♻️</button>";
         c.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
@@ -1570,12 +1585,12 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       gEl.innerHTML="";
       files.forEach(function(f){
         const cell=document.createElement("div");
-        cell.style.cssText="background:#fff;border:1.5px solid #ece6f8;border-radius:12px;overflow:hidden;position:relative";
-        cell.innerHTML="<img style='width:100%;height:80px;object-fit:cover;display:block;background:#f4f2fb'>"+
-          "<div style='padding:5px 7px;font-size:10px;color:#3b3166;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700'>"+esc(f.name)+"</div>"+
-          "<div style='padding:0 7px 6px;font-size:9px;color:#6b6489'>"+human(f.size||0)+"</div>"+
+        cell.style.cssText="background:var(--card2,#fff);border:1.5px solid var(--bord,#ece6f8);border-radius:12px;overflow:hidden;position:relative";
+        cell.innerHTML="<img style='width:100%;height:80px;object-fit:cover;display:block;background:var(--tile,#f4f2fb)'>"+
+          "<div style='padding:5px 7px;font-size:10px;color:var(--body,#3b3166);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700'>"+esc(f.name)+"</div>"+
+          "<div style='padding:0 7px 6px;font-size:9px;color:var(--dim,#6b6489)'>"+human(f.size||0)+"</div>"+
           "<div style='position:absolute;top:4px;right:4px;display:flex;gap:4px'>"+
-          "<button class='dl' title='Télécharger' style='border:none;border-radius:8px;background:#fff;padding:3px 6px;cursor:pointer'>⬇️</button>"+
+          "<button class='dl' title='Télécharger' style='border:none;border-radius:8px;background:var(--card2,#fff);padding:3px 6px;cursor:pointer'>⬇️</button>"+
           "<button class='rm' title='Supprimer' style='border:none;border-radius:8px;background:#ffe6ee;padding:3px 6px;cursor:pointer'>🗑</button></div>";
         cell.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
         cell.querySelector(".dl").addEventListener("click",async()=>{
@@ -1590,13 +1605,13 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
             /* colonne absente : ancienne suppression + SQL pour activer la corbeille */
             await sb.storage.from("drive").remove([uid+"/"+f.name]);
             await sb.from("drive_files").delete().eq("name",f.name);
-            o.innerHTML="🗑️ Supprimé. <span style='font-size:11px'>Pour garder les photos supprimées dans une corbeille, exécute dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:6px;border-radius:8px;font-size:10px;margin-top:4px'>alter table drive_files add column if not exists deleted boolean default false;</code></span>";
+            o.innerHTML="🗑️ Supprimé. <span style='font-size:11px'>Pour garder les photos supprimées dans une corbeille, exécute dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:6px;border-radius:8px;font-size:10px;margin-top:4px'>alter table drive_files add column if not exists deleted boolean default false;</code></span>";
           }
           refresh();
         });
         gEl.appendChild(cell);
       });
-      if(!files.length)gEl.innerHTML="<div style='color:#6b6489;font-size:12px;grid-column:1/-1'>Aucune image — envoyez vos premières images ci-dessus ☝️</div>";
+      if(!files.length)gEl.innerHTML="<div style='color:var(--dim,#6b6489);font-size:12px;grid-column:1/-1'>Aucune image — envoyez vos premières images ci-dessus ☝️</div>";
     }
     $("drv_file").addEventListener("change",e=>{
       pending=[...(e.target.files||[])];
@@ -1623,16 +1638,16 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         if(!error){
           const {error:iErr}=await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});
           if(iErr&&(iErr.message||"").indexOf("row-level security")>=0){
-            o.innerHTML="✅ Image envoyée, mais l'entrée n'a pas pu être enregistrée (RLS). Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>create table if not exists drive_files (user_id uuid not null default auth.uid() references auth.users(id) on delete cascade, name text not null, size bigint, created_at timestamptz default now(), primary key (user_id, name));\nalter table drive_files enable row level security;\ndrop policy if exists drive_own on drive_files;\ncreate policy drive_own on drive_files for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\ndrop policy if exists drive_admin on drive_files;\ncreate policy drive_admin on drive_files for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code><br>Puis réenvoyez l'image.";
+            o.innerHTML="✅ Image envoyée, mais l'entrée n'a pas pu être enregistrée (RLS). Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>create table if not exists drive_files (user_id uuid not null default auth.uid() references auth.users(id) on delete cascade, name text not null, size bigint, created_at timestamptz default now(), primary key (user_id, name));\nalter table drive_files enable row level security;\ndrop policy if exists drive_own on drive_files;\ncreate policy drive_own on drive_files for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\ndrop policy if exists drive_admin on drive_files;\ncreate policy drive_admin on drive_files for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code><br>Puis réenvoyez l'image.";
           }
           used+=blob.size;
         }else if((error.message||"").indexOf("Bucket not found")>=0){
           try{await sb.storage.createBucket("drive",{public:true});}catch(e){}
           const {error:e2}=await sb.storage.from("drive").upload(uid+"/"+f.name,blob,{upsert:true});
-          if(e2)o.innerHTML="⚠️ <b>Bucket « drive » introuvable.</b> Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>insert into storage.buckets (id, name, public) values ('drive','drive',true);</code><br>Puis Stockage → drive → Policies → « New policy » → lecture publique (authenticated full access).";
+          if(e2)o.innerHTML="⚠️ <b>Bucket « drive » introuvable.</b> Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>insert into storage.buckets (id, name, public) values ('drive','drive',true);</code><br>Puis Stockage → drive → Policies → « New policy » → lecture publique (authenticated full access).";
           else{await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});used+=blob.size;}
         }else if((error.message||"").indexOf("row-level security")>=0||(error.message||"").indexOf("policy")>=0){
-          o.innerHTML="⚠️ <b>Le bucket « drive » bloque l'envoi (sécurité Storage).</b> Va dans <b>Supabase → SQL Editor</b> et exécute ce bloc complet :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>insert into storage.buckets (id, name, public) values ('drive','drive',true) on conflict (id) do nothing;\n-- (si le bucket existe déjà, cette ligne est simplement ignorée)\ndrop policy if exists \"drive read\" on storage.objects;\ncreate policy \"drive read\" on storage.objects for select using (bucket_id = 'drive');\ndrop policy if exists \"drive write\" on storage.objects;\ncreate policy \"drive write\" on storage.objects for insert to authenticated with check (bucket_id = 'drive');\ndrop policy if exists \"drive upd\" on storage.objects;\ncreate policy \"drive upd\" on storage.objects for update to authenticated using (bucket_id = 'drive');\ndrop policy if exists \"drive del\" on storage.objects;\ncreate policy \"drive del\" on storage.objects for delete to authenticated using (bucket_id = 'drive');</code><br>Puis réenvoie l'image.";
+          o.innerHTML="⚠️ <b>Le bucket « drive » bloque l'envoi (sécurité Storage).</b> Va dans <b>Supabase → SQL Editor</b> et exécute ce bloc complet :<br><code style='display:block;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>insert into storage.buckets (id, name, public) values ('drive','drive',true) on conflict (id) do nothing;\n-- (si le bucket existe déjà, cette ligne est simplement ignorée)\ndrop policy if exists \"drive read\" on storage.objects;\ncreate policy \"drive read\" on storage.objects for select using (bucket_id = 'drive');\ndrop policy if exists \"drive write\" on storage.objects;\ncreate policy \"drive write\" on storage.objects for insert to authenticated with check (bucket_id = 'drive');\ndrop policy if exists \"drive upd\" on storage.objects;\ncreate policy \"drive upd\" on storage.objects for update to authenticated using (bucket_id = 'drive');\ndrop policy if exists \"drive del\" on storage.objects;\ncreate policy \"drive del\" on storage.objects for delete to authenticated using (bucket_id = 'drive');</code><br>Puis réenvoie l'image.";
         }else o.innerHTML="⚠️ "+esc(f.name)+" : "+esc(error.message);
       }
       pending=[];$("drv_file").value="";
@@ -1658,7 +1673,7 @@ calcTool("chauss","👟","Pointures","EU → US / UK / cm","quotidien","Équival
   v=>{const eu=v.eu;
     const cm=(eu-2)/1.5;
     return "EU <b>"+eu+"</b> ≈ <b style='color:#00a583'>US "+fmt(eu-33.5,1)+"</b> · UK <b>"+fmt(eu-34.5,1)+"</b> · pied ≈ <b>"+fmt(cm,1)+" cm</b><br>"+
-      "<span style='color:#6b6489;font-size:11px'>équivalences indicatives, essayez toujours !</span>";});
+      "<span style='color:var(--dim,#6b6489);font-size:11px'>équivalences indicatives, essayez toujours !</span>";});
 calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalences de consommation de carburant.",
   [["l","Consommation (L/100km)",6]],
   v=>fmt(v.l)+" L/100km = <b style='color:#00a583'>"+fmt(235.215/v.l,1)+" mpg US</b> · <b>"+fmt(282.481/v.l,1)+" mpg UK</b> · <b>"+fmt(100/v.l,1)+" km/L</b>");
@@ -2307,7 +2322,7 @@ INITS.credit=function(){
       "Mensualité : <b style='color:#00a583'>"+fmt(m)+" €/mois</b><br>"+
       "Total payé : <b>"+fmt(tot)+" €</b><br>"+
       "Coût des intérêts : <b style='color:#e0306a'>"+fmt(tot-P)+" €</b><br>"+
-      "<span style='color:#6b6489;font-size:11px'>Hors assurance — "+n+" mensualités</span>";
+      "<span style='color:var(--dim,#6b6489);font-size:11px'>Hors assurance — "+n+" mensualités</span>";
   }
   ["cAmt","cYears"].forEach(id=>$(id).addEventListener("input",calc));
   calc();
@@ -2757,13 +2772,13 @@ INITS.pomo=function(){
     '<div class="row" style="margin-top:6px"><input id="setName" placeholder="ex. Tatami" maxlength="20"><button id="setSaveName" style="margin:0">OK</button></div></div>'+
     '<div class="set-sec"><label>🎨 Thème</label><div class="themeRow" id="themeRow" style="margin-top:8px">'+
       THEMES.map(t=>'<div class="swatch'+(t[0]===curTheme()?" sel":"")+'" data-t="'+t[0]+'" title="'+t[1]+'" style="background:'+SWATCH[t[0]]+'"></div>').join("")+
-    '</div><div id="themeName" style="font-size:11px;font-weight:700;color:#6b6489;margin-top:6px">'+(THEMES.find(t=>t[0]===curTheme())||THEMES[0])[1]+'</div></div>'+
+    '</div><div id="themeName" style="font-size:11px;font-weight:700;color:var(--dim,#6b6489);margin-top:6px">'+(THEMES.find(t=>t[0]===curTheme())||THEMES[0])[1]+'</div></div>'+
     '<div class="set-sec"><label>✨ Animations</label><div class="animRow" id="animRow">'+
       '<button class="ghost animBtn" data-a="full">🎬 Complètes</button>'+
       '<button class="ghost animBtn" data-a="low">🎞️ Réduites</button>'+
       '<button class="ghost animBtn" data-a="none">🚫 Aucune</button></div>'+
-      '<div style="font-size:10px;color:#6b6489;margin-top:6px">Complètes : tous les effets · Réduites : fond discret, pas de cascade · Aucune : tout est figé</div></div>'+
-    '<div class="set-sec"><label>🧰 Outils affichés <span style="font-weight:400;color:#6b6489">(décocher pour masquer)</span></label>'+
+      '<div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Complètes : tous les effets · Réduites : fond discret, pas de cascade · Aucune : tout est figé</div></div>'+
+    '<div class="set-sec"><label>🧰 Outils affichés <span style="font-weight:400;color:var(--dim,#6b6489)">(décocher pour masquer)</span></label>'+
     '<div class="toolToggle" id="setTools" style="margin-top:8px">'+toolBoxes+'</div>'+
     '<button class="ghost" id="setAllTools" style="font-size:11px;padding:7px 12px;margin-top:8px">Tout afficher</button></div>'+
     '</div>';
