@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🧰 Ma Boîte à Outils</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --txt:#241a4d;--dim:#6b6489;
+  --r:20px;
+  font-family:"Segoe UI",Inter,system-ui,sans-serif;
+  --mx:50;--my:35;
+}
+html{scroll-behavior:smooth}
+body{color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* ====== FOND ANIMÉ SUIVANT LA SOURIS ====== */
+#bgFx{position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,#ff9a9e,#a18cd1,#fbc2eb,#8fd3f4);
+  background-size:400% 400%;animation:gradShift 18s ease infinite}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+#bgGlow{position:fixed;inset:0;z-index:-1;pointer-events:none;transition:background .18s linear;
+  background:
+    radial-gradient(560px circle at calc(var(--mx)*1%) calc(var(--my)*1%),rgba(255,236,120,.55),transparent 60%),
+    radial-gradient(760px circle at calc(100% - var(--mx)*1%) calc(var(--my)*1%),rgba(120,220,255,.5),transparent 60%),
+    radial-gradient(900px circle at calc(var(--mx)*1%) calc(100% - var(--my)*1%),rgba(255,130,220,.42),transparent 60%);
+}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(0deg,rgba(255,255,255,.35),rgba(255,255,255,.35))}
+
+/* ====== TOPBAR ====== */
+#topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
+  padding:12px 16px;background:rgba(255,255,255,.65);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.6)}
+#topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:#2b1e63}
+#btnHome{display:none;background:linear-gradient(135deg,#ff5c8a,#a18cd1);color:#fff;border:none;
+  border-radius:14px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(161,140,209,.5)}
+body.inTool #btnHome{display:inline-block}
+#btnHome:active{transform:scale(.95)}
+#crumb{color:var(--dim);font-size:12px;flex:1;text-align:right;font-weight:600}
+
+/* ====== ACCUEIL ====== */
+#home{max-width:1100px;margin:0 auto;padding:30px 16px 40px}
+body.inTool #home{display:none}
+#hero{text-align:center;margin-bottom:28px}
+#hero h2{font-size:clamp(26px,5.5vw,44px);font-weight:900;letter-spacing:-.5px;color:#fff;
+  text-shadow:0 2px 0 #c9a6ff,0 6px 24px rgba(90,60,180,.45)}
+#hero p{color:#3a2f6b;margin-top:10px;font-size:13px;letter-spacing:1.5px;font-weight:700}
+#menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+.mbtn{background:rgba(255,255,255,.82);border:none;border-radius:var(--r);padding:20px 12px;text-align:center;
+  cursor:pointer;box-shadow:0 8px 24px rgba(80,50,160,.18);transition:.18s;
+  display:flex;flex-direction:column;align-items:center;gap:10px;backdrop-filter:blur(6px)}
+.mbtn:hover{transform:translateY(-5px) scale(1.03);box-shadow:0 16px 34px rgba(80,50,160,.35)}
+.mbtn:active{transform:scale(.96)}
+.mbtn .ico{font-size:34px;width:66px;height:66px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 -3px 8px rgba(0,0,0,.06)}
+.mbtn b{font-size:13.5px;color:#2b1e63}
+.mbtn small{font-size:10.5px;color:var(--dim);line-height:1.35}
+.c1 .ico{background:#ffd6e3}.c2 .ico{background:#ffedb8}.c3 .ico{background:#c9f0ff}
+.c4 .ico{background:#cdf5d2}.c5 .ico{background:#e4d5ff}.c6 .ico{background:#ffdfd0}
+.c7 .ico{background:#d6e6ff}.c8 .ico{background:#ffe9c2}.c9 .ico{background:#c8f7e3}
+.c10 .ico{background:#eed2ff}.c11 .ico{background:#ffd6ec}.c12 .ico{background:#ccf1ff}
+
+/* ====== PAGES OUTILS ====== */
+.page{display:none;max-width:780px;margin:0 auto;padding:22px 16px 60px}
+.page.show{display:block;animation:pop .28s ease}
+@keyframes pop{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.tool-card{background:rgba(255,255,255,.9);border-radius:var(--r);box-shadow:0 10px 30px rgba(80,50,160,.2);
+  padding:22px;margin-bottom:16px;backdrop-filter:blur(8px)}
+.tool-card h3{font-size:18px;color:#2b1e63}
+.tool-card .desc{color:var(--dim);font-size:12px;margin:4px 0 14px;font-weight:600}
+label{display:block;font-size:12px;color:#584d80;margin:12px 0 5px;font-weight:700}
+input,select,textarea{width:100%;background:#faf9ff;border:1.5px solid #e2def5;color:var(--txt);
+  padding:11px 13px;border-radius:13px;font-size:15px;outline:none;font-family:inherit;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:#a18cd1;background:#fff;box-shadow:0 0 0 3px rgba(161,140,209,.25)}
+textarea{resize:vertical;min-height:70px}
+button{background:linear-gradient(135deg,#8f7bff,#a18cd1);color:#fff;border:none;border-radius:13px;
+  padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;transition:.15s;font-family:inherit;
+  box-shadow:0 5px 16px rgba(140,110,220,.35)}
+button:hover{filter:brightness(1.1);transform:translateY(-1px)}
+button:active{transform:scale(.96)}
+button.ghost{background:rgba(255,255,255,.85);color:#2b1e63;box-shadow:0 3px 10px rgba(80,50,160,.15)}
+button.green{background:linear-gradient(135deg,#00d4a0,#00a583);box-shadow:0 5px 16px rgba(0,180,140,.35)}
+button.pink{background:linear-gradient(135deg,#ff6f9c,#e0306a);box-shadow:0 5px 16px rgba(255,90,140,.4)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.out{background:#f4f1ff;border:1.5px dashed #cabcf0;border-radius:13px;padding:12px 14px;margin-top:12px;
+  font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:#3b3166}
+.big{font-size:22px;font-weight:800;color:#4b2fd4}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chip{padding:8px 14px;border-radius:22px;font-size:12px;border:1.5px solid #e2def5;
+  background:#fff;color:#6b6489;cursor:pointer;font-weight:700;transition:.12s}
+.chip:hover{border-color:#a18cd1}
+.chip.sel{background:linear-gradient(135deg,#8f7bff,#c47bff);color:#fff;border-color:transparent;
+  box-shadow:0 4px 12px rgba(140,110,220,.4)}
+.swatch{display:inline-block;width:42px;height:42px;border-radius:12px;border:2px solid #fff;cursor:pointer;margin:3px;
+  box-shadow:0 3px 8px rgba(0,0,0,.2)}
+#pixCanvas{image-rendering:pixelated;max-width:100%;border:1px solid #e2def5;border-radius:12px;background:
+  repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px}
+.todo-item{display:flex;align-items:center;gap:10px;background:#f6f3ff;border-radius:13px;padding:10px 13px;margin-top:7px}
+.todo-item.done span{text-decoration:line-through;color:var(--dim)}
+.todo-item span{flex:1;font-size:14px}
+.todo-item button{margin:0;padding:4px 10px;font-size:11px}
+.kbdrow{display:flex;gap:6px;margin-top:6px}
+.kbd{padding:14px 0;flex:1;min-width:52px;text-align:center;background:#f4f1ff;border:1px solid #e2def5;
+  border-radius:13px;font-size:17px;cursor:pointer;font-weight:800;transition:.08s}
+.kbd:active{background:#a18cd1;color:#fff}
+.kbd.op{color:#7a5cd8}
+.kbd.eq{background:linear-gradient(135deg,#8f7bff,#a18cd1);color:#fff}
+#calcOut{text-align:right;font-size:26px;font-weight:800;min-height:32px;padding:14px;background:#f4f1ff;border-radius:13px;color:#3b3166}
+footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacing:1.5px;font-weight:700}
+@media(max-width:600px){
+  #menu{grid-template-columns:repeat(2,1fr);gap:12px}
+  .mbtn{padding:14px 8px}.mbtn .ico{font-size:28px;width:56px;height:56px}
+  .row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div id="bgFx"></div>
+<div id="bgGlow"></div>
+
+<div id="topbar">
+  <button id="btnHome">⬅ Menu</button>
+  <h1>🧰 Ma Boîte à Outils</h1>
+  <span id="crumb"></span>
+</div>
+
+<!-- ============ ACCUEIL ============ -->
+<div id="home">
+  <div id="hero">
+    <h2>Que voulez-vous faire ?</h2>
+    <p>12 OUTILS · 100% HORS-LIGNE · MOBILE & PC</p>
+  </div>
+  <div id="menu"></div>
+</div>
+
+<!-- ============ PAGES (générées par JS) ============ -->
+<div id="pages"></div>
+
+<footer>MA BOÎTE À OUTILS — COLORÉE, RAPIDE, SANS PRISE DE TÊTE</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>(+n).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumFractionDigits:0});
+
+/* ============ FOND : halo qui suit le pointeur ============ */
+(function(){
+  const root=document.documentElement;
+  let tx=50,ty=35,cx=50,cy=35;
+  addEventListener("pointermove",e=>{
+    tx=e.clientX/innerWidth*100;
+    ty=e.clientY/innerHeight*100;
+  },{passive:true});
+  addEventListener("touchmove",e=>{
+    if(e.touches[0]){tx=e.touches[0].clientX/innerWidth*100;ty=e.touches[0].clientY/innerHeight*100;}
+  },{passive:true});
+  (function anim(){ // interpolation fluide
+    cx+=(tx-cx)*.06;cy+=(ty-cy)*.06;
+    root.style.setProperty("--mx",cx.toFixed(2));
+    root.style.setProperty("--my",cy.toFixed(2));
+    requestAnimationFrame(anim);
+  })();
+})();
+
+/* ============ DÉFINITION DES 12 OUTILS ============ */
+const TOOLS=[
+ {id:"pixel",  ico:"🎨",cls:"c1",  name:"Pixel Art",         desc:"Image → grille + codes HEX", brief:"Transformez une image en grille de la taille que vous voulez, avec le code hexadécimal de chaque pixel, copiable en un clic.",
+  html:`
+   <label>Choisissez une image</label><input type="file" id="pixFile" accept="image/*">
+   <div class="row"><div><label>Grille : largeur</label><input type="number" id="pixW" value="16" min="2" max="128"></div>
+   <div><label>Hauteur</label><input type="number" id="pixH" value="16" min="2" max="128"></div></div>
+   <button class="green" id="pixGo">Convertir</button>
+   <button class="ghost" id="pixCopy">📋 Copier les codes HEX</button>
+   <div style="margin-top:12px;overflow:auto"><canvas id="pixCanvas" width="16" height="16"></canvas></div>
+   <div class="out" id="pixOut" style="max-height:150px;overflow:auto;font-size:11px">L'aperçu de la grille de couleurs apparaîtra ici…</div>`},
+ {id:"pw",     ico:"🔐",cls:"c2",  name:"Mots de passe",     desc:"Sécurisés, sur mesure", brief:"Mots de passe générés de façon cryptographiquement sûre, avec longueur et types de caractères au choix.",
+  html:`
+   <label>Longueur : <output id="pwLenV">16</output> caractères</label>
+   <input type="range" id="pwLen" min="6" max="64" value="16">
+   <div class="chips" id="pwOpts">
+    <div class="chip sel" data-k="up">A-Z</div><div class="chip sel" data-k="low">a-z</div>
+    <div class="chip sel" data-k="num">0-9</div><div class="chip sel" data-k="spec">!@#$…</div></div>
+   <button class="pink" id="pwGo">🎲 Générer</button>
+   <div class="out big" id="pwOut" style="user-select:all">Cliquez sur Générer</div>
+   <div class="out" id="pwStrength" style="margin-top:6px">—</div>`},
+ {id:"units",  ico:"📏",cls:"c3",  name:"Convertisseur",     desc:"Longueur, masse, temp…", brief:"Convertissez instantanément longueur, masse, température, volume et unités informatiques.",
+  html:`
+   <div class="chips" id="uCat">
+    <div class="chip sel" data-c="len">Longueur</div><div class="chip" data-c="mass">Masse</div>
+    <div class="chip" data-c="temp">Température</div><div class="chip" data-c="vol">Volume</div>
+    <div class="chip" data-c="data">Données</div></div>
+   <label>Valeur</label><input type="number" id="uVal" value="1">
+   <div class="row"><div><label>De</label><select id="uFrom"></select></div>
+   <div><label>Vers</label><select id="uTo"></select></div></div>
+   <div class="out big" id="uOut">—</div>`},
+ {id:"color",  ico:"🎯",cls:"c4",  name:"Couleurs",          desc:"HEX / RGB / HSL + palette", brief:"Convertissez une couleur entre HEX, RGB et HSL, et générez une palette harmonieuse.",
+  html:`
+   <div class="row"><input type="color" id="colPick" value="#6c5cff" style="padding:3px;height:48px">
+   <input type="text" id="colHex" value="#6c5cff" placeholder="#RRGGBB"></div>
+   <button class="green" id="colGo">Convertir</button>
+   <div class="out" id="colOut">—</div>
+   <label>Palette harmonieuse (cliquez pour copier)</label>
+   <div id="palette" style="margin-top:8px"></div>`},
+ {id:"calc",   ico:"🧮",cls:"c5",  name:"Calculatrice",      desc:"Clic ou clavier", brief:"Calculatrice simple mais efficace : au clic, au clavier, avec parenthèses et pourcentages.",
+  html:`
+   <div id="calcOut">0</div>
+   <div class="kbdrow"><div class="kbd op" data-k="C">C</div><div class="kbd op" data-k="←">←</div><div class="kbd op" data-k="%">%</div><div class="kbd op" data-k="/">÷</div></div>
+   <div class="kbdrow"><div class="kbd" data-k="7">7</div><div class="kbd" data-k="8">8</div><div class="kbd" data-k="9">9</div><div class="kbd op" data-k="*">×</div></div>
+   <div class="kbdrow"><div class="kbd" data-k="4">4</div><div class="kbd" data-k="5">5</div><div class="kbd" data-k="6">6</div><div class="kbd op" data-k="-">−</div></div>
+   <div class="kbdrow"><div class="kbd" data-k="1">1</div><div class="kbd" data-k="2">2</div><div class="kbd" data-k="3">3</div><div class="kbd op" data-k="+">+</div></div>
+   <div class="kbdrow"><div class="kbd" data-k="(">(</div><div class="kbd" data-k="0">0</div><div class="kbd" data-k=".">.</div><div class="kbd eq" data-k="=">=</div></div>`},
+ {id:"todo",   ico:"✅",cls:"c6",  name:"Ma to-do",          desc:"Sauvegardée automatiquement", brief:"Votre liste de tâches reste enregistrée dans le navigateur, même après fermeture de la page.",
+  html:`
+   <div class="row"><input type="text" id="todoIn" placeholder="Nouvelle tâche…">
+   <button id="todoAdd" style="margin:0">+</button></div>
+   <div id="todoList" style="margin-top:12px"></div>`},
+ {id:"text",   ico:"📝",cls:"c7",  name:"Texte",             desc:"Compteur & transformations", brief:"Comptez mots, phrases et temps de lecture, et transformez votre texte en un clic.",
+  html:`
+   <textarea id="txtIn" placeholder="Collez votre texte ici…"></textarea>
+   <div class="chips"><div class="chip" id="txtUp">MAJUSCULES</div><div class="chip" id="txtLow">minuscules</div>
+   <div class="chip" id="txtTrim">Nettoyer</div><div class="chip" id="txtRev">Inverser</div></div>
+   <div class="out" id="txtStats">—</div>`},
+ {id:"pct",    ico:"💶",cls:"c8",  name:"Pourcentages & TVA",desc:"Remises, TVA, pourboire", brief:"Calculez remise, TVA française et pourboire pour connaître le total exact à payer.",
+  html:`
+   <label>Prix (€)</label><input type="number" id="pPrix" value="100" step="any">
+   <div class="chips" id="pTva">
+    <div class="chip" data-v="2.1">TVA 2,1%</div><div class="chip" data-v="5.5">TVA 5,5%</div>
+    <div class="chip sel" data-v="10">TVA 10%</div><div class="chip" data-v="20">TVA 20%</div></div>
+   <div class="row" style="margin-top:10px">
+    <div><label>Remise %</label><input type="number" id="pDisc" value="0" min="0" max="100"></div>
+    <div><label>Pourboire %</label><input type="number" id="pTip" value="0" min="0"></div></div>
+   <div class="out" id="pOut">—</div>`},
+ {id:"credit", ico:"🏦",cls:"c9",  name:"Crédit",            desc:"Mensualités & intérêts", brief:"Simulez un crédit : mensualité, total payé et coût des intérêts, en direct.",
+  html:`
+   <div class="row"><div><label>Montant (€)</label><input type="number" id="cAmt" value="200000"></div>
+   <div><label>Durée (années)</label><input type="number" id="cYears" value="20"></div></div>
+   <label>Taux annuel : <output id="cRateV">3,5 %</output></label>
+   <input type="range" id="cRate" min="0.1" max="10" step="0.1" value="3.5">
+   <div class="out" id="cOut">—</div>`},
+ {id:"b64",    ico:"🔁",cls:"c10", name:"Base64",            desc:"Encoder / décoder", brief:"Encodez du texte en Base64 ou décodez-en, avec gestion de l'UTF-8 (accents, emojis…).",
+  html:`
+   <textarea id="b64In" placeholder="Texte à encoder ou Base64 à décoder…"></textarea>
+   <button class="green" id="b64Enc">Encoder ➜</button>
+   <button class="ghost" id="b64Dec">⬅ Décoder</button>
+   <div class="out" id="b64Out">—</div>`},
+ {id:"chrono", ico:"⏱️",cls:"c11", name:"Chrono & minuteur", desc:"Tours + alarme sonore", brief:"Chronomètre avec tours, et minuteur avec alarme sonore intégrée.",
+  html:`
+   <div class="out big" id="chronoOut" style="text-align:center;font-size:30px">00:00.0</div>
+   <button class="green" id="chStart">▶ Démarrer</button>
+   <button class="ghost" id="chLap">📍 Tour</button>
+   <button class="ghost" id="chReset">↺ Reset</button>
+   <div class="out" id="chLaps" style="max-height:100px;overflow:auto"></div>
+   <label>Minuteur (minutes)</label><input type="number" id="tmMin" value="5" min="0.1" step="0.5">
+   <button class="pink" id="tmGo">🔔 Lancer le minuteur</button>`},
+ {id:"dice",   ico:"🎲",cls:"c12", name:"Hasard",            desc:"Dés & tirage au sort", brief:"Lancez des dés à N faces ou tirez au sort un élément d'une liste.",
+  html:`
+   <div class="row"><div><label>Nombre de dés</label><input type="number" id="dN" value="2" min="1" max="20"></div>
+   <div><label>Nombre de faces</label><input type="number" id="dF" value="6" min="2" max="1000"></div></div>
+   <button class="pink" id="dGo">🎲 Lancer les dés</button>
+   <div class="out big" id="dOut">—</div>
+   <label>Liste de choix (un par ligne) — ex. où manger ce soir 😉</label>
+   <textarea id="rList" placeholder="Pizza&#10;Burger&#10;Salade"></textarea>
+   <button class="green" id="rGo">🎯 Tirer au sort</button>
+   <div class="out big" id="rOut">—</div>`},
+];
+
+/* ============ NAVIGATION ============ */
+const menuEl=$("menu"),pagesEl=$("pages"),initDone=new Set();
+TOOLS.forEach(t=>{
+  const b=document.createElement("button");
+  b.className="mbtn "+t.cls;
+  b.type="button";
+  b.innerHTML='<span class="ico">'+t.ico+'</span><b>'+t.name+'</b><small>'+t.desc+'</small>';
+  b.addEventListener("click",()=>go(t.id));
+  menuEl.appendChild(b);
+  const p=document.createElement("div");
+  p.className="page";p.id="page-"+t.id;
+  p.innerHTML='<div class="tool-card"><h3>'+t.ico+' '+t.name+'</h3><div class="desc">'+t.brief+'</div>'+t.html+'</div>';
+  pagesEl.appendChild(p);
+});
+function go(id){
+  const t=TOOLS.find(x=>x.id===id);if(!t)return;
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+  const p=$("page-"+id);
+  p.classList.add("show");
+  document.body.classList.add("inTool");   // masque l'accueil
+  $("crumb").textContent=t.name;
+  if(location.hash!=="#"+id)location.hash=id;
+  scrollTo(0,0);
+  if(!initDone.has(id)){
+    initDone.add(id);
+    try{INITS[id]&&INITS[id]();}
+    catch(err){console.error(err);}     // une erreur d'outil ne casse jamais la page
+  }
+}
+function goHome(){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+  document.body.classList.remove("inTool");
+  $("crumb").textContent="";
+  if(location.hash)history.replaceState(null,""," ");
+}
+$("btnHome").addEventListener("click",goHome);
+addEventListener("hashchange",()=>{
+  const id=location.hash.slice(1);
+  const t=TOOLS.find(x=>x.id===id);
+  if(t)go(id);else if(!id)goHome();
+},{passive:true});
+if(location.hash&&TOOLS.some(t=>"#"+t.id===location.hash))go(location.hash.slice(1));
+
+const INITS={};
+
+/* ============ 1. PIXEL ART ============ */
+INITS.pixel=function(){
+  let pixImg=null,pixRows=null;
+  const cv=$("pixCanvas"),ctx=cv.getContext("2d");
+  $("pixFile").addEventListener("change",e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{const im=new Image();im.onload=()=>{pixImg=im;go();};im.src=ev.target.result;};
+    r.readAsDataURL(f);
+  });
+  function go(){
+    if(!pixImg){alert("Choisissez d'abord une image !");return;}
+    const w=Math.min(128,Math.max(2,+$("pixW").value||16));
+    const h=Math.min(128,Math.max(2,+$("pixH").value||16));
+    $("pixW").value=w;$("pixH").value=h;
+    cv.width=w;cv.height=h;
+    ctx.clearRect(0,0,w,h);ctx.drawImage(pixImg,0,0,w,h);
+    const d=ctx.getImageData(0,0,w,h).data,rows=[];
+    for(let y=0;y<h;y++){
+      const row=[];
+      for(let x=0;x<w;x++){
+        const i=(y*w+x)*4;
+        row.push("#"+[d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,"0")).join(""));
+      }
+      rows.push(row.join(" "));
+    }
+    pixRows=rows;
+    $("pixOut").textContent=rows.join("\n");
+  }
+  $("pixGo").addEventListener("click",go);
+  $("pixCopy").addEventListener("click",()=>{
+    if(!pixRows){alert("Rien à copier : convertissez d'abord une image.");return;}
+    const txt=pixRows.join("\n");
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(txt).then(
+        ()=>alert("✅ Grille HEX copiée ! ("+pixRows.length+" lignes × "+pixRows[0].split(" ").length+" pixels)"),
+        ()=>alert("Copie refusée — le texte reste sélectionnable en dessous."));
+    else alert("Copie non dispo ici — le texte reste sélectionnable en dessous.");
+  });
+};
+
+/* ============ 2. MOT DE PASSE ============ */
+INITS.pw=function(){
+  const sets={up:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",low:"abcdefghijklmnopqrstuvwxyz",num:"0123456789",spec:"!@#$%^&*()-_=+[]{};:,.<>?"},
+        on=new Set(["up","low","num","spec"]);
+  $("pwLen").addEventListener("input",e=>{$("pwLenV").textContent=e.target.value;});
+  document.querySelectorAll("#pwOpts .chip").forEach(c=>c.addEventListener("click",()=>{
+    c.classList.toggle("sel");
+    if(c.classList.contains("sel"))on.add(c.dataset.k);else on.delete(c.dataset.k);
+  }));
+  $("pwGo").addEventListener("click",()=>{
+    let pool="";on.forEach(k=>pool+=sets[k]);
+    if(!pool){$("pwOut").textContent="Cochez au moins une option !";return;}
+    const len=+$("pwLen").value,arr=new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    let pw="";for(const n of arr)pw+=pool[n%pool.length];
+    $("pwOut").textContent=pw;
+    const bits=len*Math.log2(pool.length);
+    $("pwStrength").textContent="Entropie : "+Math.round(bits)+" bits — "+
+      (bits<40?"faible 😟":bits<70?"correct 🙂":"excellent 💪");
+  });
+};
+
+/* ============ 3. UNITÉS ============ */
+INITS.units=function(){
+  const UNITS={
+    len:{m:1,km:1000,cm:.01,mm:.001,"mile":1609.344,yd:.9144,"pied (ft)":.3048,"pouce (in)":.0254,"mille nautique":1852},
+    mass:{kg:1,g:.001,t:1000,"livre (lb)":.45359237,"once (oz)":.028349523},
+    temp:{"°C":1,"°F":1,"K":1},
+    vol:{L:1,mL:.001,"m³":1000,"gallon US":3.785411784},
+    data:{octet:1,Ko:1024,Mo:1048576,Go:1073741824,To:1099511627776}
+  };
+  let cat="len";
+  function fill(){
+    const keys=Object.keys(UNITS[cat]);
+    $("uFrom").innerHTML=keys.map(k=>"<option>"+k+"</option>").join("");
+    $("uTo").innerHTML=keys.map(k=>"<option>"+k+"</option>").join("");
+    $("uFrom").value=keys[0];$("uTo").value=keys[Math.min(1,keys.length-1)];
+    conv();
+  }
+  function conv(){
+    const v=+$("uVal").value||0,f=$("uFrom").value,t=$("uTo").value;let r;
+    if(cat==="temp"){
+      const c=f==="°C"?v:f==="°F"?(v-32)*5/9:v-273.15;
+      r=t==="°C"?c:t==="°F"?c*9/5+32:c+273.15;
+    }else r=v*UNITS[cat][f]/UNITS[cat][t];
+    $("uOut").textContent=fmt(v)+" "+f+" = "+fmt(r,6)+" "+t;
+  }
+  document.querySelectorAll("#uCat .chip").forEach(c=>c.addEventListener("click",()=>{
+    document.querySelectorAll("#uCat .chip").forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel");cat=c.dataset.c;fill();
+  }));
+  ["uVal","uFrom","uTo"].forEach(id=>$(id).addEventListener("input",conv));
+  fill();
+};
+
+/* ============ 4. COULEURS ============ */
+INITS.color=function(){
+  function h2r(h){h=h.replace("#","");if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    const n=parseInt(h,16);return isNaN(n)?null:[n>>16&255,n>>8&255,n&255];}
+  function r2Hsl(r,g,b){r/=255;g/=255;b/=255;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;
+    if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);
+      h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h*=60;}
+    return[Math.round(h),Math.round(s*100),Math.round(l*100)];}
+  function hsl2h(h,s,l){s/=100;l/=100;
+    const a=s*Math.min(l,1-l),f=function(n){const k=(n+h/30)%12;
+      return Math.round(255*(l-a*Math.max(Math.min(k-3,9-k,1),-1))).toString(16).padStart(2,"0");};
+    return"#"+f(0)+f(8)+f(4);}
+  function upd(hex){
+    const rgb=h2r(hex);if(!rgb)return;
+    const r=rgb[0],g=rgb[1],b=rgb[2],hs=r2Hsl(r,g,b),h=hs[0],s=hs[1],l=hs[2];
+    const lum=Math.round(.299*r+.587*g+.114*b);
+    $("colHex").value=hex;$("colPick").value=hex;
+    $("colOut").innerHTML="HEX <b>"+hex.toUpperCase()+"</b> · RGB <b>"+r+", "+g+", "+b+"</b> · HSL <b>"+h+"°, "+s+"%, "+l+"%</b><br>"+
+      "Texte lisible sur ce fond : <b>"+(lum>128?"⬜ blanc":"⬛ noir")+"</b>";
+    const pals=[h,(h+30)%360,(h+180)%360,(h+120)%360,(h+240)%360,(h+150)%360];
+    $("palette").innerHTML=pals.map(function(hh){
+      const hx=hsl2h(hh,s,l);
+      return '<span class="swatch" style="background:'+hx+'" title="'+hx+' — cliquez pour copier" data-h="'+hx+'"></span>';
+    }).join("");
+    document.querySelectorAll("#palette .swatch").forEach(function(sw){
+      sw.addEventListener("click",function(){
+        if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(sw.dataset.h);
+        alert(sw.dataset.h+" copié !");
+      });
+    });
+  }
+  $("colPick").addEventListener("input",e=>upd(e.target.value));
+  $("colGo").addEventListener("click",()=>{let v=$("colHex").value.trim();upd(v.charAt(0)==="#"?v:"#"+v);});
+  upd("#6c5cff");
+};
+
+/* ============ 5. CALCULATRICE ============ */
+INITS.calc=function(){
+  let expr="";
+  const render=()=>{$("calcOut").textContent=expr||"0";};
+  function press(k){
+    if(k==="C")expr="";
+    else if(k==="←")expr=expr.slice(0,-1);
+    else if(k==="="){
+      try{
+        const c=expr.replace(/%/g,"/100").replace(/×/g,"*").replace(/÷/g,"/");
+        if(c&&/^[0-9+\-*/().%\s]+$/.test(c))
+          expr=String(Math.round(Function("\"use strict\";return("+c+")")()*1e10)/1e10);
+      }catch(e){}
+    }else expr+=k;
+    render();
+  }
+  document.querySelectorAll("#page-calc .kbd").forEach(k=>k.addEventListener("click",()=>press(k.dataset.k)));
+  addEventListener("keydown",function(e){
+    if(!$("page-calc").classList.contains("show"))return;
+    const tag=document.activeElement?document.activeElement.tagName:"";
+    if(tag==="INPUT"||tag==="TEXTAREA")return;
+    if(/^[0-9+\-*/().%]$/.test(e.key))press(e.key);
+    else if(e.key==="Enter")press("=");
+    else if(e.key==="Backspace")press("←");
+    else if(e.key==="Escape")press("C");
+  });
+};
+
+/* ============ 6. TO-DO ============ */
+INITS.todo=function(){
+  let todos=[];
+  try{todos=JSON.parse(localStorage.getItem("outils_todos")||"[]");}catch(e){todos=[];}
+  if(!Array.isArray(todos))todos=[];
+  const save=()=>{try{localStorage.setItem("outils_todos",JSON.stringify(todos));}catch(e){}};
+  function render(){
+    const L=$("todoList");L.innerHTML="";
+    if(!todos.length)L.innerHTML='<div class="out" style="border-style:solid">Aucune tâche — profitez du vide 😌</div>';
+    todos.forEach(function(t,i){
+      const d=document.createElement("div");d.className="todo-item"+(t.done?" done":"");
+      d.innerHTML='<input type="checkbox"'+(t.done?" checked":"")+'><span></span><button class="ghost">✕</button>';
+      d.querySelector("span").textContent=t.txt;
+      d.querySelector("input").addEventListener("change",()=>{todos[i].done=!todos[i].done;save();render();});
+      d.querySelector("button").addEventListener("click",()=>{todos.splice(i,1);save();render();});
+      L.appendChild(d);
+    });
+  }
+  function add(){
+    const v=$("todoIn").value.trim();if(!v)return;
+    todos.push({txt:v,done:false});$("todoIn").value="";save();render();
+  }
+  $("todoAdd").addEventListener("click",add);
+  $("todoIn").addEventListener("keydown",e=>{if(e.key==="Enter")add();});
+  render();
+};
+
+/* ============ 7. TEXTE ============ */
+INITS.text=function(){
+  const ta=$("txtIn");
+  function stats(){
+    const v=ta.value,words=(v.match(/\S+/g)||[]).length;
+    $("txtStats").textContent=v.length+" caractères · "+words+" mots · "+
+      ((v.match(/[.!?]+/g)||[]).length)+" phrases · "+(v?v.split("\n").length:0)+" lignes · "+
+      "~"+Math.ceil(words/200)+" min de lecture";
+  }
+  ta.addEventListener("input",stats);
+  $("txtUp").addEventListener("click",()=>{ta.value=ta.value.toUpperCase();stats();});
+  $("txtLow").addEventListener("click",()=>{ta.value=ta.value.toLowerCase();stats();});
+  $("txtTrim").addEventListener("click",()=>{ta.value=ta.value.replace(/[ \t]+/g," ").replace(/^ | $/gm,"");stats();});
+  $("txtRev").addEventListener("click",()=>{ta.value=Array.from(ta.value).reverse().join("");stats();});
+  stats();
+};
+
+/* ============ 8. POURCENTAGES / TVA ============ */
+INITS.pct=function(){
+  let rate=10;
+  document.querySelectorAll("#pTva .chip").forEach(c=>c.addEventListener("click",()=>{
+    document.querySelectorAll("#pTva .chip").forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel");rate=+c.dataset.v;calc();
+  }));
+  function calc(){
+    const p=+$("pPrix").value||0,d=+$("pDisc").value||0,t=+$("pTip").value||0;
+    const a=p*(1-d/100),ht=a/(1+rate/100);
+    $("pOut").innerHTML=
+      "Prix affiché : <b>"+fmt(p)+" €</b><br>"+
+      "Après remise "+d+"% : <b>"+fmt(a)+" €</b><br>"+
+      "Dont TVA "+String(rate).replace(".",",")+"% : <b>"+fmt(a-ht)+" €</b> (HT : "+fmt(ht)+" €)<br>"+
+      "Pourboire "+t+"% : <b>"+fmt(a*t/100)+" €</b><br>"+
+      "💸 Total à payer : <b style='color:#00a583'>"+fmt(a*(1+t/100))+" €</b>";
+  }
+  ["pPrix","pDisc","pTip"].forEach(id=>$(id).addEventListener("input",calc));
+  calc();
+};
+
+/* ============ 9. CRÉDIT ============ */
+INITS.credit=function(){
+  $("cRate").addEventListener("input",e=>{$("cRateV").textContent=e.target.value.replace(".",",")+" %";calc();});
+  function calc(){
+    const P=+$("cAmt").value||0,n=(+$("cYears").value||1)*12,r=(+$("cRate").value)/100/12;
+    const m=r===0?P/n:P*r/(1-Math.pow(1+r,-n)),tot=m*n;
+    $("cOut").innerHTML=
+      "Mensualité : <b style='color:#00a583'>"+fmt(m)+" €/mois</b><br>"+
+      "Total payé : <b>"+fmt(tot)+" €</b><br>"+
+      "Coût des intérêts : <b style='color:#e0306a'>"+fmt(tot-P)+" €</b><br>"+
+      "<span style='color:#6b6489;font-size:11px'>Hors assurance — "+n+" mensualités</span>";
+  }
+  ["cAmt","cYears"].forEach(id=>$(id).addEventListener("input",calc));
+  calc();
+};
+
+/* ============ 10. BASE64 ============ */
+INITS.b64=function(){
+  $("b64Enc").addEventListener("click",()=>{
+    try{$("b64Out").textContent=btoa(unescape(encodeURIComponent($("b64In").value)));}
+    catch(e){$("b64Out").textContent="Erreur d'encodage";}
+  });
+  $("b64Dec").addEventListener("click",()=>{
+    try{$("b64Out").textContent=decodeURIComponent(escape(atob($("b64In").value.trim())));}
+    catch(e){$("b64Out").textContent="⚠️ Base64 invalide";}
+  });
+};
+
+/* ============ 11. CHRONO ============ */
+INITS.chrono=function(){
+  let t0=0,acc=0,run=false,laps=[];
+  function tick(){
+    const ms=acc+(run?performance.now()-t0:0);
+    const m=String(Math.floor(ms/60000)).padStart(2,"0"),
+          s=String(Math.floor(ms/1000)%60).padStart(2,"0"),
+          d=Math.floor(ms%1000/100);
+    $("chronoOut").textContent=m+":"+s+"."+d;
+    if(run)requestAnimationFrame(tick);
+  }
+  $("chStart").addEventListener("click",()=>{
+    run=!run;$("chStart").textContent=run?"⏸ Pause":"▶ Démarrer";
+    if(run){t0=performance.now();tick();}else acc+=performance.now()-t0;
+  });
+  $("chLap").addEventListener("click",()=>{
+    const v=$("chronoOut").textContent;
+    laps.unshift(v);laps=laps.slice(0,20);
+    $("chLaps").innerHTML=laps.map((l,i)=>"Tour "+(laps.length-i)+" — <b>"+l+"</b>").join("<br>");
+  });
+  $("chReset").addEventListener("click",()=>{
+    run=false;acc=0;laps=[];
+    $("chStart").textContent="▶ Démarrer";
+    $("chLaps").innerHTML="";$("chronoOut").textContent="00:00.0";
+  });
+  $("tmGo").addEventListener("click",()=>{
+    const min=+$("tmMin").value||0,end=Date.now()+min*60000,btn=$("tmGo");
+    btn.disabled=true;
+    const iv=setInterval(()=>{
+      const left=end-Date.now();
+      btn.textContent="⏳ reste "+Math.max(0,Math.ceil(left/1000))+" s";
+      if(left<=0){
+        clearInterval(iv);btn.disabled=false;btn.textContent="🔔 Lancer le minuteur";
+        try{
+          const AC=new(window.AudioContext||window.webkitAudioContext)();
+          const o=AC.createOscillator(),g=AC.createGain();
+          o.frequency.value=880;g.gain.value=.3;
+          o.connect(g);g.connect(AC.destination);o.start();
+          o.stop(AC.currentTime+.5);
+        }catch(e){}
+        alert("⏰ C'est l'heure ! ("+min+" min écoulées)");
+      }
+    },500);
+  });
+};
+
+/* ============ 12. HASARD ============ */
+INITS.dice=function(){
+  $("dGo").addEventListener("click",()=>{
+    const n=+$("dN").value||1,f=+$("dF").value||6;
+    const rolls=Array.from({length:n},()=>1+Math.floor(Math.random()*f));
+    $("dOut").textContent=rolls.join(" + ")+(n>1?" = "+rolls.reduce((a,b)=>a+b,0):"");
+  });
+  $("rGo").addEventListener("click",()=>{
+    const list=$("rList").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    $("rOut").textContent=list.length?list[Math.floor(Math.random()*list.length)]:"Ajoutez des choix dans la liste !";
+  });
+};
+</script>
+</body>
+</html>
