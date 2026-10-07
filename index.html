@@ -1355,7 +1355,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
 
 /* ===== Drive : stockage d'images (100 Mo par compte) ===== */
 (function(){
-  const meta={id:"drive",ico:"🖼️",name:"Mon Drive",desc:"Images dans le cloud (100 Mo)",cat:"dev",cls:nextCls(),
+  const meta={id:"drive",ico:"🖼️",name:"Mon Drive",desc:"Images dans le cloud (100 Mo)",cat:"image",cls:nextCls(),
     brief:"Stockez vos images dans le cloud : 100 Mo par compte, accessibles depuis tous vos appareils connectés. Connectez-vous pour l'utiliser.",
     html:'<div id="drv_noacct" style="display:none"><div class="out" style="border-style:solid">☁️ Connectez-vous (bouton « Compte » en haut) pour utiliser le Drive.</div></div>'+
       '<div id="drv_ui">'+
@@ -1656,6 +1656,17 @@ window.__loadScript=src=>new Promise(res=>{
   function initAuth(sb){
   window.__sb=sb;
   const fullKey=k=>"nova_"+k;
+  function deepEq(a,b){
+    if(a===b)return true;
+    if(typeof a!==typeof b)return false;
+    if(a&&b&&typeof a==="object"){
+      if(Array.isArray(a)!==Array.isArray(b))return false;
+      const ka=Object.keys(a),kb=Object.keys(b);
+      if(ka.length!==kb.length)return false;
+      return ka.every(k=>Object.prototype.hasOwnProperty.call(b,k)&&deepEq(a[k],b[k]));
+    }
+    return false;
+  }
   function collectRows(){
     const rows=[];
     for(let i=0;i<localStorage.length;i++){
@@ -1683,8 +1694,10 @@ window.__loadScript=src=>new Promise(res=>{
     let n=0;
     data.forEach(r=>{
       const k=fullKey(r.key);
-      const s=JSON.stringify(r.value);
-      if(localStorage.getItem(k)!==s){localStorage.setItem(k,s);n++;}
+      const cur=localStorage.getItem(k);
+      let same=false;
+      try{same=cur!==null&&deepEq(JSON.parse(cur),r.value);}catch(e){}
+      if(!same){localStorage.setItem(k,JSON.stringify(r.value));n++;}
     });
     return n;
   }
@@ -1719,7 +1732,10 @@ window.__loadScript=src=>new Promise(res=>{
       $("sb_logout2").style.display="";
       const n=await pullAll();
       await pushAll();
-      if(!booted&&n>0)setTimeout(()=>location.reload(),800);
+      if(!booted&&n>0&&!sessionStorage.getItem("nova_reloaded")){
+        sessionStorage.setItem("nova_reloaded","1");
+        setTimeout(()=>location.reload(),800);
+      }
       booted=true;
     }else{
       /* pas connecté : accès libre quand même, juste sans synchro cloud */
@@ -1735,9 +1751,11 @@ window.__loadScript=src=>new Promise(res=>{
   sb.channel("rt-sync").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},p=>{
     const row=p.new;
     if(!row||!row.key)return;
-    const s=JSON.stringify(row.value);
-    if(localStorage.getItem(fullKey(row.key))!==s){
-      localStorage.setItem(fullKey(row.key),s);
+    const k=fullKey(row.key),cur=localStorage.getItem(k);
+    let same=false;
+    try{same=cur!==null&&deepEq(JSON.parse(cur),row.value);}catch(e){}
+    if(!same){
+      localStorage.setItem(k,JSON.stringify(row.value));
       flashSaved();
     }
   }).subscribe();
