@@ -144,8 +144,6 @@ body.inTool #home{display:none}
 .c19 .ico{background:#f7d6d6}.c20 .ico{background:#d6f7f0}.c21 .ico{background:#ffeacc}
 .c22 .ico{background:#e6d6ff}.c23 .ico{background:#ffd9e0}.c24 .ico{background:#dff5cc}
 .c25 .ico{background:#cfe3ff}.c26 .ico{background:#ffe6f7}
-.page{display:none;max-width:780px;margin:0 auto;padding:22px 16px 60px}
-.page.show{display:block;animation:pop .28s ease}
 @keyframes pop{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .tool-card{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(80,50,160,.2);
   padding:22px;margin-bottom:16px;backdrop-filter:blur(8px)}
@@ -242,13 +240,37 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   background:rgba(43,30,99,.92);color:#fff;font-weight:800;font-size:13px;padding:11px 20px;
   border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);pointer-events:none;
   animation:toastIn .25s ease both,toastOut .4s ease 1.4s both}
-.page.show{animation:pop .35s cubic-bezier(.2,.8,.3,1)}
+.page.show{animation:pop .35s cubic-bezier(.2,.8,.3,1)}   /* (remplacé par slideInR plus bas) */
 button{position:relative;overflow:hidden}
 .mbtn{overflow:visible}
 button:hover{filter:brightness(1.12) saturate(1.1)}
 #btnTheme{padding:8px 12px;font-size:15px}
 #btnSettings{padding:8px 12px;font-size:15px}
 body.no-anim *,body.no-anim *::before,body.no-anim *::after{animation:none!important;transition:none!important}
+/* ===== NIVEAUX D'ANIMATION ===== */
+html[data-anim="none"] *,html[data-anim="none"] *::before,html[data-anim="none"] *::after{animation:none!important;transition:none!important}
+html[data-anim="none"] #bgCursor{display:none!important}
+html[data-anim="low"] .mbtn{animation:none!important}
+html[data-anim="low"] #bgFx{animation:none!important;transition:none!important}
+html[data-anim="low"] #bgCursor{transition:none!important;opacity:.35}
+html[data-anim="low"] #bgGlow::before,html[data-anim="low"] #bgGlow::after{animation-duration:90s!important;opacity:.3!important}
+html[data-anim="low"] #hero>div:first-child,html[data-anim="low"] #topbar h1{animation:none!important}
+html[data-anim="low"] .mbtn:hover{transform:translateY(-3px) scale(1.01)!important;rotate:0deg!important}
+html[data-anim="low"] .mbtn:hover .ico{transform:none!important}
+/* ===== SLIDE ENTRE PAGES ===== */
+#home{will-change:transform,opacity}
+body.inTool #home{display:none}
+#home.slideL{animation:homeOut .3s cubic-bezier(.5,0,.8,.4) both}
+@keyframes homeOut{to{opacity:0;transform:translateX(-56px)}}
+#home.slideR{animation:homeBack .3s cubic-bezier(.2,.6,.3,1) both}
+@keyframes homeBack{from{opacity:0;transform:translateX(-56px)}to{opacity:1;transform:none}}
+.page{display:none;max-width:780px;margin:0 auto;padding:22px 16px 60px;will-change:transform,opacity}
+.page.show{display:block;animation:slideInR .34s cubic-bezier(.2,.7,.3,1) both}
+@keyframes slideInR{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+.page.outL{animation:pageOutL .28s cubic-bezier(.5,0,.8,.4) both}
+@keyframes pageOutL{to{opacity:0;transform:translateX(-60px)}}
+html[data-anim="none"] #home.slideL,html[data-anim="none"] #home.slideR,
+html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:none!important}
 #greet{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(80,50,160,.35);
   margin-bottom:6px;animation:greetIn .6s cubic-bezier(.2,.8,.3,1) both}
 @keyframes greetIn{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
@@ -264,6 +286,9 @@ body.no-anim *,body.no-anim *::before,body.no-anim *::after{animation:none!impor
 .swatch{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.2s}
 .swatch:hover{transform:scale(1.15)}
 .swatch.sel{border-color:#2b1e63;transform:scale(1.12)}
+.animRow{display:flex;gap:7px;margin-top:8px}
+.animBtn{flex:1;font-size:11px;padding:9px 4px;margin:0;text-align:center}
+.animBtn.sel{background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;border:1.5px solid transparent}
 .toolToggle{display:flex;flex-wrap:wrap;gap:6px;max-height:200px;overflow:auto;padding:4px 0}
 .toolToggle label{display:flex;align-items:center;gap:5px;background:var(--input,#f6f4fb);border:1.5px solid #e2def5;
   border-radius:11px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;margin:0;transition:.15s}
@@ -271,7 +296,7 @@ body.no-anim *,body.no-anim *::before,body.no-anim *::after{animation:none!impor
 .toolToggle label.off{opacity:.4;text-decoration:line-through}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<script>try{var __t=localStorage.getItem("nova_theme");if(__t)document.documentElement.dataset.theme=__t;}catch(e){}</script>
+<script>try{var __t=localStorage.getItem("nova_theme");if(__t)document.documentElement.dataset.theme=__t;var __a=localStorage.getItem("nova_anim")||(localStorage.getItem("nova_noanim")==="1"?"none":"");if(__a&&__a!=="full")document.documentElement.dataset.anim=__a;}catch(e){}</script>
 </head>
 <body>
 <div id="bgFx"></div>
@@ -1778,9 +1803,18 @@ function go(id){
     p.innerHTML='<div class="tool-card"><h3>'+found.meta.ico+' '+found.meta.name+'</h3><div class="desc">'+found.meta.brief+'</div>'+(found.meta.html||"")+'</div>';
     pagesEl.appendChild(p);
   }
+  const fromHome=!document.body.classList.contains("inTool");
+  const noAnimLvl=document.documentElement.dataset.anim==="none";
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
   $("page-"+id).classList.add("show");
-  document.body.classList.add("inTool");
+  if(fromHome&&!noAnimLvl){                 /* le menu glisse à gauche, la page entre par la droite */
+    const home=$("home");
+    home.classList.remove("slideR");
+    home.classList.add("slideL");
+    setTimeout(()=>{document.body.classList.add("inTool");home.classList.remove("slideL");},240);
+  }else{
+    document.body.classList.add("inTool");
+  }
   $("crumb").textContent=found.meta.name;
   bumpUse(id);
   if(location.hash!=="#"+id)location.hash=id;
@@ -1796,8 +1830,19 @@ function go(id){
   }
 }
 function goHome(){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+  const pg=document.querySelector(".page.show");
+  const noAnimLvl=document.documentElement.dataset.anim==="none";
   document.body.classList.remove("inTool");
+  const home=$("home");
+  if(!noAnimLvl){                            /* la page glisse à gauche, le menu revient */
+    home.classList.remove("slideL");
+    home.classList.add("slideR");
+    setTimeout(()=>home.classList.remove("slideR"),360);
+  }
+  if(pg){
+    if(!noAnimLvl){pg.classList.add("outL");setTimeout(()=>{pg.classList.remove("show","outL");},280);}
+    else pg.classList.remove("show");
+  }else document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
   $("crumb").textContent="";
   if(location.hash)history.replaceState(null,""," ");
 }
@@ -2713,14 +2758,24 @@ INITS.pomo=function(){
     '<div class="set-sec"><label>🎨 Thème</label><div class="themeRow" id="themeRow" style="margin-top:8px">'+
       THEMES.map(t=>'<div class="swatch'+(t[0]===curTheme()?" sel":"")+'" data-t="'+t[0]+'" title="'+t[1]+'" style="background:'+SWATCH[t[0]]+'"></div>').join("")+
     '</div><div id="themeName" style="font-size:11px;font-weight:700;color:#6b6489;margin-top:6px">'+(THEMES.find(t=>t[0]===curTheme())||THEMES[0])[1]+'</div></div>'+
-    '<div class="set-sec"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="setAnim" style="width:auto;margin:0"> ✨ Animations (tuiles, fond, effets)</label></div>'+
+    '<div class="set-sec"><label>✨ Animations</label><div class="animRow" id="animRow">'+
+      '<button class="ghost animBtn" data-a="full">🎬 Complètes</button>'+
+      '<button class="ghost animBtn" data-a="low">🎞️ Réduites</button>'+
+      '<button class="ghost animBtn" data-a="none">🚫 Aucune</button></div>'+
+      '<div style="font-size:10px;color:#6b6489;margin-top:6px">Complètes : tous les effets · Réduites : fond discret, pas de cascade · Aucune : tout est figé</div></div>'+
     '<div class="set-sec"><label>🧰 Outils affichés <span style="font-weight:400;color:#6b6489">(décocher pour masquer)</span></label>'+
     '<div class="toolToggle" id="setTools" style="margin-top:8px">'+toolBoxes+'</div>'+
     '<button class="ghost" id="setAllTools" style="font-size:11px;padding:7px 12px;margin-top:8px">Tout afficher</button></div>'+
     '</div>';
   document.body.appendChild(mod);
-  try{document.body.classList.toggle("no-anim",localStorage.getItem("nova_noanim")==="1");}catch(e){}
-  $("setAnim").checked=!document.body.classList.contains("no-anim");
+  function curAnim(){try{const a=localStorage.getItem("nova_anim");if(a)return a;}catch(e){}
+    try{if(localStorage.getItem("nova_noanim")==="1")return"none";}catch(e){}return"full";}
+  function setAnimLvl(a){
+    if(a==="full")delete document.documentElement.dataset.anim;else document.documentElement.dataset.anim=a;
+    try{localStorage.setItem("nova_anim",a);}catch(e){}
+    document.querySelectorAll(".animBtn").forEach(b=>b.classList.toggle("sel",b.dataset.a===a));
+  }
+  setAnimLvl(curAnim());
   const HID=()=>{try{return new Set(JSON.parse(localStorage.getItem("nova_hidden")||"[]"));}catch(e){return new Set();}};
   function syncToolBoxes(){$("setTools").querySelectorAll("label").forEach(l=>{
     const off=HID().has(l.dataset.id);l.querySelector("input").checked=!off;l.classList.toggle("off",off);});}
@@ -2733,9 +2788,13 @@ INITS.pomo=function(){
     syncToolBoxes();buildMenu();applyFilters();
   });
   $("setAllTools").addEventListener("click",()=>{try{localStorage.setItem("nova_hidden","[]");}catch(e){}syncToolBoxes();buildMenu();applyFilters();});
-  $("setAnim").addEventListener("change",e=>{
-    document.body.classList.toggle("no-anim",!e.target.checked);
-    try{localStorage.setItem("nova_noanim",e.target.checked?"":"1");}catch(e2){}
+  $("animRow").addEventListener("click",e=>{
+    const b=e.target.closest(".animBtn");if(!b)return;
+    setAnimLvl(b.dataset.a);
+    const old=document.getElementById("themeToast");if(old)old.remove();
+    const t=document.createElement("div");t.id="themeToast";
+    t.textContent=b.dataset.a==="full"?"✨ Animations complètes":(b.dataset.a==="low"?"🎞️ Animations réduites":"🚫 Animations désactivées");
+    document.body.appendChild(t);setTimeout(()=>{if(t.parentNode)t.remove();},2000);
   });
   bT.addEventListener("click",()=>{
     let i=THEMES.findIndex(t=>t[0]===curTheme());i=(i+1)%THEMES.length;setTheme(THEMES[i][0]);
