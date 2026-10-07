@@ -7,6 +7,10 @@
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23ff5c8a"/><stop offset="1" stop-color="%23a18cd1"/></linearGradient></defs><rect x="4" y="20" width="56" height="36" rx="8" fill="url(%23g)"/><rect x="22" y="10" width="20" height="12" rx="4" fill="none" stroke="url(%23g)" stroke-width="5"/><rect x="4" y="30" width="56" height="6" fill="rgba(255,255,255,.45)"/><circle cx="32" cy="40" r="7" fill="none" stroke="white" stroke-width="4"/><rect x="10" y="28" width="8" height="14" rx="3" fill="white"/><rect x="46" y="28" width="8" height="14" rx="3" fill="white"/></svg>'/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+::selection{background:#ffb3cd}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:linear-gradient(#c9a6ff,#ff9ac2);border-radius:8px;border:2.5px solid rgba(255,255,255,.7)}
+::-webkit-scrollbar-track{background:transparent}
 :root{
   --txt:#241a4d;--dim:#6b6489;--r:20px;
   font-family:"Segoe UI",Inter,system-ui,sans-serif;
@@ -25,10 +29,38 @@ body{color:var(--txt);min-height:100vh;overflow-x:hidden}
 @keyframes drift2{from{transform:translate3d(0,0,0) scale(1.15)}to{transform:translate3d(-20vw,-18vh,0) scale(.9)}}
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(0deg,rgba(255,255,255,.35),rgba(255,255,255,.35))}
+/* ===== PORTE DE CONNEXION ===== */
+#authGate{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:linear-gradient(135deg,rgba(255,154,158,.92),rgba(161,140,209,.92),rgba(139,205,244,.92));
+  backdrop-filter:blur(6px)}
+body:not(.locked) #authGate{display:none}
+body.locked{overflow:hidden}
+.gate-card{background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.8);
+  border-radius:28px;padding:34px 30px;width:100%;max-width:400px;text-align:center;
+  box-shadow:0 30px 80px rgba(60,30,120,.45);animation:gateIn .5s cubic-bezier(.2,1.2,.3,1)}
+@keyframes gateIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+.gate-card h2{font-size:24px;font-weight:900;color:#2b1e63;margin:14px 0 4px}
+.gate-card .sub{font-size:13px;color:#6b6489;margin-bottom:20px}
+.gate-card input{width:100%;font-size:15px;padding:13px 16px;border-radius:14px;border:1.5px solid #e2def5;
+  margin:6px 0;background:#fff;color:var(--txt);outline:none;font-family:inherit;transition:.2s}
+.gate-card input:focus{border-color:#a18cd1;box-shadow:0 0 0 4px rgba(161,140,209,.2)}
+.gate-card .btn{width:100%;margin-top:12px;padding:13px;font-size:15px;border-radius:14px;border:none;
+  font-weight:800;cursor:pointer;font-family:inherit;transition:.2s}
+.btnP{background:linear-gradient(135deg,#ff5c8a,#a18cd1);color:#fff;box-shadow:0 8px 24px rgba(161,90,209,.4)}
+.btnP:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(161,90,209,.5)}
+.btnG{background:none;color:#6b6489}
+.btnG:hover{background:rgba(161,140,209,.12)}
+#sb_msg{margin-top:14px;font-size:13px;font-weight:600;color:#3a2f6b;min-height:18px}
+#acctChip{display:none;margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
+  border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:700;color:#3a2f6b;
+  align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
+body.authed #acctChip{display:flex}
+#acctChip button{border:none;background:#ffe0ea;color:#e0306a;font-size:10px;font-weight:800;
+  border-radius:999px;padding:4px 10px;cursor:pointer}
 #topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
   padding:12px 16px;background:rgba(255,255,255,.88);
   border-bottom:1px solid rgba(255,255,255,.6)}
-#topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:#2b1e63;white-space:nowrap}
+#topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:#2b1e63;white-space:nowrap;background:linear-gradient(90deg,#e0306a,#7c5cd6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 #btnHome{display:none;background:linear-gradient(135deg,#ff5c8a,#a18cd1);color:#fff;border:none;
   border-radius:14px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(161,140,209,.5)}
 body.inTool #btnHome{display:inline-block}
@@ -37,9 +69,11 @@ body.inTool #btnHome{display:inline-block}
 #savedTag{display:none;font-size:10px;color:#00a583;font-weight:800;letter-spacing:1px}
 #home{max-width:1150px;margin:0 auto;padding:28px 16px 40px}
 body.inTool #home{display:none}
-#hero{text-align:center;margin-bottom:18px}
-#hero h2{font-size:clamp(26px,5.5vw,44px);font-weight:900;letter-spacing:-.5px;color:#fff;
-  text-shadow:0 2px 0 #c9a6ff,0 6px 24px rgba(90,60,180,.45)}
+#hero{text-align:center;margin-bottom:18px;animation:fadeUp .6s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#hero h2{font-size:clamp(26px,5.5vw,44px);font-weight:900;letter-spacing:-.5px;
+  background:linear-gradient(90deg,#fff,#ffe0f0 45%,#d9c8ff);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 18px rgba(90,60,180,.5))}
 #hero p{color:#3a2f6b;margin-top:10px;font-size:13px;letter-spacing:1.5px;font-weight:700}
 #searchWrap{max-width:560px;margin:16px auto 0;position:relative}
 #search{font-size:16px;padding:13px 44px 13px 18px;border-radius:16px;width:100%;
@@ -142,6 +176,7 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <h1>🧰 Ma Boîte à Outils</h1>
   <span id="crumb"></span>
   <span id="savedTag">💾 SAUVEGARDÉ</span>
+  <div id="acctChip"><span id="sb_email"></span><button id="sb_logout2">Quitter</button></div>
 </div>
 
 <div id="home">
@@ -160,24 +195,18 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <div id="menu"></div>
 </div>
 
-<div id="authCard" class="tool-card" style="display:none">
-  <h3>☁️ Mon compte</h3>
-  <div id="sb_logged" style="display:none">
-    <div style="font-size:14px">Connecté : <b id="sb_email" style="color:#00a583"></b></div>
-    <div style="font-size:12px;color:#6b6489;margin:4px 0 10px">☁️ Vos données sont synchronisées avec votre compte</div>
-    <button class="green" id="sb_sync">🔄 Synchroniser maintenant</button>
-    <button class="ghost" id="sb_logout">Se déconnecter</button>
-    <div class="out" id="sb_status" style="margin-top:8px">—</div>
-  </div>
-  <div id="sb_form">
-    <div style="font-size:12px;color:#6b6489;margin-bottom:10px">Créez un compte pour retrouver vos données sur tous vos appareils. Sur un même PC, vous restez connecté.</div>
-    <div class="row">
-      <div style="flex:1.4"><label>Adresse e-mail</label><input type="email" id="sb_mail" placeholder="vous@exemple.fr"></div>
-      <div style="flex:1"><label>Mot de passe (6+ car.)</label><input type="password" id="sb_pass" placeholder="••••••"></div>
+<div id="authGate">
+  <div class="gate-card">
+    <div style="width:76px;height:76px;margin:0 auto;border-radius:22px;background:linear-gradient(135deg,#ff5c8a,#a18cd1);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(161,90,209,.45);transform:rotate(-4deg)">
+      <svg width="48" height="48" viewBox="0 0 64 64"><rect x="4" y="20" width="56" height="36" rx="8" fill="white"/><rect x="22" y="10" width="20" height="12" rx="4" fill="none" stroke="white" stroke-width="5"/><rect x="4" y="30" width="56" height="6" fill="rgba(0,0,0,.15)"/><circle cx="32" cy="42" r="7" fill="none" stroke="#ff5c8a" stroke-width="4"/><rect x="10" y="28" width="8" height="14" rx="3" fill="#ff5c8a"/><rect x="46" y="28" width="8" height="14" rx="3" fill="#a18cd1"/></svg>
     </div>
-    <button class="green" id="sb_login">Se connecter</button>
-    <button class="ghost" id="sb_signup">Créer un compte</button>
-    <div class="out" id="sb_msg" style="margin-top:8px">—</div>
+    <h2>Ma Boîte à Outils</h2>
+    <div class="sub">Connectez-vous pour accéder à vos outils.<br>Vos données vous suivent sur tous vos appareils. ☁️</div>
+    <input type="email" id="sb_mail" placeholder="📧 Adresse e-mail" autocomplete="email">
+    <input type="password" id="sb_pass" placeholder="🔒 Mot de passe (6 caractères min.)" autocomplete="current-password">
+    <button class="btn btnP" id="sb_login">Se connecter</button>
+    <button class="btn btnG" id="sb_signup">Pas encore de compte ? Créer un compte</button>
+    <div id="sb_msg"></div>
   </div>
 </div>
 
@@ -1111,6 +1140,57 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       "Pour "+v.t+" s : <b>"+Math.ceil(v.t*20/v.d)+" répéteur(s)</b> à "+v.d+" tick(s)<br>"+
       "<span style='color:#6b6489;font-size:11px'>1 tick = 1/20 s · le comparateur ajoute aussi 1 tick</span>";});
 
+/* ===== Panneau admin (tous les comptes, temps réel) ===== */
+(function(){
+  const meta={id:"admpanel",ico:"👑",name:"Panneau admin",desc:"Tous les comptes & données",cat:"securite",cls:nextCls(),
+    brief:"Réservé à l'administrateur : consultez tous les comptes et toutes leurs données, mises à jour en temps réel.",
+    html:'<button class="green" id="ad_refresh">🔄 Actualiser</button>'+
+      '<button class="ghost" id="ad_export">⬇️ Exporter tout (.json)</button>'+
+      '<div class="out" id="ad_o" style="max-height:420px;overflow:auto">Chargement…</div>'+
+      '<div class="save-note">🔴 Mise à jour en temps réel</div>'};
+  GEN.push({meta:meta,init:function(){
+    const o=$("ad_o"),sb=window.__sb;
+    if(!sb){o.textContent="Cloud indisponible.";return;}
+    let allRows=[];
+    async function isAdmin(){
+      const {data}=await sb.auth.getUser();
+      const u=data&&data.user;
+      return !!(u&&u.email===ADMIN_EMAIL);
+    }
+    async function render(){
+      if(!(await isAdmin())){o.textContent="⛔ Réservé à l'administrateur.";return;}
+      const {data,error}=await sb.from("tool_data").select("key,value,email,updated_at").order("email");
+      if(error){o.textContent="⚠️ "+error.message+" — exécutez le SQL admin fourni dans Supabase.";return;}
+      allRows=data||[];
+      if(!allRows.length){o.textContent="Aucune donnée pour le moment.";return;}
+      const users={};
+      allRows.forEach(r=>{const em=r.email||"(comptes anciens)";if(!users[em])users[em]=[];users[em].push(r);});
+      o.innerHTML=Object.keys(users).map(function(em){
+        const rows=users[em];
+        let last="";rows.forEach(r=>{if(r.updated_at&&r.updated_at>last)last=r.updated_at;});
+        return '<details style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:800;color:#2b1e63">'+
+          (em===ADMIN_EMAIL?"👑 ":"👤 ")+esc(em)+' — '+rows.length+' donnée(s)'+
+          (last?' · maj '+String(last).replace("T"," ").slice(0,16):'')+'</summary>'+
+          '<table style="width:100%;font-size:11px;border-collapse:collapse">'+
+          rows.map(r=>'<tr><td style="padding:3px 6px;border-top:1px solid #eee;color:#6b6489;white-space:nowrap">'+esc(r.key)+
+          '</td><td style="padding:3px 6px;border-top:1px solid #eee;word-break:break-all">'+esc(typeof r.value==="object"?JSON.stringify(r.value):String(r.value)).slice(0,300)+'</td></tr>').join("")+
+          '</table></details>';
+      }).join("");
+    }
+    $("ad_refresh").addEventListener("click",render);
+    $("ad_export").addEventListener("click",()=>{
+      if(!allRows.length)return;
+      const blob=new Blob([JSON.stringify(allRows,null,2)],{type:"application/json"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);a.download="toutes-les-donnees.json";
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    });
+    render();
+    sb.channel("adm-rt").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},()=>render()).subscribe();
+  }});
+})();
+
 /* ===== Listes copiables ===== */
 listTool("spec","§","Caractères spéciaux","Symboles à copier","texte","Tous ces symboles se copient en un clic.",
   ["©|copyright","®","™","§","¶","†","‡","•","…","‰","€","£","¥","¢","±","×","÷","≈","≠","≤","≥","→","←","↔","⇒","∞","√","∑","∆","∂","∫","π","µ","Ω","°","′","″","¹","²","³","½","¼","¾","⅓","№","∅","≈","¡","¿","«","»","“","”","–","—","·","†"]);
@@ -1156,8 +1236,11 @@ function bumpUse(id){
 }
 
 const menuEl=$("menu"),pagesEl=$("pages"),initDone=new Set();
-const ORDERED=[...ALL].sort((x,y)=>useScore(y.meta.id)-useScore(x.meta.id));
-ORDERED.forEach(function(a){
+function buildMenu(){
+  if(window.__menuBuilt)return;window.__menuBuilt=true;
+  const LIST=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
+  const ORDERED=[...LIST].sort((x,y)=>useScore(y.meta.id)-useScore(x.meta.id));
+  ORDERED.forEach(function(a){
   const t=a.meta;
   const b=document.createElement("button");
   b.className="mbtn "+t.cls;
@@ -1167,17 +1250,15 @@ ORDERED.forEach(function(a){
   b.innerHTML='<span class="ico">'+t.ico+'</span><b>'+t.name+'</b><small>'+t.desc+'</small>';
   b.addEventListener("click",()=>go(t.id));
   menuEl.appendChild(b);
-});
-/* Catégories */
-(function(){
+  });
   const cats=$("cats");
   const b=document.createElement("div");
-  b.className="chip sel";b.textContent="⭐ Tous ("+ALL.length+")";b.dataset.c="*";
+  b.className="chip sel";b.textContent="⭐ Tous ("+LIST.length+")";b.dataset.c="*";
   cats.appendChild(b);
   CATS.forEach(function(c){
     const ch=document.createElement("div");
     ch.className="chip";ch.dataset.c=c;
-    ch.textContent=(CATLABEL[c]||c)+" ("+ALL.filter(a=>a.meta.cat===c).length+")";
+    ch.textContent=(CATLABEL[c]||c)+" ("+LIST.filter(a=>a.meta.cat===c).length+")";
     cats.appendChild(ch);
   });
   let curCat="*";
@@ -1188,7 +1269,7 @@ ORDERED.forEach(function(a){
     applyFilters();
   });
   window._curCat=()=>curCat;
-})();
+}
 
 function applyFilters(){
   const q=$("search").value.trim().toLowerCase();
@@ -1212,11 +1293,12 @@ $("search").addEventListener("keydown",e=>{
 });
 addEventListener("keydown",e=>{
   if(e.key==="/"&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="TEXTAREA"){
-    if(!document.body.classList.contains("inTool")){e.preventDefault();$("search").focus();}
+    if(!document.body.classList.contains("inTool")&&!document.body.classList.contains("locked")){e.preventDefault();$("search").focus();}
   }
 });
 
 function go(id){
+  if(document.body.classList.contains("locked"))return;
   let found=null;
   ALL.forEach(a=>{if(a.meta.id===id)found=a;});
   if(!found)return;
@@ -1257,15 +1339,18 @@ addEventListener("hashchange",()=>{
 },{passive:true});
 if(location.hash&&ALL.some(a=>"#"+a.meta.id===location.hash))go(location.hash.slice(1));
 
-/* ===== COMPTE & SYNCHRO CLOUD (Supabase) ===== */
+/* ===== COMPTE & SYNCHRO CLOUD (Supabase) — porte de connexion obligatoire ===== */
 const SB_URL="https://vhhnprxlkiffcczilqxt.supabase.co",SB_KEY="sb_publishable_rqrRL_hoxSPtmXzdHAU7KA_3ARM1GUv";
+document.body.classList.add("locked");
 (function(){
-  const card=$("authCard");
-  if(!SB_URL||!SB_KEY||!window.supabase)return;
-  card.style.display="";
+  const msg=$("sb_msg");
+  const say=t=>{msg.textContent=t;};
+  if(!window.supabase){   /* CDN inaccessible : on ne bloque pas tout de même */
+    document.body.classList.remove("locked");
+    return;
+  }
   const sb=window.supabase.createClient(SB_URL,SB_KEY);
-  const msg=$("sb_msg"),status=$("sb_status");
-  const say=(el,t)=>{el.textContent=t;};
+  window.__sb=sb;
   const fullKey=k=>"nova_"+k;
   function collectRows(){
     const rows=[];
@@ -1277,23 +1362,20 @@ const SB_URL="https://vhhnprxlkiffcczilqxt.supabase.co",SB_KEY="sb_publishable_r
   }
   async function pushAll(){
     const u=(await sb.auth.getUser()).data.user;
-    if(!u)return say(status,"Non connecté.");
+    if(!u)return;
     const rows=collectRows();
-    if(!rows.length)return say(status,"Rien à envoyer.");
     const CHUNK=200;
     for(let i=0;i<rows.length;i+=CHUNK){
-      const {error}=await sb.from("tool_data").upsert(
-        rows.slice(i,i+CHUNK).map(r=>({user_id:u.id,key:r.key,value:r.value})),
+      await sb.from("tool_data").upsert(
+        rows.slice(i,i+CHUNK).map(r=>({user_id:u.id,key:r.key,value:r.value,email:u.email,updated_at:new Date().toISOString()})),
         {onConflict:"user_id,key"});
-      if(error)return say(status,"⚠️ Erreur d'envoi : "+error.message);
     }
-    say(status,"✅ "+rows.length+" donnée(s) envoyée(s) dans le cloud.");
   }
   async function pullAll(){
     const u=(await sb.auth.getUser()).data.user;
-    if(!u)return false;
+    if(!u)return 0;
     const {data,error}=await sb.from("tool_data").select("key,value");
-    if(error||!data)return false;
+    if(error||!data)return 0;
     let n=0;
     data.forEach(r=>{
       const k=fullKey(r.key);
@@ -1308,54 +1390,61 @@ const SB_URL="https://vhhnprxlkiffcczilqxt.supabase.co",SB_KEY="sb_publishable_r
     pushTimer=setTimeout(async()=>{
       const u=(await sb.auth.getUser()).data.user;
       if(!u)return;
-      const rows=collectRows();
-      for(let i=0;i<rows.length;i+=200){
-        await sb.from("tool_data").upsert(
-          rows.slice(i,i+200).map(r=>({user_id:u.id,key:r.key,value:r.value})),
-          {onConflict:"user_id,key"});
-      }
-    },3000);
+      await pushAll();
+    },1200);
   };
-  async function showLogged(email){
-    $("sb_form").style.display="none";
-    $("sb_logged").style.display="";
-    $("sb_email").textContent=email;
-    if(email===ADMIN_EMAIL)$("sb_email").innerHTML=email+' <span style="color:#e0306a">👑 ADMIN</span>';
-    say(status,"Prêt.");
+  function unlock(email){
+    window.__email=email;
+    buildMenu();
+    document.body.classList.remove("locked");
+    document.body.classList.add("authed");
+    const e=$("sb_email");
+    e.textContent=email;
+    if(email===ADMIN_EMAIL)e.innerHTML=email+' <span style="color:#e0306a">👑</span>';
   }
+  let booted=false;
   async function onSessionChange(){
     const {data}=await sb.auth.getSession();
     const s=data&&data.session;
-    if(s){await showLogged(s.user.email);
+    if(s){
+      unlock(s.user.email);
       const n=await pullAll();
       await pushAll();
-      if(n>0)say(status,"✅ "+n+" donnée(s) récupérée(s) du cloud — rechargement…"),setTimeout(()=>location.reload(),1000);
+      if(!booted&&n>0)setTimeout(()=>location.reload(),800);
+      booted=true;
     }else{
-      $("sb_form").style.display="";
-      $("sb_logged").style.display="none";
+      document.body.classList.add("locked");
+      document.body.classList.remove("authed");
     }
   }
   sb.auth.onAuthStateChange(()=>{onSessionChange();});
+  /* Temps réel : les changements cloud arrivent instantanément */
+  sb.channel("rt-sync").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},p=>{
+    const row=p.new;
+    if(!row||!row.key)return;
+    const s=JSON.stringify(row.value);
+    if(localStorage.getItem(fullKey(row.key))!==s){
+      localStorage.setItem(fullKey(row.key),s);
+      flashSaved();
+    }
+  }).subscribe();
   $("sb_login").addEventListener("click",async()=>{
     const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
-    if(!m||p.length<6)return say(msg,"E-mail + mot de passe (6 caractères min.) requis.");
-    say(msg,"Connexion…");
+    if(!m||p.length<6)return say("E-mail + mot de passe (6 caractères min.) requis.");
+    say("Connexion…");
     const {error}=await sb.auth.signInWithPassword({email:m,password:p});
-    say(msg,error?("⚠️ "+(error.message||"Échec de connexion")):"✅ Connecté !");
+    say(error?("⚠️ "+(error.message||"Échec de connexion")):"✅ Bienvenue !");
   });
   $("sb_signup").addEventListener("click",async()=>{
     const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
-    if(!m||p.length<6)return say(msg,"E-mail + mot de passe (6 caractères min.) requis.");
-    say(msg,"Création du compte…");
+    if(!m||p.length<6)return say("E-mail + mot de passe (6 caractères min.) requis.");
+    say("Création du compte…");
     const {error}=await sb.auth.signUp({email:m,password:p});
-    say(msg,error?("⚠️ "+error.message):"✅ Compte créé ! Vérifiez votre boîte mail si un e-mail de confirmation est demandé, puis connectez-vous.");
+    say(error?("⚠️ "+error.message):"✅ Compte créé ! Vérifiez votre boîte mail si un e-mail de confirmation est demandé, puis connectez-vous.");
   });
-  $("sb_sync").addEventListener("click",async()=>{
-    say(status,"🔄 Synchronisation…");
-    await pullAll();
-    await pushAll();
-  });
-  $("sb_logout").addEventListener("click",async()=>{await sb.auth.signOut();location.reload();});
+  const quit=async()=>{await sb.auth.signOut();location.reload();};
+  $("sb_logout2").addEventListener("click",quit);
+  $("sb_pass").addEventListener("keydown",e=>{if(e.key==="Enter")$("sb_login").click();});
   onSessionChange();
 })();
 
