@@ -123,9 +123,22 @@ button.ghost{background:rgba(255,255,255,.85);color:#2b1e63;box-shadow:0 3px 10p
 button.green{background:linear-gradient(135deg,#00d4a0,#00a583);box-shadow:0 5px 16px rgba(0,180,140,.35)}
 button.pink{background:linear-gradient(135deg,#ff6f9c,#e0306a);box-shadow:0 5px 16px rgba(255,90,140,.4)}
 button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5px 16px rgba(255,150,60,.4)}
-.row{display:flex;gap:10px}.row>*{flex:1}
-.out{background:#f4f1ff;border:1.5px dashed #cabcf0;border-radius:13px;padding:12px 14px;margin-top:12px;
-  font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:#3b3166}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
+.out{background:#faf9ff;border:1.5px solid #e5defa;border-radius:14px;padding:14px 16px;margin-top:14px;
+  font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:#3b3166;line-height:1.65}
+.out b{color:#4b2fd4}
+/* grille de cartes (heure mondiale, etc.) */
+.citygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px}
+.citycard{background:#fff;border:1.5px solid #e8e2f7;border-radius:14px;padding:10px 8px;text-align:center;
+  box-shadow:0 3px 10px rgba(80,50,160,.08)}
+.citycard small{display:block;font-size:10px;color:#6b6489;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.citycard b{display:block;font-size:20px;color:#4b2fd4;margin-top:3px;font-variant-numeric:tabular-nums}
+/* favoris */
+.mbtn{position:relative}
+.fav{position:absolute;top:8px;right:10px;background:none;border:none;font-size:17px;cursor:pointer;
+  opacity:.3;padding:2px;line-height:1;transition:.15s}
+.fav:hover{opacity:.8;transform:scale(1.15)}
+.fav.on{opacity:1;filter:drop-shadow(0 2px 4px rgba(255,190,0,.6))}
 .big{font-size:22px;font-weight:800;color:#4b2fd4}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .chip{padding:8px 14px;border-radius:22px;font-size:12px;border:1.5px solid #e2def5;
@@ -857,13 +870,14 @@ actTool("monde","🌍","Heure mondiale","10 villes","temps","Heure actuelle dans
   ()=>{const cities=[["Paris","Europe/Paris"],["Londres","Europe/London"],["New York","America/New_York"],
     ["Los Angeles","America/Los_Angeles"],["São Paulo","America/Sao_Paulo"],["Tokyo","Asia/Tokyo"],
     ["Dubaï","Asia/Dubai"],["Sydney","Australia/Sydney"],["Moscou","Europe/Moscow"],["Montréal","America/Toronto"]];
-    let out="";
+  let out="";
     try{
       cities.forEach(function(c){
         const t=new Intl.DateTimeFormat("fr-FR",{timeZone:c[1],hour:"2-digit",minute:"2-digit"}).format(new Date());
-        out+=c[0]+" : <b>"+t+"</b> · ";
+        const d=new Intl.DateTimeFormat("fr-FR",{timeZone:c[1],weekday:"long"}).format(new Date());
+        out+='<div class="citycard"><small>'+c[0]+'</small><b>'+t+'</b><small style="text-transform:none">'+d+'</small></div>';
       });
-      return out.slice(0,-3);
+      return '<div class="citygrid">'+out+'</div>';
     }catch(e){
       const utc=new Date().getTime(),h=new Date(utc).getUTCHours();
       return "Heure UTC : <b>"+h+"h</b> (fuseaux locaux indisponibles)";
@@ -1145,59 +1159,117 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
 /* ===== Panneau admin (tous les comptes, temps réel) ===== */
 (function(){
   const meta={id:"admpanel",ico:"👑",name:"Panneau admin",desc:"Tous les comptes & données",cat:"securite",cls:nextCls(),
-    brief:"Réservé à l'administrateur : consultez tous les comptes et toutes leurs données, mises à jour en temps réel.",
+    brief:"Réservé à l'administrateur : choisissez un compte, puis un outil, pour voir exactement ce qu'il a enregistré. Mise à jour en temps réel.",
     html:'<button class="green" id="ad_refresh">🔄 Actualiser</button>'+
       '<button class="ghost" id="ad_export">⬇️ Exporter tout (.json)</button>'+
-      '<div class="out" id="ad_o" style="max-height:420px;overflow:auto">Chargement…</div>'+
+      '<div style="margin-top:16px;font-weight:800;color:#2b1e63;font-size:13px">👤 Comptes</div>'+
+      '<div id="ad_users" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px"></div>'+
+      '<div id="ad_toolsWrap" style="display:none">'+
+      '<div style="margin-top:16px;font-weight:800;color:#2b1e63;font-size:13px">🧰 Ce que ce compte a enregistré</div>'+
+      '<div id="ad_tools" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px"></div>'+
+      '<div class="out" id="ad_view" style="margin-top:12px;max-height:340px;overflow:auto">Cliquez sur un outil pour voir le contenu.</div>'+
+      '</div>'+
+      '<div class="out" id="ad_err" style="display:none;margin-top:12px"></div>'+
       '<div class="save-note">🔴 Mise à jour en temps réel</div>'};
   GEN.push({meta:meta,init:function(){
-    const o=$("ad_o"),sb=window.__sb;
-    if(!sb){o.textContent="Cloud indisponible.";return;}
-    let allRows=[];
+    const uEl=$("ad_users"),tWrap=$("ad_toolsWrap"),tEl=$("ad_tools"),vEl=$("ad_view"),eEl=$("ad_err"),sb=window.__sb;
+    if(!sb){eEl.style.display="";eEl.textContent="Cloud indisponible.";return;}
+    let allRows=[],curUser=null,curTool=null;
+    const KEYNAME={todo:"✅ Ma to-do",notes:"📒 Bloc-notes",pw_vault:"🔐 Coffre de mots de passe",pw_cfg:"🔐 Réglages mots de passe",usage:"📊 Outils les plus utilisés",pix_size:"🎨 Réglages pixel art",pomo_state:"🍅 Pomodoro",occ2:"🔎 Compter un mot"};
+    function keyLabel(key){
+      if(KEYNAME[key])return KEYNAME[key];
+      let id=null;
+      if(key.indexOf("t_")===0)id=key.slice(2);
+      else if(key.indexOf("tx_")===0)id=key.slice(3);
+      if(id){
+        const t=ALL.find(a=>a.meta.id===id);
+        if(t)return t.meta.ico+" "+t.meta.name;
+      }
+      return "📄 "+key;
+    }
+    function renderValue(v){
+      if(v===null||v===undefined||v==="")return "<i style='color:#6b6489'>(vide)</i>";
+      if(typeof v==="string")return "<div style='white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
+      if(Array.isArray(v)){
+        if(!v.length)return "<i style='color:#6b6489'>(liste vide)</i>";
+        return "<div style='display:flex;flex-direction:column;gap:6px'>"+v.map(function(x){
+          const s=typeof x==="string"?x:JSON.stringify(x);
+          return "<div style='background:#f6f4fb;border-radius:10px;padding:8px 12px;word-break:break-word;white-space:pre-wrap'>"+esc(s)+"</div>";
+        }).join("")+"</div>";
+      }
+      if(typeof v==="object"){
+        const ks=Object.keys(v);
+        if(ks.length===1&&typeof v[ks[0]]!=="object")return renderValue(v[ks[0]]);
+        return "<table style='width:100%;font-size:12px;border-collapse:collapse'>"+ks.map(function(k){
+          return "<tr><td style='padding:4px 8px;border-top:1px solid #eee;color:#6b6489;font-weight:700;white-space:nowrap;vertical-align:top'>"+esc(k)+
+            "</td><td style='padding:4px 8px;border-top:1px solid #eee;word-break:break-word'>"+renderValue(v[k])+"</td></tr>";
+        }).join("")+"</table>";
+      }
+      return esc(String(v));
+    }
+    function sqlHelp(msg){
+      eEl.style.display="";
+      eEl.innerHTML="⚠️ <b>"+esc(msg)+"</b><br>Exécute dans <b>Supabase → SQL Editor</b> :"+
+        "<code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
+        "create table if not exists tool_data (\n"+
+        "  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,\n"+
+        "  key text not null, value jsonb, email text, updated_at timestamptz default now(),\n"+
+        "  primary key (user_id, key));\n"+
+        "alter table tool_data enable row level security;\n"+
+        "create policy own_rows on tool_data for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\n"+
+        "create policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = 'clogab75@gmail.com');\n"+
+        "alter publication supabase_realtime add table tool_data;</code>"+
+        "<br>Puis clique sur Actualiser.";
+    }
     async function isAdmin(){
       const {data}=await sb.auth.getUser();
       const u=data&&data.user;
       return !!(u&&u.email===ADMIN_EMAIL);
     }
-    async function render(){
-      if(!(await isAdmin())){o.textContent="⛔ Réservé à l'administrateur.";return;}
-      const {data,error}=await sb.from("tool_data").select("key,value,email,updated_at").order("email");
-      if(error){
-        const r2=await sb.from("tool_data").select("key,value");
-        if(r2.error){
-          o.innerHTML="⚠️ <b>Accès admin impossible :</b> "+esc(error.message)+
-            "<br><br>Pour l'activer, va dans <b>Supabase → SQL Editor</b> et exécute :"+
-            "<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
-            esc("alter table tool_data add column if not exists email text;")+"\\n"+
-            esc("alter table tool_data add column if not exists updated_at timestamptz default now();")+"\\n"+
-            esc("update tool_data t set email = u.email from auth.users u where u.id = t.user_id;")+"\\n"+
-            esc("create policy \\"admin read all\\" on tool_data for select using (auth.jwt()->>'email' = 'clogab75@gmail.com');")+
-            "</code>Puis clique sur Actualiser.";
-          return;
-        }
-        o.innerHTML="⚠️ Colonnes e-mail absentes — exécute le SQL admin (voir message). Affichage de vos propres données :"+
-          listRows((r2.data||[]).map(r=>({key:r.key,value:r.value,email:"(vous)"})));
-        allRows=r2.data||[];
-        return;
-      }
-      allRows=data||[];
-      if(!allRows.length){o.textContent="Aucune donnée pour le moment.";return;}
-      o.innerHTML=listRows(allRows);
+    function drawUsers(){
+      const users=[];
+      allRows.forEach(function(r){const em=r.email||"(inconnu)";if(users.indexOf(em)<0)users.push(em);});
+      uEl.innerHTML="";
+      users.forEach(function(em){
+        const c=document.createElement("div");
+        c.className="chip"+(em===curUser?" sel":"");
+        c.textContent=(em===ADMIN_EMAIL?"👑 ":"")+em+" ("+allRows.filter(r=>(r.email||"(inconnu)")===em).length+")";
+        c.addEventListener("click",()=>{curUser=em;curTool=null;drawUsers();drawTools();});
+        uEl.appendChild(c);
+      });
+      tWrap.style.display=curUser?"":"none";
     }
-    function listRows(rows){
-      const users={};
-      rows.forEach(r=>{const em=r.email||"(inconnu)";if(!users[em])users[em]=[];users[em].push(r);});
-      return Object.keys(users).map(function(em){
-        const urs=users[em];
-        let last="";urs.forEach(r=>{if(r.updated_at&&r.updated_at>last)last=r.updated_at;});
-        return '<details style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:800;color:#2b1e63">'+
-          (em===ADMIN_EMAIL?"👑 ":"👤 ")+esc(em)+' — '+urs.length+' donnée(s)'+
-          (last?' · maj '+String(last).replace("T"," ").slice(0,16):'')+'</summary>'+
-          '<table style="width:100%;font-size:11px;border-collapse:collapse">'+
-          urs.map(r=>'<tr><td style="padding:3px 6px;border-top:1px solid #eee;color:#6b6489;white-space:nowrap">'+esc(r.key)+
-          '</td><td style="padding:3px 6px;border-top:1px solid #eee;word-break:break-all">'+esc(typeof r.value==="object"?JSON.stringify(r.value):String(r.value)).slice(0,300)+'</td></tr>').join("")+
-          '</table></details>';
+    function drawTools(){
+      const rows=allRows.filter(r=>(r.email||"(inconnu)")===curUser);
+      const groups={};
+      rows.forEach(function(r){const L=keyLabel(r.key);if(!groups[L])groups[L]=[];groups[L].push(r);});
+      tEl.innerHTML="";
+      Object.keys(groups).forEach(function(L){
+        const c=document.createElement("div");
+        c.className="chip"+(L===curTool?" sel":"");
+        c.textContent=L+" ("+groups[L].length+")";
+        c.addEventListener("click",()=>{curTool=L;drawTools();drawView(groups[L]);});
+        tEl.appendChild(c);
+      });
+      if(curTool&&groups[curTool])drawView(groups[curTool]);
+      else vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
+    }
+    function drawView(rows){
+      vEl.innerHTML=rows.map(function(r){
+        const d=r.updated_at?(" · maj "+String(r.updated_at).replace("T"," ").slice(0,16)):"";
+        return "<div style='margin-bottom:14px'><div style='font-size:11px;color:#6b6489;font-weight:700'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
       }).join("");
+    }
+    async function render(){
+      if(!(await isAdmin())){eEl.style.display="";eEl.textContent="⛔ Réservé à l'administrateur.";return;}
+      const {data,error}=await sb.from("tool_data").select("key,value,email,updated_at").order("email");
+      if(error)return sqlHelp(error.message);
+      allRows=data||[];
+      eEl.style.display="none";
+      if(!allRows.length){eEl.style.display="";eEl.textContent="Aucune donnée pour le moment — attends que des comptes utilisent les outils.";tWrap.style.display="none";return;}
+      if(curUser&&!allRows.some(r=>(r.email||"(inconnu)")===curUser))curUser=null;
+      drawUsers();
+      if(curUser)drawTools();
     }
     $("ad_refresh").addEventListener("click",render);
     $("ad_export").addEventListener("click",()=>{
@@ -1308,8 +1380,9 @@ function applyFilters(){
   const q=$("search").value.trim().toLowerCase();
   let vis=0,first=null;
   document.querySelectorAll(".mbtn").forEach(function(b){
-    const ok=(window._curCat()==="*"||b.dataset.cat===window._curCat())&&
-             (!q||b.dataset.s.indexOf(q)>=0);
+    const cur=window._curCat();
+    const catOk=cur==="*"||(cur==="__fav"?b.dataset.fav==="1":b.dataset.cat===cur);
+    const ok=catOk&&(!q||b.dataset.s.indexOf(q)>=0);
     b.style.display=ok?"":"none";
     if(ok){vis++;if(!first)first=b;}
   });
@@ -1372,17 +1445,27 @@ addEventListener("hashchange",()=>{
 },{passive:true});
 if(location.hash&&ALL.some(a=>"#"+a.meta.id===location.hash))go(location.hash.slice(1));
 
-/* ===== COMPTE & SYNCHRO CLOUD (Supabase) — porte de connexion obligatoire ===== */
+/* ===== COMPTE & SYNCHRO CLOUD — chargé sans bloquer la page ===== */
 const SB_URL="https://vhhnprxlkiffcczilqxt.supabase.co",SB_KEY="sb_publishable_rqrRL_hoxSPtmXzdHAU7KA_3ARM1GUv";
+window.__loadScript=src=>new Promise(res=>{
+  const s=document.createElement("script");
+  s.src=src;s.onload=()=>res(true);s.onerror=()=>res(false);
+  document.head.appendChild(s);
+});
 document.body.classList.add("locked");
 (function(){
   const msg=$("sb_msg");
   const say=t=>{msg.textContent=t;};
-  if(!window.supabase){   /* CDN inaccessible : on ne bloque pas tout de même */
-    document.body.classList.remove("locked");
-    return;
-  }
-  const sb=window.supabase.createClient(SB_URL,SB_KEY);
+  window.__loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js")
+    .then(function(ok){
+      if(!ok||!window.supabase){
+        say("⚠️ Connexion au cloud impossible — mode local activé.");
+        document.body.classList.remove("locked");
+        return;
+      }
+      initAuth(window.supabase.createClient(SB_URL,SB_KEY));
+    });
+  function initAuth(sb){
   window.__sb=sb;
   const fullKey=k=>"nova_"+k;
   function collectRows(){
@@ -1451,7 +1534,6 @@ document.body.classList.add("locked");
     }
   }
   sb.auth.onAuthStateChange(()=>{onSessionChange();});
-  /* Temps réel : les changements cloud arrivent instantanément */
   sb.channel("rt-sync").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},p=>{
     const row=p.new;
     if(!row||!row.key)return;
@@ -1479,6 +1561,7 @@ document.body.classList.add("locked");
   $("sb_logout2").addEventListener("click",quit);
   $("sb_pass").addEventListener("keydown",e=>{if(e.key==="Enter")$("sb_login").click();});
   onSessionChange();
+  }
 })();
 
 const INITS={};
