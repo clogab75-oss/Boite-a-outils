@@ -51,10 +51,9 @@ body.locked{overflow:hidden}
 .btnG{background:none;color:#6b6489}
 .btnG:hover{background:rgba(161,140,209,.12)}
 #sb_msg{margin-top:14px;font-size:13px;font-weight:600;color:#3a2f6b;min-height:18px}
-#acctChip{display:none;margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
+#acctChip{display:flex;margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
   border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:700;color:#3a2f6b;
   align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
-body.authed #acctChip{display:flex}
 #acctChip button{border:none;background:#ffe0ea;color:#e0306a;font-size:10px;font-weight:800;
   border-radius:999px;padding:4px 10px;cursor:pointer}
 #topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
@@ -151,10 +150,18 @@ button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5p
   box-shadow:0 3px 8px rgba(0,0,0,.2)}
 #pixCanvas{image-rendering:pixelated;max-width:100%;border:1px solid #e2def5;border-radius:12px;background:
   repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px}
-.todo-item{display:flex;align-items:center;gap:10px;background:#f6f3ff;border-radius:13px;padding:10px 13px;margin-top:7px}
-.todo-item.done span{text-decoration:line-through;color:var(--dim)}
-.todo-item span{flex:1;font-size:14px}
-.todo-item button{margin:0;padding:4px 10px;font-size:11px}
+.todo-item{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #ece6f8;
+  border-radius:14px;padding:11px 14px;margin-top:8px;box-shadow:0 2px 8px rgba(80,50,160,.06);
+  transition:.15s;animation:todoIn .25s ease both}
+@keyframes todoIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.todo-item:hover{border-color:#c9b8ec}
+.todo-item input[type=checkbox]{width:20px;height:20px;accent-color:#7c5cd6;cursor:pointer;flex-shrink:0}
+.todo-item.done{background:#f8f6fd;border-color:#e5e0f2}
+.todo-item.done span{text-decoration:line-through;color:#9b93b5}
+.todo-item span{flex:1;font-size:14px;word-break:break-word}
+.todo-item .del{margin:0;border:none;background:#ffe6ee;color:#e0306a;width:28px;height:28px;
+  border-radius:50%;font-size:13px;cursor:pointer;flex-shrink:0;transition:.15s}
+.todo-item .del:hover{background:#ffccd9;transform:rotate(90deg)}
 .kbdrow{display:flex;gap:6px;margin-top:6px}
 .kbd{padding:14px 0;flex:1;min-width:52px;text-align:center;background:#f4f1ff;border:1px solid #e2def5;
   border-radius:13px;font-size:17px;cursor:pointer;font-weight:800;transition:.08s}
@@ -181,7 +188,7 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
 }
 </style>
 </head>
-<body class="locked">
+<body>
 <div id="bgFx"></div>
 <div id="bgGlow"></div>
 
@@ -190,7 +197,7 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <h1>🧰 Ma Boîte à Outils</h1>
   <span id="crumb"></span>
   <span id="savedTag">💾 SAUVEGARDÉ</span>
-  <div id="acctChip"><span id="sb_email"></span><button id="sb_logout2">Quitter</button></div>
+  <div id="acctChip"><span id="sb_email"></span><button id="sb_chpw" style="display:none">Compte</button><button id="sb_logout2" style="display:none">Quitter</button></div>
 </div>
 
 <div id="home">
@@ -209,17 +216,18 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <div id="menu"></div>
 </div>
 
-<div id="authGate">
+<div id="authGate" style="display:none">
   <div class="gate-card">
     <div style="width:76px;height:76px;margin:0 auto;border-radius:22px;background:linear-gradient(135deg,#ff5c8a,#a18cd1);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(161,90,209,.45);transform:rotate(-4deg)">
       <svg width="48" height="48" viewBox="0 0 64 64"><rect x="4" y="20" width="56" height="36" rx="8" fill="white"/><rect x="22" y="10" width="20" height="12" rx="4" fill="none" stroke="white" stroke-width="5"/><rect x="4" y="30" width="56" height="6" fill="rgba(0,0,0,.15)"/><circle cx="32" cy="42" r="7" fill="none" stroke="#ff5c8a" stroke-width="4"/><rect x="10" y="28" width="8" height="14" rx="3" fill="#ff5c8a"/><rect x="46" y="28" width="8" height="14" rx="3" fill="#a18cd1"/></svg>
     </div>
-    <h2>Ma Boîte à Outils</h2>
-    <div class="sub">Connectez-vous pour accéder à vos outils.<br>Vos données vous suivent sur tous vos appareils. ☁️</div>
+    <h2>Mon compte</h2>
+    <div class="sub">Connectez-vous pour synchroniser vos données sur tous vos appareils. ☁️<br>Sans compte, tout fonctionne aussi (données locales).</div>
     <input type="email" id="sb_mail" placeholder="📧 Adresse e-mail" autocomplete="email">
     <input type="password" id="sb_pass" placeholder="🔒 Mot de passe (6 caractères min.)" autocomplete="current-password">
     <button class="btn btnP" id="sb_login">Se connecter</button>
     <button class="btn btnG" id="sb_signup">Pas encore de compte ? Créer un compte</button>
+    <button class="btn btnG" id="sb_skip">Continuer sans compte →</button>
     <div id="sb_msg"></div>
   </div>
 </div>
@@ -316,8 +324,8 @@ const RICH=[
  {id:"todo",ico:"✅",name:"Ma to-do",desc:"Sauvegardée",cat:"quotidien",
   brief:"Liste de tâches sauvegardée automatiquement dans le navigateur.",
   html:`
-   <div class="row"><input type="text" id="todoIn" placeholder="Nouvelle tâche…">
-   <button id="todoAdd" style="margin:0">+</button></div>
+   <div class="row" style="align-items:center"><input type="text" id="todoIn" placeholder="✍️ Nouvelle tâche…" style="font-size:15px;padding:12px 14px">
+   <button id="todoAdd" style="margin:0;font-size:16px;white-space:nowrap">Ajouter</button></div>
    <div class="chips"><div class="chip" id="todoSortDone">Masquer les terminées</div>
    <div class="chip" id="todoClearDone">Nettoyer les terminées</div></div>
    <div id="todoList" style="margin-top:12px"></div>`},
@@ -1163,6 +1171,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     brief:"Réservé à l'administrateur : choisissez un compte, puis un outil, pour voir exactement ce qu'il a enregistré. Mise à jour en temps réel.",
     html:'<button class="green" id="ad_refresh">🔄 Actualiser</button>'+
       '<button class="ghost" id="ad_export">⬇️ Exporter tout (.json)</button>'+
+      '<div id="ad_status" class="out" style="display:none;margin-top:10px;font-size:12px"></div>'+
       '<div style="margin-top:16px;font-weight:800;color:#2b1e63;font-size:13px">👤 Comptes</div>'+
       '<div id="ad_users" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px"></div>'+
       '<div id="ad_toolsWrap" style="display:none">'+
@@ -1174,9 +1183,11 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       '<div class="save-note">🔴 Mise à jour en temps réel</div>'};
   GEN.push({meta:meta,init:function(){
     const uEl=$("ad_users"),tWrap=$("ad_toolsWrap"),tEl=$("ad_tools"),vEl=$("ad_view"),eEl=$("ad_err"),sb=window.__sb;
-    if(!sb){eEl.style.display="";eEl.textContent="Cloud indisponible.";return;}
+    const showErr=(html)=>{eEl.style.display="";eEl.innerHTML=html;};
+    const showStatus=(html)=>{const s=$("ad_status");s.style.display="";s.innerHTML=html;};
+    if(!sb)return showErr("⚠️ Cloud non chargé — rechargez la page (connexion requise).");
     let allRows=[],curUser=null,curTool=null;
-    const KEYNAME={todo:"✅ Ma to-do",notes:"📒 Bloc-notes",pw_vault:"🔐 Coffre de mots de passe",pw_cfg:"🔐 Réglages mots de passe",usage:"📊 Outils les plus utilisés",pix_size:"🎨 Réglages pixel art",pomo_state:"🍅 Pomodoro",occ2:"🔎 Compter un mot"};
+    const KEYNAME={todo:"✅ Ma to-do",notes:"📒 Bloc-notes",pw_vault:"🔐 Coffre de mots de passe",pw_cfg:"🔐 Réglages mots de passe",usage:"📊 Outils les plus utilisés",pix_size:"🎨 Réglages pixel art",pomo_state:"🍅 Pomodoro",occ2:"🔎 Compter un mot",favs:"⭐ Favoris"};
     function keyLabel(key){
       if(KEYNAME[key])return KEYNAME[key];
       let id=null;
@@ -1188,7 +1199,6 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       }
       return "📄 "+key;
     }
-    /* rendu "mini-page" : on affiche le contenu comme dans le vrai outil */
     function miniField(label,val){
       return "<div style='display:flex;gap:10px;padding:7px 10px;background:#f6f4fb;border-radius:10px;margin-top:6px;align-items:baseline'>"+
         "<span style='font-size:11px;color:#6b6489;font-weight:800;white-space:nowrap;min-width:120px'>"+esc(label)+"</span>"+
@@ -1199,19 +1209,17 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
       if(typeof v==="string")return "<div style='background:#f6f4fb;border-radius:12px;padding:10px 12px;white-space:pre-wrap;word-break:break-word'>"+esc(v)+"</div>";
       if(Array.isArray(v)){
         if(!v.length)return "<i style='color:#6b6489'>(liste vide)</i>";
-        /* to-do ? */
         if(v[0]&&typeof v[0]==="object"&&("t" in v[0]||"done" in v[0])){
           return "<div>"+v.map(function(x){
             return "<div style='display:flex;gap:8px;padding:6px 10px;align-items:center;background:#f6f4fb;border-radius:10px;margin-top:6px'>"+
-              "<span>"+(x.done?"✅":"⬜")+"</span><span style='flex:1;font-size:13px;word-break:break-word;"+(x.done?"text-decoration:line-through;color:#9b93b5":"")+"'>"+esc(x.t||"")+"</span></div>";
+              "<span>"+(x.done?"✅":"⬜")+"</span><span style='flex:1;font-size:13px;word-break:break-word;"+(x.done?"text-decoration:line-through;color:#9b93b5":"")+"'>"+esc(x.t||x.txt||"")+"</span></div>";
           }).join("")+"</div>";
         }
-        /* coffre de mots de passe ? */
-        if(v[0]&&typeof v[0]==="object"&&("pass" in v[0]||"name" in v[0])){
+        if(v[0]&&typeof v[0]==="object"&&("pass" in v[0]||"pwd" in v[0])){
           return "<table style='width:100%;font-size:12px;border-collapse:collapse;margin-top:6px'>"+
             "<tr style='color:#6b6489;font-size:10px;text-transform:uppercase'><th style='text-align:left;padding:4px 8px'>Nom</th><th style='text-align:left;padding:4px 8px'>Mot de passe</th></tr>"+
-            v.map(function(x){return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;font-weight:700'>"+esc(x.name||"")+"</td>"+
-              "<td style='padding:5px 8px;border-top:1px solid #eee;font-family:monospace'>"+esc(x.pass||"")+"</td></tr>";}).join("")+"</table>";
+            v.map(function(x){return "<tr><td style='padding:5px 8px;border-top:1px solid #eee;font-weight:700'>"+esc(x.name||x.site||"")+"</td>"+
+              "<td style='padding:5px 8px;border-top:1px solid #eee;font-family:monospace'>"+esc(x.pass||x.pwd||"")+"</td></tr>";}).join("")+"</table>";
         }
         return v.map(function(x){
           const s=typeof x==="string"?x:JSON.stringify(x);
@@ -1219,10 +1227,9 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         }).join("");
       }
       if(typeof v==="object"){
-        /* statistiques d'usage ? */
         const ks=Object.keys(v);
         if(ks.length&&ks.every(k=>v[k]&&typeof v[k]==="object"&&"n" in v[k])){
-          const rows=ks.map(k=>({k:k,n:v[k].n,last:v[k].last})).sort((a,b)=>b.n-a.n).slice(0,15);
+          const rows=ks.map(k=>({k:k,n:v[k].n})).sort((a,b)=>b.n-a.n).slice(0,15);
           const max=rows[0]?rows[0].n:1;
           return "<div>"+rows.map(function(rw){
             const t=ALL.find(a=>a.meta.id===rw.k);
@@ -1231,11 +1238,9 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
               "<div style='height:6px;border-radius:4px;background:#eee6f7;overflow:hidden'><div style='height:100%;border-radius:4px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:"+(rw.n/max*100)+"%'></div></div></div>";
           }).join("")+"</div>";
         }
-        /* champs d'un calculateur ? */
         if(ks.length&&ks.every(k=>typeof v[k]!=="object")){
           return "<div style='display:flex;flex-wrap:wrap'>"+ks.map(function(k){
-            const st=String(v[k]);
-            return "<span style='background:#f6f4fb;border-radius:10px;padding:5px 10px;margin:4px 6px 0 0;font-size:12px'><b style='color:#6b6489'>"+esc(k)+"</b> : "+esc(st)+"</span>";
+            return "<span style='background:#f6f4fb;border-radius:10px;padding:5px 10px;margin:4px 6px 0 0;font-size:12px'><b style='color:#6b6489'>"+esc(k)+"</b> : "+esc(String(v[k]))+"</span>";
           }).join("")+"</div>";
         }
         return "<table style='width:100%;font-size:12px;border-collapse:collapse'>"+ks.map(function(k){
@@ -1252,16 +1257,87 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
           return "<div style='margin-bottom:16px'><div style='font-size:11px;color:#6b6489;font-weight:800;text-transform:uppercase;letter-spacing:.5px'>"+esc(keyLabel(r.key))+d+"</div>"+renderValue(r.value)+"</div>";
         }).join("")+"</div>";
     }
+    function sqlHelp(msg){
+      showErr("⚠️ <b>Accès admin refusé :</b> "+esc(msg)+
+        "<br>Pour l'activer, va dans <b>Supabase → SQL Editor</b> et exécute ce bloc complet :"+
+        "<code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>"+
+        "create table if not exists tool_data (\n  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,\n  key text not null, value jsonb, email text,\n  updated_at timestamptz default now(), primary key (user_id, key));\n"+
+        "alter table tool_data enable row level security;\n"+
+        "drop policy if exists own_rows on tool_data;\n"+
+        "create policy own_rows on tool_data for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\n"+
+        "drop policy if exists admin_read_all on tool_data;\n"+
+        "create policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = 'clogab75@gmail.com');</code>"+
+        "<br>Puis clique sur <b>🔄 Actualiser</b>.");
+    }
+    function acctKey(r){
+      if(r.email)return r.email;
+      if(r.user_id)return "Compte "+String(r.user_id).slice(0,8);
+      return "(compte inconnu)";
+    }
+    function drawUsers(){
+      const users=[];
+      allRows.forEach(function(r){const em=acctKey(r);if(users.indexOf(em)<0)users.push(em);});
+      uEl.innerHTML="";
+      if(!users.length){uEl.innerHTML="<div style='color:#6b6489;font-size:12px'>Aucun compte avec des données pour l'instant.</div>";return;}
+      users.forEach(function(em){
+        const c=document.createElement("div");
+        c.className="chip"+(em===curUser?" sel":"");
+        c.textContent=(em===ADMIN_EMAIL?"👑 ":"👤 ")+em+" ("+allRows.filter(r=>acctKey(r)===em).length+")";
+        c.addEventListener("click",()=>{curUser=em;curTool=null;drawUsers();drawTools();});
+        uEl.appendChild(c);
+      });
+      tWrap.style.display=curUser?"":"none";
+    }
+    function drawTools(){
+      const rows=allRows.filter(r=>acctKey(r)===curUser);
+      const groups={};
+      rows.forEach(function(r){const L=keyLabel(r.key);if(!groups[L])groups[L]=[];groups[L].push(r);});
+      tEl.innerHTML="";
+      Object.keys(groups).forEach(function(L){
+        const c=document.createElement("div");
+        c.className="chip"+(L===curTool?" sel":"");
+        c.textContent=L+" ("+groups[L].length+")";
+        c.addEventListener("click",()=>{curTool=L;drawTools();drawView(groups[L]);});
+        tEl.appendChild(c);
+      });
+      if(curTool&&groups[curTool])drawView(groups[curTool]);
+      else vEl.innerHTML="Cliquez sur un outil pour voir ce que ce compte a enregistré.";
+    }
     async function render(){
-      if(!(await isAdmin())){eEl.style.display="";eEl.textContent="⛔ Réservé à l'administrateur.";return;}
-      const {data,error}=await sb.from("tool_data").select("key,value,email,updated_at").order("email");
-      if(error)return sqlHelp(error.message);
-      allRows=data||[];
-      eEl.style.display="none";
-      if(!allRows.length){eEl.style.display="";eEl.textContent="Aucune donnée pour le moment — attends que des comptes utilisent les outils.";tWrap.style.display="none";return;}
-      if(curUser&&!allRows.some(r=>(r.email||"(inconnu)")===curUser))curUser=null;
-      drawUsers();
-      if(curUser)drawTools();
+      try{
+        eEl.style.display="none";eEl.textContent="";
+        showStatus("⏳ Vérification de la session…");
+        uEl.innerHTML="";
+        const {data:me,error:meErr}=await sb.auth.getUser();
+        const u=me&&me.user;
+        if(meErr||!u){showErr("⚠️ Vous n'êtes pas connecté — cliquez sur « Compte » en haut.");showStatus("❌ Non connecté");return;}
+        if(u.email!==ADMIN_EMAIL){showErr("⛔ Connecté avec "+esc(u.email)+" — ce panneau est réservé à "+esc(ADMIN_EMAIL)+".");showStatus("❌ Session : "+esc(u.email)+" (pas admin)");return;}
+        showStatus("👑 Session admin OK ("+esc(u.email)+") · chargement des données…");
+        let {data,error}=await sb.from("tool_data").select("key,value,email,user_id,updated_at");
+        if(error){
+          /* essai sans les colonnes optionnelles (ancienne table) */
+          const r2=await sb.from("tool_data").select("key,value,user_id");
+          if(r2.error){
+            showStatus("❌ Lecture refusée ("+esc(r2.error.message||"erreur")+")");
+            return sqlHelp(r2.error.message||error.message);
+          }
+          allRows=(r2.data||[]).map(r=>({key:r.key,value:r.value,email:null,user_id:r.user_id}));
+        }else allRows=data||[];
+        const nbAccounts=allRows.map(acctKey).filter((v,i,a)=>a.indexOf(v)===i).length;
+        showStatus("✅ Connecté en admin · <b>"+nbAccounts+"</b> compte(s) · <b>"+allRows.length+"</b> entrée(s) dans la table"+
+          (nbAccounts<=1?" · ℹ️ si d'autres comptes n'apparaissent pas : soit ils n'ont encore rien enregistré avec un outil, soit il faut exécuter le SQL admin ci-dessous (voir erreur)":""));
+        if(nbAccounts<=1&&allRows.length)showErr("ℹ️ Seul votre compte apparaît. Si d'autres comptes existent : ils doivent <b>utiliser un outil</b> (une donnée est alors créée), et la règle SQL <code>admin_read_all</code> doit être exécutée dans Supabase → SQL Editor :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>drop policy if exists admin_read_all on tool_data;\ncreate policy admin_read_all on tool_data for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code>");
+        if(!allRows.length){
+          uEl.innerHTML="";
+          return showErr("ℹ️ La table est accessible mais vide : aucun compte n'a encore utilisé d'outil (ou la synchro n'a pas encore tourné — utilisez un outil, attendez 2 s, Actualiser).");
+        }
+        if(curUser&&!allRows.some(r=>acctKey(r)===curUser))curUser=null;
+        drawUsers();
+        if(curUser)drawTools();
+      }catch(e){
+        showStatus("❌ Erreur inattendue");
+        showErr("⚠️ Erreur inattendue : "+esc(e.message||String(e)));
+      }
     }
     $("ad_refresh").addEventListener("click",render);
     $("ad_export").addEventListener("click",()=>{
@@ -1274,6 +1350,102 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
     });
     render();
     sb.channel("adm-rt").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},()=>render()).subscribe();
+  }});
+})();
+
+/* ===== Drive : stockage d'images (100 Mo par compte) ===== */
+(function(){
+  const meta={id:"drive",ico:"🖼️",name:"Mon Drive",desc:"Images dans le cloud (100 Mo)",cat:"dev",cls:nextCls(),
+    brief:"Stockez vos images dans le cloud : 100 Mo par compte, accessibles depuis tous vos appareils connectés. Connectez-vous pour l'utiliser.",
+    html:'<div id="drv_noacct" style="display:none"><div class="out" style="border-style:solid">☁️ Connectez-vous (bouton « Compte » en haut) pour utiliser le Drive.</div></div>'+
+      '<div id="drv_ui">'+
+      '<label>Choisir des images (JPG, PNG, GIF, WebP…)</label>'+
+      '<input type="file" id="drv_file" accept="image/*" multiple>'+
+      '<div class="save-note">📏 Limite : 100 Mo par compte · les images de plus de 5 Mo sont compressées automatiquement</div>'+
+      '<button class="green" id="drv_up">⬆️ Envoyer</button>'+
+      '<div class="out" id="drv_bar" style="display:none"><div id="drv_fill" style="height:8px;border-radius:6px;background:linear-gradient(90deg,#ff5c8a,#a18cd1);width:0"></div><div id="drv_txt" style="font-size:11px;margin-top:4px"></div></div>'+
+      '<div style="margin-top:14px;font-weight:800;color:#2b1e63;font-size:13px">🖼️ Mes images</div>'+
+      '<div id="drv_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:10px"></div>'+
+      '<div class="out" id="drv_o" style="margin-top:10px">—</div></div>'};
+  GEN.push({meta:meta,init:function(){
+    const sb=window.__sb,gEl=$("drv_grid"),o=$("drv_o"),bar=$("drv_bar"),fill=$("drv_fill"),txt=$("drv_txt");
+    const LIMIT=100*1024*1024;
+    if(!sb){o.textContent="Cloud indisponible.";return;}
+    let uid=null,pending=[];
+    async function me(){
+      if(!uid){const {data}=await sb.auth.getUser();uid=data&&data.user?data.user.id:null;
+        if(!uid){$("drv_ui").style.display="none";$("drv_noacct").style.display="";}
+      }
+      return uid;
+    }
+    function human(b){return b>1048576?(b/1048576).toFixed(1)+" Mo":(b/1024).toFixed(0)+" Ko";}
+    async function refresh(){
+      if(!(await me()))return;
+      const {data,error}=await sb.from("drive_files").select("name,size,created_at").order("created_at",{ascending:false});
+      if(error){o.innerHTML="⚠️ "+esc(error.message)+"<br><span style='font-size:11px'>Créez la table drive_files (SQL fourni) puis réessayez.</span>";return;}
+      const files=data||[];
+      const used=files.reduce((s,f)=>s+(f.size||0),0);
+      bar.style.display="";
+      fill.style.width=Math.min(100,used/LIMIT*100)+"%";
+      txt.innerHTML="Stockage utilisé : <b>"+human(used)+"</b> / "+human(LIMIT)+(used>LIMIT*.8?" <span style='color:#e0306a'>⚠️ presque plein</span>":"");
+      gEl.innerHTML="";
+      files.forEach(function(f){
+        const cell=document.createElement("div");
+        cell.style.cssText="background:#fff;border:1.5px solid #ece6f8;border-radius:12px;overflow:hidden;position:relative";
+        cell.innerHTML="<img style='width:100%;height:80px;object-fit:cover;display:block;background:#f4f2fb'>"+
+          "<div style='padding:5px 7px;font-size:10px;color:#3b3166;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700'>"+esc(f.name)+"</div>"+
+          "<div style='padding:0 7px 6px;font-size:9px;color:#6b6489'>"+human(f.size||0)+"</div>"+
+          "<div style='position:absolute;top:4px;right:4px;display:flex;gap:4px'>"+
+          "<button class='dl' title='Télécharger' style='border:none;border-radius:8px;background:#fff;padding:3px 6px;cursor:pointer'>⬇️</button>"+
+          "<button class='rm' title='Supprimer' style='border:none;border-radius:8px;background:#ffe6ee;padding:3px 6px;cursor:pointer'>🗑</button></div>";
+        cell.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
+        cell.querySelector(".dl").addEventListener("click",async()=>{
+          const {data}=await sb.storage.from("drive").download(uid+"/"+f.name);
+          const u=URL.createObjectURL(data);
+          const a=document.createElement("a");a.href=u;a.download=f.name;
+          document.body.appendChild(a);a.click();a.remove();
+        });
+        cell.querySelector(".rm").addEventListener("click",async()=>{
+          await sb.storage.from("drive").remove([uid+"/"+f.name]);
+          await sb.from("drive_files").delete().eq("name",f.name);
+          refresh();
+        });
+        gEl.appendChild(cell);
+      });
+      if(!files.length)gEl.innerHTML="<div style='color:#6b6489;font-size:12px;grid-column:1/-1'>Aucune image — envoyez vos premières images ci-dessus ☝️</div>";
+    }
+    $("drv_file").addEventListener("change",e=>{
+      pending=[...(e.target.files||[])];
+      o.textContent=pending.length?pending.length+" image(s) prête(s) : "+human(pending.reduce((s,f)=>s+f.size,0)):"—";
+    });
+    $("drv_up").addEventListener("click",async()=>{
+      if(!(await me()))return;
+      if(!pending.length)return o.textContent="Choisissez d'abord des images.";
+      const {data:usedRows}=await sb.from("drive_files").select("size");
+      let used=(usedRows||[]).reduce((s,f)=>s+(f.size||0),0);
+      for(const f of pending){
+        if(used+f.size>LIMIT){o.innerHTML="⚠️ <b>"+esc(f.name)+"</b> : limite de 100 Mo atteinte (il reste "+human(LIMIT-used)+").";break;}
+        let blob=f;
+        if(f.size>5*1024*1024){                 /* compression auto des grosses images */
+          try{
+            const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f);});
+            const sc=Math.min(1,1920/im.width);
+            const c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+            c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+            blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.8));
+          }catch(e){/* on envoie l'original */}
+        }
+        const {error}=await sb.storage.from("drive").upload(uid+"/"+f.name,blob,{upsert:true});
+        if(!error){
+          await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});
+          used+=blob.size;
+        }else o.innerHTML="⚠️ "+esc(f.name)+" : "+esc(error.message);
+      }
+      pending=[];$("drv_file").value="";
+      refresh();
+    });
+    refresh();
+    sb.channel("drv-rt").on("postgres_changes",{event:"*",schema:"public",table:"drive_files"},()=>refresh()).subscribe();
   }});
 })();
 
@@ -1322,9 +1494,10 @@ function bumpUse(id){
 }
 
 const menuEl=$("menu"),pagesEl=$("pages"),initDone=new Set();
+const iconQueue=[];
 function buildMenu(){
-  if(window.__menuBuilt)return;window.__menuBuilt=true;
-  const iconQueue=[];
+  window.__menuBuilt=false;
+  menuEl.innerHTML="";$("cats").innerHTML="";iconQueue.length=0;
   const LIST=window.__email===ADMIN_EMAIL?ALL:ALL.filter(a=>a.meta.id!=="admpanel");
   const FAVS=new Set(lsGet("favs",[]));
   const ORDERED=[...LIST].sort((x,y)=>{
@@ -1468,7 +1641,6 @@ window.__loadScript=src=>new Promise(res=>{
   s.src=src;s.onload=()=>res(true);s.onerror=()=>res(false);
   document.head.appendChild(s);
 });
-document.body.classList.add("locked");
 (function(){
   const msg=$("sb_msg");
   const say=t=>{msg.textContent=t;};
@@ -1543,7 +1715,8 @@ document.body.classList.add("locked");
       const e=$("sb_email");
       e.textContent=s.user.email;
       if(s.user.email===ADMIN_EMAIL)e.innerHTML=s.user.email+' <span style="color:#e0306a">👑</span>';
-      $("sb_chpw").style.display="";
+      $("sb_chpw").style.display="none";
+      $("sb_logout2").style.display="";
       const n=await pullAll();
       await pushAll();
       if(!booted&&n>0)setTimeout(()=>location.reload(),800);
@@ -1552,9 +1725,10 @@ document.body.classList.add("locked");
       /* pas connecté : accès libre quand même, juste sans synchro cloud */
       window.__email=null;
       buildMenu();
-      document.body.classList.remove("locked");
       document.body.classList.remove("authed");
-      $("sb_chpw").style.display="none";
+      $("sb_email").textContent="Non connecté";
+      $("sb_chpw").style.display="";
+      $("sb_logout2").style.display="none";
     }
   }
   sb.auth.onAuthStateChange(()=>{onSessionChange();});
@@ -1572,6 +1746,7 @@ document.body.classList.add("locked");
     if(!m||p.length<6)return say("E-mail + mot de passe (6 caractères min.) requis.");
     say("Connexion…");
     const {error}=await sb.auth.signInWithPassword({email:m,password:p});
+    if(!error)$("authGate").classList.remove("open");
     say(error?("⚠️ "+(error.message||"Échec de connexion")):"✅ Bienvenue !");
   });
   $("sb_signup").addEventListener("click",async()=>{
@@ -1583,6 +1758,8 @@ document.body.classList.add("locked");
   });
   const quit=async()=>{await sb.auth.signOut();location.reload();};
   $("sb_logout2").addEventListener("click",quit);
+  $("sb_chpw").addEventListener("click",()=>{$("authGate").classList.add("open");});
+  $("sb_skip").addEventListener("click",()=>{$("authGate").classList.remove("open");});
   $("sb_pass").addEventListener("keydown",e=>{if(e.key==="Enter")$("sb_login").click();});
   onSessionChange();
   }
@@ -1817,7 +1994,7 @@ INITS.todo=function(){
     todos.forEach(function(t,i){
       if(hideDone&&t.done)return;
       const d=document.createElement("div");d.className="todo-item"+(t.done?" done":"");
-      d.innerHTML='<input type="checkbox"'+(t.done?" checked":"")+'><span></span><button class="ghost">✕</button>';
+      d.innerHTML='<input type="checkbox"'+(t.done?" checked":"")+'><span></span><button class="del" title="Supprimer">🗑</button>';
       d.querySelector("span").textContent=t.txt;
       d.querySelector("input").addEventListener("change",()=>{todos[i].done=!todos[i].done;save();render();});
       d.querySelector("button").addEventListener("click",()=>{todos.splice(i,1);save();render();});
