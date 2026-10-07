@@ -38,6 +38,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 body.inTool #btnHome{display:inline-block}
 #btnHome:active{transform:scale(.95)}
 #crumb{color:var(--dim);font-size:12px;flex:1;text-align:right;font-weight:600}
+#savedTag{display:none;font-size:10px;color:#00a583;font-weight:800;letter-spacing:1px}
 
 /* ====== ACCUEIL ====== */
 #home{max-width:1100px;margin:0 auto;padding:30px 16px 40px}
@@ -46,20 +47,26 @@ body.inTool #home{display:none}
 #hero h2{font-size:clamp(26px,5.5vw,44px);font-weight:900;letter-spacing:-.5px;color:#fff;
   text-shadow:0 2px 0 #c9a6ff,0 6px 24px rgba(90,60,180,.45)}
 #hero p{color:#3a2f6b;margin-top:10px;font-size:13px;letter-spacing:1.5px;font-weight:700}
-#menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.mbtn{background:rgba(255,255,255,.82);border:none;border-radius:var(--r);padding:20px 12px;text-align:center;
+#menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.mbtn{background:rgba(255,255,255,.82);border:none;border-radius:var(--r);padding:16px 10px;text-align:center;
   cursor:pointer;box-shadow:0 8px 24px rgba(80,50,160,.18);transition:.18s;
-  display:flex;flex-direction:column;align-items:center;gap:10px;backdrop-filter:blur(6px)}
+  display:flex;flex-direction:column;align-items:center;gap:8px;backdrop-filter:blur(6px)}
 .mbtn:hover{transform:translateY(-5px) scale(1.03);box-shadow:0 16px 34px rgba(80,50,160,.35)}
 .mbtn:active{transform:scale(.96)}
-.mbtn .ico{font-size:34px;width:66px;height:66px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+.mbtn .ico{font-size:30px;width:58px;height:58px;border-radius:19px;display:flex;align-items:center;justify-content:center;
   box-shadow:inset 0 -3px 8px rgba(0,0,0,.06)}
-.mbtn b{font-size:13.5px;color:#2b1e63}
-.mbtn small{font-size:10.5px;color:var(--dim);line-height:1.35}
+.mbtn b{font-size:13px;color:#2b1e63}
+.mbtn small{font-size:10px;color:var(--dim);line-height:1.3}
+.mbtn .save-dot{position:absolute}
 .c1 .ico{background:#ffd6e3}.c2 .ico{background:#ffedb8}.c3 .ico{background:#c9f0ff}
 .c4 .ico{background:#cdf5d2}.c5 .ico{background:#e4d5ff}.c6 .ico{background:#ffdfd0}
 .c7 .ico{background:#d6e6ff}.c8 .ico{background:#ffe9c2}.c9 .ico{background:#c8f7e3}
 .c10 .ico{background:#eed2ff}.c11 .ico{background:#ffd6ec}.c12 .ico{background:#ccf1ff}
+.c13 .ico{background:#fff3bf}.c14 .ico{background:#e0f2c9}.c15 .ico{background:#f4d6ff}
+.c16 .ico{background:#c9eaff}.c17 .ico{background:#ffe0c2}.c18 .ico{background:#d9f7ef}
+.c19 .ico{background:#f7d6d6}.c20 .ico{background:#d6f7f0}.c21 .ico{background:#ffeacc}
+.c22 .ico{background:#e6d6ff}
+.mbtn.has-save{outline:2px dashed #00a583;outline-offset:-6px}
 
 /* ====== PAGES OUTILS ====== */
 .page{display:none;max-width:780px;margin:0 auto;padding:22px 16px 60px}
@@ -82,6 +89,7 @@ button:active{transform:scale(.96)}
 button.ghost{background:rgba(255,255,255,.85);color:#2b1e63;box-shadow:0 3px 10px rgba(80,50,160,.15)}
 button.green{background:linear-gradient(135deg,#00d4a0,#00a583);box-shadow:0 5px 16px rgba(0,180,140,.35)}
 button.pink{background:linear-gradient(135deg,#ff6f9c,#e0306a);box-shadow:0 5px 16px rgba(255,90,140,.4)}
+button.orange{background:linear-gradient(135deg,#ff9a3c,#e07020);box-shadow:0 5px 16px rgba(255,150,60,.4)}
 .row{display:flex;gap:10px}.row>*{flex:1}
 .out{background:#f4f1ff;border:1.5px dashed #cabcf0;border-radius:13px;padding:12px 14px;margin-top:12px;
   font-size:14px;min-height:38px;word-break:break-word;font-variant-numeric:tabular-nums;color:#3b3166}
@@ -107,10 +115,21 @@ button.pink{background:linear-gradient(135deg,#ff6f9c,#e0306a);box-shadow:0 5px 
 .kbd.op{color:#7a5cd8}
 .kbd.eq{background:linear-gradient(135deg,#8f7bff,#a18cd1);color:#fff}
 #calcOut{text-align:right;font-size:26px;font-weight:800;min-height:32px;padding:14px;background:#f4f1ff;border-radius:13px;color:#3b3166}
+.save-note{font-size:10px;color:#00a583;font-weight:700;letter-spacing:.5px;margin-top:8px}
 footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacing:1.5px;font-weight:700}
+#gradPrev{height:80px;border-radius:14px;margin-top:12px;border:1px solid #e2def5}
+.notes-area{min-height:220px;font-size:15px;line-height:1.6}
+/* vitesse de frappe */
+#typeArea{background:#f6f3ff;border-radius:13px;padding:16px;font-size:16px;line-height:1.7;margin-top:12px;min-height:80px}
+#typeArea .ok{color:#00a583;font-weight:700}
+#typeArea .bad{color:#e0306a;text-decoration:underline}
+#typeInput{margin-top:10px;font-size:16px}
+/* pomodoro */
+#pomoTime{font-size:52px;font-weight:900;text-align:center;color:#4b2fd8;margin:10px 0}
+#pomoPrev{height:60px;border-radius:14px;margin-top:12px;border:1px solid #e2def5}
 @media(max-width:600px){
-  #menu{grid-template-columns:repeat(2,1fr);gap:12px}
-  .mbtn{padding:14px 8px}.mbtn .ico{font-size:28px;width:56px;height:56px}
+  #menu{grid-template-columns:repeat(2,1fr);gap:10px}
+  .mbtn{padding:12px 6px}.mbtn .ico{font-size:26px;width:50px;height:50px}
   .row{flex-direction:column}
 }
 </style>
@@ -123,13 +142,14 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
   <button id="btnHome">⬅ Menu</button>
   <h1>🧰 Ma Boîte à Outils</h1>
   <span id="crumb"></span>
+  <span id="savedTag">💾 SAUVEGARDÉ</span>
 </div>
 
 <!-- ============ ACCUEIL ============ -->
 <div id="home">
   <div id="hero">
     <h2>Que voulez-vous faire ?</h2>
-    <p>12 OUTILS · 100% HORS-LIGNE · MOBILE & PC</p>
+    <p>22 OUTILS · SAUVEGARDE AUTOMATIQUE · 100% HORS-LIGNE · MOBILE & PC</p>
   </div>
   <div id="menu"></div>
 </div>
@@ -137,12 +157,29 @@ footer{text-align:center;color:#4b3f7d;font-size:10px;padding:28px;letter-spacin
 <!-- ============ PAGES (générées par JS) ============ -->
 <div id="pages"></div>
 
-<footer>MA BOÎTE À OUTILS — COLORÉE, RAPIDE, SANS PRISE DE TÊTE</footer>
+<footer>MA BOÎTE À OUTILS — VOS DONNÉES RESTENT DANS VOTRE NAVIGATEUR</footer>
 
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
 const fmt=(n,d=2)=>(+n).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumFractionDigits:0});
+
+/* ============ SAUVEGARDE GÉNÉRIQUE ============ */
+function lsGet(key,def){
+  try{const v=localStorage.getItem("nova_"+key);
+    return v===null?def:JSON.parse(v);}
+  catch(e){return def;}
+}
+function lsSet(key,val){
+  try{localStorage.setItem("nova_"+key,JSON.stringify(val));}catch(e){}
+  flashSaved();
+}
+function flashSaved(){
+  const t=$("savedTag");
+  t.style.display="inline";
+  clearTimeout(flashSaved._t);
+  flashSaved._t=setTimeout(()=>{t.style.display="none";},1400);
+}
 
 /* ============ FOND : halo qui suit le pointeur ============ */
 (function(){
@@ -155,7 +192,7 @@ const fmt=(n,d=2)=>(+n).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumF
   addEventListener("touchmove",e=>{
     if(e.touches[0]){tx=e.touches[0].clientX/innerWidth*100;ty=e.touches[0].clientY/innerHeight*100;}
   },{passive:true});
-  (function anim(){ // interpolation fluide
+  (function anim(){
     cx+=(tx-cx)*.06;cy+=(ty-cy)*.06;
     root.style.setProperty("--mx",cx.toFixed(2));
     root.style.setProperty("--my",cy.toFixed(2));
@@ -163,9 +200,10 @@ const fmt=(n,d=2)=>(+n).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumF
   })();
 })();
 
-/* ============ DÉFINITION DES 12 OUTILS ============ */
+/* ============ DÉFINITION DES 22 OUTILS ============ */
 const TOOLS=[
- {id:"pixel",  ico:"🎨",cls:"c1",  name:"Pixel Art",         desc:"Image → grille + codes HEX", brief:"Transformez une image en grille de la taille que vous voulez, avec le code hexadécimal de chaque pixel, copiable en un clic.",
+ {id:"pixel",  ico:"🎨",cls:"c1",  name:"Pixel Art",         desc:"Image → grille + HEX",
+  brief:"Transformez une image en grille de la taille voulue, avec le code hexadécimal de chaque pixel.",
   html:`
    <label>Choisissez une image</label><input type="file" id="pixFile" accept="image/*">
    <div class="row"><div><label>Grille : largeur</label><input type="number" id="pixW" value="16" min="2" max="128"></div>
@@ -173,8 +211,9 @@ const TOOLS=[
    <button class="green" id="pixGo">Convertir</button>
    <button class="ghost" id="pixCopy">📋 Copier les codes HEX</button>
    <div style="margin-top:12px;overflow:auto"><canvas id="pixCanvas" width="16" height="16"></canvas></div>
-   <div class="out" id="pixOut" style="max-height:150px;overflow:auto;font-size:11px">L'aperçu de la grille de couleurs apparaîtra ici…</div>`},
- {id:"pw",     ico:"🔐",cls:"c2",  name:"Mots de passe",     desc:"Sécurisés, sur mesure", brief:"Mots de passe générés de façon cryptographiquement sûre, avec longueur et types de caractères au choix.",
+   <div class="out" id="pixOut" style="max-height:150px;overflow:auto;font-size:11px">L'aperçu de la grille apparaîtra ici…</div>`},
+ {id:"pw",     ico:"🔐",cls:"c2",  name:"Mots de passe",     desc:"Sécurisés, sur mesure",
+  brief:"Mots de passe générés de façon cryptographiquement sûre, avec entropie affichée.",
   html:`
    <label>Longueur : <output id="pwLenV">16</output> caractères</label>
    <input type="range" id="pwLen" min="6" max="64" value="16">
@@ -183,8 +222,13 @@ const TOOLS=[
     <div class="chip sel" data-k="num">0-9</div><div class="chip sel" data-k="spec">!@#$…</div></div>
    <button class="pink" id="pwGo">🎲 Générer</button>
    <div class="out big" id="pwOut" style="user-select:all">Cliquez sur Générer</div>
-   <div class="out" id="pwStrength" style="margin-top:6px">—</div>`},
- {id:"units",  ico:"📏",cls:"c3",  name:"Convertisseur",     desc:"Longueur, masse, temp…", brief:"Convertissez instantanément longueur, masse, température, volume et unités informatiques.",
+   <div class="out" id="pwStrength" style="margin-top:6px">—</div>
+   <label>Vos mots de passe enregistrés (facultatif, local)</label>
+   <div class="row"><input type="text" id="pwName" placeholder="Nom du site…">
+   <button class="ghost" id="pwSave" style="margin:0">💾</button></div>
+   <div id="pwList" style="margin-top:10px"></div>`},
+ {id:"units",  ico:"📏",cls:"c3",  name:"Convertisseur",     desc:"Longueur, masse, temp…",
+  brief:"Convertissez instantanément longueur, masse, température, volume et unités informatiques.",
   html:`
    <div class="chips" id="uCat">
     <div class="chip sel" data-c="len">Longueur</div><div class="chip" data-c="mass">Masse</div>
@@ -194,7 +238,8 @@ const TOOLS=[
    <div class="row"><div><label>De</label><select id="uFrom"></select></div>
    <div><label>Vers</label><select id="uTo"></select></div></div>
    <div class="out big" id="uOut">—</div>`},
- {id:"color",  ico:"🎯",cls:"c4",  name:"Couleurs",          desc:"HEX / RGB / HSL + palette", brief:"Convertissez une couleur entre HEX, RGB et HSL, et générez une palette harmonieuse.",
+ {id:"color",  ico:"🎯",cls:"c4",  name:"Couleurs",          desc:"HEX / RGB / HSL + palette",
+  brief:"Convertissez une couleur entre HEX, RGB et HSL, et générez une palette harmonieuse.",
   html:`
    <div class="row"><input type="color" id="colPick" value="#6c5cff" style="padding:3px;height:48px">
    <input type="text" id="colHex" value="#6c5cff" placeholder="#RRGGBB"></div>
@@ -202,7 +247,8 @@ const TOOLS=[
    <div class="out" id="colOut">—</div>
    <label>Palette harmonieuse (cliquez pour copier)</label>
    <div id="palette" style="margin-top:8px"></div>`},
- {id:"calc",   ico:"🧮",cls:"c5",  name:"Calculatrice",      desc:"Clic ou clavier", brief:"Calculatrice simple mais efficace : au clic, au clavier, avec parenthèses et pourcentages.",
+ {id:"calc",   ico:"🧮",cls:"c5",  name:"Calculatrice",      desc:"Clic ou clavier",
+  brief:"Calculatrice au clic ou au clavier, avec parenthèses et pourcentages.",
   html:`
    <div id="calcOut">0</div>
    <div class="kbdrow"><div class="kbd op" data-k="C">C</div><div class="kbd op" data-k="←">←</div><div class="kbd op" data-k="%">%</div><div class="kbd op" data-k="/">÷</div></div>
@@ -210,18 +256,25 @@ const TOOLS=[
    <div class="kbdrow"><div class="kbd" data-k="4">4</div><div class="kbd" data-k="5">5</div><div class="kbd" data-k="6">6</div><div class="kbd op" data-k="-">−</div></div>
    <div class="kbdrow"><div class="kbd" data-k="1">1</div><div class="kbd" data-k="2">2</div><div class="kbd" data-k="3">3</div><div class="kbd op" data-k="+">+</div></div>
    <div class="kbdrow"><div class="kbd" data-k="(">(</div><div class="kbd" data-k="0">0</div><div class="kbd" data-k=".">.</div><div class="kbd eq" data-k="=">=</div></div>`},
- {id:"todo",   ico:"✅",cls:"c6",  name:"Ma to-do",          desc:"Sauvegardée automatiquement", brief:"Votre liste de tâches reste enregistrée dans le navigateur, même après fermeture de la page.",
+ {id:"todo",   ico:"✅",cls:"c6",  name:"Ma to-do",          desc:"Sauvegardée automatiquement",
+  brief:"Votre liste de tâches reste enregistrée dans le navigateur, même après fermeture.",
   html:`
    <div class="row"><input type="text" id="todoIn" placeholder="Nouvelle tâche…">
    <button id="todoAdd" style="margin:0">+</button></div>
+   <div class="chips" style="margin-top:10px">
+     <div class="chip" id="todoSortDone">Masquer les terminées</div>
+     <div class="chip" id="todoClearDone">Nettoyer les terminées</div></div>
    <div id="todoList" style="margin-top:12px"></div>`},
- {id:"text",   ico:"📝",cls:"c7",  name:"Texte",             desc:"Compteur & transformations", brief:"Comptez mots, phrases et temps de lecture, et transformez votre texte en un clic.",
+ {id:"text",   ico:"📝",cls:"c7",  name:"Texte",             desc:"Compteur & transformations",
+  brief:"Comptez mots, phrases et temps de lecture, et transformez votre texte en un clic.",
   html:`
    <textarea id="txtIn" placeholder="Collez votre texte ici…"></textarea>
    <div class="chips"><div class="chip" id="txtUp">MAJUSCULES</div><div class="chip" id="txtLow">minuscules</div>
    <div class="chip" id="txtTrim">Nettoyer</div><div class="chip" id="txtRev">Inverser</div></div>
-   <div class="out" id="txtStats">—</div>`},
- {id:"pct",    ico:"💶",cls:"c8",  name:"Pourcentages & TVA",desc:"Remises, TVA, pourboire", brief:"Calculez remise, TVA française et pourboire pour connaître le total exact à payer.",
+   <div class="out" id="txtStats">—</div>
+   <div class="save-note">💾 Votre texte est sauvegardé automatiquement</div>`},
+ {id:"pct",    ico:"💶",cls:"c8",  name:"Pourcentages & TVA",desc:"Remises, TVA, pourboire",
+  brief:"Calculez remise, TVA française et pourboire pour connaître le total exact à payer.",
   html:`
    <label>Prix (€)</label><input type="number" id="pPrix" value="100" step="any">
    <div class="chips" id="pTva">
@@ -231,20 +284,23 @@ const TOOLS=[
     <div><label>Remise %</label><input type="number" id="pDisc" value="0" min="0" max="100"></div>
     <div><label>Pourboire %</label><input type="number" id="pTip" value="0" min="0"></div></div>
    <div class="out" id="pOut">—</div>`},
- {id:"credit", ico:"🏦",cls:"c9",  name:"Crédit",            desc:"Mensualités & intérêts", brief:"Simulez un crédit : mensualité, total payé et coût des intérêts, en direct.",
+ {id:"credit", ico:"🏦",cls:"c9",  name:"Crédit",            desc:"Mensualités & intérêts",
+  brief:"Simulez un crédit : mensualité, total payé et coût des intérêts.",
   html:`
    <div class="row"><div><label>Montant (€)</label><input type="number" id="cAmt" value="200000"></div>
    <div><label>Durée (années)</label><input type="number" id="cYears" value="20"></div></div>
    <label>Taux annuel : <output id="cRateV">3,5 %</output></label>
    <input type="range" id="cRate" min="0.1" max="10" step="0.1" value="3.5">
    <div class="out" id="cOut">—</div>`},
- {id:"b64",    ico:"🔁",cls:"c10", name:"Base64",            desc:"Encoder / décoder", brief:"Encodez du texte en Base64 ou décodez-en, avec gestion de l'UTF-8 (accents, emojis…).",
+ {id:"b64",    ico:"🔁",cls:"c10", name:"Base64",            desc:"Encoder / décoder",
+  brief:"Encodez du texte en Base64 ou décodez-en, avec gestion de l'UTF-8.",
   html:`
    <textarea id="b64In" placeholder="Texte à encoder ou Base64 à décoder…"></textarea>
    <button class="green" id="b64Enc">Encoder ➜</button>
    <button class="ghost" id="b64Dec">⬅ Décoder</button>
    <div class="out" id="b64Out">—</div>`},
- {id:"chrono", ico:"⏱️",cls:"c11", name:"Chrono & minuteur", desc:"Tours + alarme sonore", brief:"Chronomètre avec tours, et minuteur avec alarme sonore intégrée.",
+ {id:"chrono", ico:"⏱️",cls:"c11", name:"Chrono & minuteur", desc:"Tours + alarme sonore",
+  brief:"Chronomètre avec tours, et minuteur avec alarme sonore.",
   html:`
    <div class="out big" id="chronoOut" style="text-align:center;font-size:30px">00:00.0</div>
    <button class="green" id="chStart">▶ Démarrer</button>
@@ -253,23 +309,135 @@ const TOOLS=[
    <div class="out" id="chLaps" style="max-height:100px;overflow:auto"></div>
    <label>Minuteur (minutes)</label><input type="number" id="tmMin" value="5" min="0.1" step="0.5">
    <button class="pink" id="tmGo">🔔 Lancer le minuteur</button>`},
- {id:"dice",   ico:"🎲",cls:"c12", name:"Hasard",            desc:"Dés & tirage au sort", brief:"Lancez des dés à N faces ou tirez au sort un élément d'une liste.",
+ {id:"dice",   ico:"🎲",cls:"c12", name:"Hasard",            desc:"Dés & tirage au sort",
+  brief:"Lancez des dés à N faces ou tirez au sort un élément d'une liste (liste sauvegardée).",
   html:`
    <div class="row"><div><label>Nombre de dés</label><input type="number" id="dN" value="2" min="1" max="20"></div>
    <div><label>Nombre de faces</label><input type="number" id="dF" value="6" min="2" max="1000"></div></div>
    <button class="pink" id="dGo">🎲 Lancer les dés</button>
    <div class="out big" id="dOut">—</div>
-   <label>Liste de choix (un par ligne) — ex. où manger ce soir 😉</label>
+   <label>Liste de choix (un par ligne) — sauvegardée</label>
    <textarea id="rList" placeholder="Pizza&#10;Burger&#10;Salade"></textarea>
    <button class="green" id="rGo">🎯 Tirer au sort</button>
    <div class="out big" id="rOut">—</div>`},
+ /* ===== NOUVEAUX OUTILS ===== */
+ {id:"notes",  ico:"📒",cls:"c13", name:"Bloc-notes",        desc:"Sauvegarde automatique",
+  brief:"Un bloc-notes simple : tout ce que vous tapez est sauvegardé automatiquement, instantanément.",
+  html:`
+   <textarea id="notesArea" class="notes-area" placeholder="Écrivez vos idées, elles seront là à votre retour…"></textarea>
+   <div class="save-note" id="notesStatus">💾 Sauvegarde automatique activée</div>
+   <button class="ghost" id="notesClear">🗑️ Effacer tout</button>
+   <button class="ghost" id="notesCopy">📋 Copier</button>
+   <div class="out" id="notesMeta">—</div>`},
+ {id:"dates",  ico:"📅",cls:"c14", name:"Dates & âge",       desc:"Différence, âge, jours",
+  brief:"Calculez l'écart entre deux dates, votre âge précis, ou ajoutez/retirez des jours à une date.",
+  html:`
+   <div class="row"><div><label>Date 1 (naissance par ex.)</label><input type="date" id="da1"></div>
+   <div><label>Date 2 (aujourd'hui par défaut)</label><input type="date" id="da2"></div></div>
+   <button class="green" id="daGo">Calculer l'écart</button>
+   <div class="out" id="daOut">—</div>
+   <label>Ajouter / retirer des jours à une date</label>
+   <div class="row"><div><label>À partir du</label><input type="date" id="dbDate"></div>
+   <div><label>Jours (±)</label><input type="number" id="dbDays" value="30"></div></div>
+   <button class="orange" id="dbGo">➜ Nouvelle date</button>
+   <div class="out" id="dbOut">—</div>`},
+ {id:"cur",    ico:"💱",cls:"c15", name:"Devises",           desc:"Taux en direct si en ligne",
+  brief:"Convertissez entre devises. Les taux se mettent à jour en ligne et sont gardés en cache hors-ligne.",
+  html:`
+   <label>Montant</label><input type="number" id="curVal" value="100" step="any">
+   <div class="row"><div><label>De</label><select id="curFrom"></select></div>
+   <div><label>Vers</label><select id="curTo"></select></div></div>
+   <button class="green" id="curGo">Convertir</button>
+   <button class="ghost" id="curRefresh">🔄 Actualiser les taux</button>
+   <div class="out big" id="curOut">—</div>
+   <div class="out" id="curInfo" style="font-size:11px">—</div>`},
+ {id:"base",   ico:"🔢",cls:"c16", name:"Binaire & Hexa",    desc:"Déc / bin / hex / octal",
+  brief:"Convertissez un nombre entre décimal, binaire, hexadécimal et octal, dans tous les sens.",
+  html:`
+   <label>Décimal</label><input type="number" id="nDec" placeholder="ex. 2026">
+   <label>Binaire</label><input type="text" id="nBin" placeholder="ex. 11111101010">
+   <label>Hexadécimal</label><input type="text" id="nHex" placeholder="ex. 7EA">
+   <label>Octal</label><input type="text" id="nOct" placeholder="ex. 3752">
+   <div class="save-note">Tapez dans n'importe quelle case, les autres se mettent à jour</div>`},
+ {id:"imc",    ico:"📐",cls:"c17", name:"IMC & calories",    desc:"Poids idéal & besoins",
+  brief:"Calculez votre IMC, votre poids idéal et vos besoins caloriques quotidiens (méthode Mifflin-St Jeor).",
+  html:`
+   <div class="chips" id="imcSex">
+    <div class="chip sel" data-s="h">👦 Homme</div><div class="chip" data-s="f">👧 Femme</div></div>
+   <div class="row" style="margin-top:10px">
+    <div><label>Taille (cm)</label><input type="number" id="imcH" value="175"></div>
+    <div><label>Poids (kg)</label><input type="number" id="imcW" value="70" step="any"></div></div>
+   <div class="row">
+    <div><label>Âge</label><input type="number" id="imcA" value="25"></div>
+    <div><label>Activité</label><select id="imcAct">
+      <option value="1.2">Sédentaire</option><option value="1.375">Léger (1-3 j/sem)</option>
+      <option value="1.55" selected>Moderé (3-5 j/sem)</option><option value="1.725">Intense (6-7 j/sem)</option>
+      <option value="1.9">Très intense</option></select></div></div>
+   <button class="green" id="imcGo">Calculer</button>
+   <div class="out" id="imcOut">—</div>`},
+ {id:"lorem",  ico:"🧠",cls:"c18", name:"Lorem ipsum",       desc:"Texte de remplissage",
+  brief:"Générez du faux texte (classique ou amusant) pour remplir vos maquettes.",
+  html:`
+   <div class="row"><div><label>Nombre de paragraphes</label><input type="number" id="loN" value="3" min="1" max="20"></div></div>
+   <div class="chips">
+    <div class="chip sel" data-m="classic">Latin classique</div>
+    <div class="chip" data-m="fun">Français absurde 😄</div></div>
+   <button class="green" id="loGo">Générer</button>
+   <button class="ghost" id="loCopy">📋 Copier</button>
+   <div class="out" id="loOut" style="max-height:220px;overflow:auto">—</div>`},
+ {id:"avg",    ico:"📊",cls:"c19", name:"Moyenne / notes",   desc:"Moyennes pondérées",
+  brief:"Calculez une moyenne pondérée (notes avec coefficients), très utile pour les bulletins.",
+  html:`
+   <div id="avgRows"></div>
+   <button class="ghost" id="avgAdd">+ Ajouter une ligne</button>
+   <button class="green" id="avgGo">Calculer la moyenne</button>
+   <div class="out big" id="avgOut">—</div>
+   <div class="out" id="avgDetail" style="font-size:12px">—</div>
+   <div class="save-note">💾 Vos lignes sont sauvegardées</div>`},
+ {id:"grad",   ico:"🌈",cls:"c20", name:"Dégradés CSS",       desc:"Générateur + code prêt",
+  brief:"Créez de jolis dégradés CSS avec aperçu en direct, et copiez le code.",
+  html:`
+   <div id="gradPrev"></div>
+   <div class="row"><input type="color" id="grA" value="#ff5c8a" style="padding:3px;height:48px">
+   <input type="color" id="grB" value="#6c5cff" style="padding:3px;height:48px"></div>
+   <label>Angle : <output id="grAngV">135°</output></label>
+   <input type="range" id="grAng" min="0" max="360" value="135">
+   <div class="chips" id="grPresets">
+    <div class="chip" data-a="#ff9a9e" data-b="#fad0c4">Sunset</div>
+    <div class="chip" data-a="#a18cd1" data-b="#fbc2eb">Violet</div>
+    <div class="chip" data-a="#84fab0" data-b="#8fd3f4">Ocean</div>
+    <div class="chip" data-a="#fccb90" data-b="#d57eeb">Candy</div>
+    <div class="chip" data-a="#00c6fb" data-b="#005bea">Electric</div>
+    <div class="chip" data-a="#f6d365" data-b="#fda085">Mango</div></div>
+   <div class="out" id="grOut" style="font-size:12px">—</div>
+   <button class="green" id="grCopy">📋 Copier le code CSS</button>`},
+ {id:"typing", ico:"⌨️",cls:"c21", name:"Vitesse de frappe",  desc:"Mots/minute + record",
+  brief:"Mesurez votre vitesse de frappe en mots par minute. Votre record est sauvegardé.",
+  html:`
+   <div class="out" style="text-align:center;font-size:12px">Record : <b id="tyBest">—</b> mots/min</div>
+   <div id="typeArea">Cliquez sur Démarrer pour recevoir une phrase…</div>
+   <input type="text" id="typeInput" placeholder="Tapez ici…" autocomplete="off">
+   <button class="green" id="tyStart">▶ Démarrer</button>
+   <div class="out" id="tyOut">—</div>`},
+ {id:"pomo",   ico:"🍅",cls:"c22", name:"Pomodoro",          desc:"Focus 25 min / pause 5",
+  brief:"Méthode Pomodoro : 25 min de focus, 5 min de pause, avec sessions comptées et sauvegardées.",
+  html:`
+   <div id="pomoTime">25:00</div>
+   <div class="out" style="text-align:center;font-size:12px">Sessions terminées aujourd'hui : <b id="pomoCount">0</b> 🍅</div>
+   <div class="chips" id="pomoMode">
+    <div class="chip sel" data-m="25">Focus 25 min</div>
+    <div class="chip" data-m="5">Pause 5 min</div>
+    <div class="chip" data-m="50">Focus 50 min</div></div>
+   <button class="green" id="pomoStart">▶ Démarrer</button>
+   <button class="ghost" id="pomoReset">↺ Reset</button>`},
 ];
 
 /* ============ NAVIGATION ============ */
 const menuEl=$("menu"),pagesEl=$("pages"),initDone=new Set();
+const SAVED_TOOLS=new Set(["todo","notes","text","dice","pw","avg","typing","pomo","cur"]);
 TOOLS.forEach(t=>{
   const b=document.createElement("button");
-  b.className="mbtn "+t.cls;
+  b.className="mbtn "+t.cls+(SAVED_TOOLS.has(t.id)?" has-save":"");
   b.type="button";
   b.innerHTML='<span class="ico">'+t.ico+'</span><b>'+t.name+'</b><small>'+t.desc+'</small>';
   b.addEventListener("click",()=>go(t.id));
@@ -282,16 +450,15 @@ TOOLS.forEach(t=>{
 function go(id){
   const t=TOOLS.find(x=>x.id===id);if(!t)return;
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
-  const p=$("page-"+id);
-  p.classList.add("show");
-  document.body.classList.add("inTool");   // masque l'accueil
+  $("page-"+id).classList.add("show");
+  document.body.classList.add("inTool");
   $("crumb").textContent=t.name;
   if(location.hash!=="#"+id)location.hash=id;
   scrollTo(0,0);
   if(!initDone.has(id)){
     initDone.add(id);
     try{INITS[id]&&INITS[id]();}
-    catch(err){console.error(err);}     // une erreur d'outil ne casse jamais la page
+    catch(err){console.error(err);}
   }
 }
 function goHome(){
@@ -303,8 +470,8 @@ function goHome(){
 $("btnHome").addEventListener("click",goHome);
 addEventListener("hashchange",()=>{
   const id=location.hash.slice(1);
-  const t=TOOLS.find(x=>x.id===id);
-  if(t)go(id);else if(!id)goHome();
+  if(TOOLS.some(x=>x.id===id))go(id);
+  else if(!id)goHome();
 },{passive:true});
 if(location.hash&&TOOLS.some(t=>"#"+t.id===location.hash))go(location.hash.slice(1));
 
@@ -314,6 +481,8 @@ const INITS={};
 INITS.pixel=function(){
   let pixImg=null,pixRows=null;
   const cv=$("pixCanvas"),ctx=cv.getContext("2d");
+  const st=lsGet("pix_size",{w:16,h:16});
+  $("pixW").value=st.w;$("pixH").value=st.h;
   $("pixFile").addEventListener("change",e=>{
     const f=e.target.files&&e.target.files[0];if(!f)return;
     const r=new FileReader();
@@ -325,6 +494,7 @@ INITS.pixel=function(){
     const w=Math.min(128,Math.max(2,+$("pixW").value||16));
     const h=Math.min(128,Math.max(2,+$("pixH").value||16));
     $("pixW").value=w;$("pixH").value=h;
+    lsSet("pix_size",{w:w,h:h});
     cv.width=w;cv.height=h;
     ctx.clearRect(0,0,w,h);ctx.drawImage(pixImg,0,0,w,h);
     const d=ctx.getImageData(0,0,w,h).data,rows=[];
@@ -347,19 +517,46 @@ INITS.pixel=function(){
       navigator.clipboard.writeText(txt).then(
         ()=>alert("✅ Grille HEX copiée ! ("+pixRows.length+" lignes × "+pixRows[0].split(" ").length+" pixels)"),
         ()=>alert("Copie refusée — le texte reste sélectionnable en dessous."));
-    else alert("Copie non dispo ici — le texte reste sélectionnable en dessous.");
+    else alert("Copie non dispo — le texte reste sélectionnable en dessous.");
   });
 };
 
-/* ============ 2. MOT DE PASSE ============ */
+/* ============ 2. MOT DE PASSE (+ coffre) ============ */
 INITS.pw=function(){
   const sets={up:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",low:"abcdefghijklmnopqrstuvwxyz",num:"0123456789",spec:"!@#$%^&*()-_=+[]{};:,.<>?"},
         on=new Set(["up","low","num","spec"]);
-  $("pwLen").addEventListener("input",e=>{$("pwLenV").textContent=e.target.value;});
-  document.querySelectorAll("#pwOpts .chip").forEach(c=>c.addEventListener("click",()=>{
-    c.classList.toggle("sel");
-    if(c.classList.contains("sel"))on.add(c.dataset.k);else on.delete(c.dataset.k);
-  }));
+  const cfg=lsGet("pw_cfg",{len:16,up:1,low:1,num:1,spec:1});
+  $("pwLen").value=cfg.len;$("pwLenV").textContent=cfg.len;
+  document.querySelectorAll("#pwOpts .chip").forEach(c=>{
+    if(!cfg[c.dataset.k])c.classList.remove("sel"),on.delete(c.dataset.k);
+    c.addEventListener("click",()=>{
+      c.classList.toggle("sel");
+      if(c.classList.contains("sel"))on.add(c.dataset.k);else on.delete(c.dataset.k);
+      lsSet("pw_cfg",{len:+$("pwLen").value,up:on.has("up")?1:0,low:on.has("low")?1:0,num:on.has("num")?1:0,spec:on.has("spec")?1:0});
+    });
+  });
+  $("pwLen").addEventListener("input",e=>{
+    $("pwLenV").textContent=e.target.value;
+    lsSet("pw_cfg",{len:+e.target.value,up:on.has("up")?1:0,low:on.has("low")?1:0,num:on.has("num")?1:0,spec:on.has("spec")?1:0});
+  });
+  function renderVault(){
+    const list=lsGet("pw_vault",[]);
+    const el=$("pwList");
+    el.innerHTML=list.length?"":"<div class='out' style='border-style:solid;font-size:11px'>Aucun mot de passe enregistré. ⚠️ Ceci est un rappel pratique stocké en clair dans votre navigateur — évitez les mots de passe critiques.</div>";
+    list.forEach(function(item,i){
+      const d=document.createElement("div");d.className="todo-item";
+      d.innerHTML="<span></span><button class='ghost'>📋</button><button class='ghost'>✕</button>";
+      d.querySelector("span").textContent=item.name+" : "+item.pw;
+      d.querySelectorAll("button")[0].addEventListener("click",function(){
+        if(navigator.clipboard)navigator.clipboard.writeText(item.pw);
+        alert("Mot de passe copié !");
+      });
+      d.querySelectorAll("button")[1].addEventListener("click",function(){
+        const l=lsGet("pw_vault",[]);l.splice(i,1);lsSet("pw_vault",l);renderVault();
+      });
+      el.appendChild(d);
+    });
+  }
   $("pwGo").addEventListener("click",()=>{
     let pool="";on.forEach(k=>pool+=sets[k]);
     if(!pool){$("pwOut").textContent="Cochez au moins une option !";return;}
@@ -371,6 +568,13 @@ INITS.pw=function(){
     $("pwStrength").textContent="Entropie : "+Math.round(bits)+" bits — "+
       (bits<40?"faible 😟":bits<70?"correct 🙂":"excellent 💪");
   });
+  $("pwSave").addEventListener("click",()=>{
+    const name=$("pwName").value.trim(),pw=$("pwOut").textContent;
+    if(!name||pw==="Cliquez sur Générer"){alert("Générez un mot de passe et donnez-lui un nom.");return;}
+    const l=lsGet("pw_vault",[]);l.push({name:name,pw:pw});
+    lsSet("pw_vault",l.slice(-20));$("pwName").value="";renderVault();
+  });
+  renderVault();
 };
 
 /* ============ 3. UNITÉS ============ */
@@ -382,14 +586,17 @@ INITS.units=function(){
     vol:{L:1,mL:.001,"m³":1000,"gallon US":3.785411784},
     data:{octet:1,Ko:1024,Mo:1048576,Go:1073741824,To:1099511627776}
   };
-  let cat="len";
+  const st=lsGet("units_state",{cat:"len",from:null,to:null,val:1});
+  let cat=st.cat||"len";
   function fill(){
     const keys=Object.keys(UNITS[cat]);
     $("uFrom").innerHTML=keys.map(k=>"<option>"+k+"</option>").join("");
     $("uTo").innerHTML=keys.map(k=>"<option>"+k+"</option>").join("");
-    $("uFrom").value=keys[0];$("uTo").value=keys[Math.min(1,keys.length-1)];
+    $("uFrom").value=st.from&&keys.indexOf(st.from)>=0?st.from:keys[0];
+    $("uTo").value=st.to&&keys.indexOf(st.to)>=0?st.to:keys[Math.min(1,keys.length-1)];
     conv();
   }
+  function save(){lsSet("units_state",{cat:cat,from:$("uFrom").value,to:$("uTo").value,val:+$("uVal").value||0});}
   function conv(){
     const v=+$("uVal").value||0,f=$("uFrom").value,t=$("uTo").value;let r;
     if(cat==="temp"){
@@ -397,17 +604,25 @@ INITS.units=function(){
       r=t==="°C"?c:t==="°F"?c*9/5+32:c+273.15;
     }else r=v*UNITS[cat][f]/UNITS[cat][t];
     $("uOut").textContent=fmt(v)+" "+f+" = "+fmt(r,6)+" "+t;
+    save();
   }
   document.querySelectorAll("#uCat .chip").forEach(c=>c.addEventListener("click",()=>{
     document.querySelectorAll("#uCat .chip").forEach(x=>x.classList.remove("sel"));
-    c.classList.add("sel");cat=c.dataset.c;fill();
+    c.classList.add("sel");cat=c.dataset.c;st.from=st.to=null;fill();save();
   }));
+  if(st.cat&&st.cat!=="len"){
+    const chip=document.querySelector("#uCat .chip[data-c='"+st.cat+"']");
+    if(chip){document.querySelectorAll("#uCat .chip").forEach(x=>x.classList.remove("sel"));
+      chip.classList.add("sel");cat=st.cat;}
+  }
+  $("uVal").value=st.val!=null?st.val:1;
   ["uVal","uFrom","uTo"].forEach(id=>$(id).addEventListener("input",conv));
   fill();
 };
 
 /* ============ 4. COULEURS ============ */
 INITS.color=function(){
+  const st=lsGet("color_last","#6c5cff");
   function h2r(h){h=h.replace("#","");if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
     const n=parseInt(h,16);return isNaN(n)?null:[n>>16&255,n>>8&255,n&255];}
   function r2Hsl(r,g,b){r/=255;g/=255;b/=255;
@@ -424,6 +639,7 @@ INITS.color=function(){
     const r=rgb[0],g=rgb[1],b=rgb[2],hs=r2Hsl(r,g,b),h=hs[0],s=hs[1],l=hs[2];
     const lum=Math.round(.299*r+.587*g+.114*b);
     $("colHex").value=hex;$("colPick").value=hex;
+    lsSet("color_last",hex);
     $("colOut").innerHTML="HEX <b>"+hex.toUpperCase()+"</b> · RGB <b>"+r+", "+g+", "+b+"</b> · HSL <b>"+h+"°, "+s+"%, "+l+"%</b><br>"+
       "Texte lisible sur ce fond : <b>"+(lum>128?"⬜ blanc":"⬛ noir")+"</b>";
     const pals=[h,(h+30)%360,(h+180)%360,(h+120)%360,(h+240)%360,(h+150)%360];
@@ -433,14 +649,14 @@ INITS.color=function(){
     }).join("");
     document.querySelectorAll("#palette .swatch").forEach(function(sw){
       sw.addEventListener("click",function(){
-        if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(sw.dataset.h);
+        if(navigator.clipboard)navigator.clipboard.writeText(sw.dataset.h);
         alert(sw.dataset.h+" copié !");
       });
     });
   }
   $("colPick").addEventListener("input",e=>upd(e.target.value));
   $("colGo").addEventListener("click",()=>{let v=$("colHex").value.trim();upd(v.charAt(0)==="#"?v:"#"+v);});
-  upd("#6c5cff");
+  upd(st);
 };
 
 /* ============ 5. CALCULATRICE ============ */
@@ -473,14 +689,16 @@ INITS.calc=function(){
 
 /* ============ 6. TO-DO ============ */
 INITS.todo=function(){
-  let todos=[];
-  try{todos=JSON.parse(localStorage.getItem("outils_todos")||"[]");}catch(e){todos=[];}
+  let todos=lsGet("todos",[]);
   if(!Array.isArray(todos))todos=[];
-  const save=()=>{try{localStorage.setItem("outils_todos",JSON.stringify(todos));}catch(e){}};
+  const save=()=>lsSet("todos",todos);
+  let hideDone=false;
   function render(){
     const L=$("todoList");L.innerHTML="";
-    if(!todos.length)L.innerHTML='<div class="out" style="border-style:solid">Aucune tâche — profitez du vide 😌</div>';
+    const shown=todos.filter(t=>!hideDone||!t.done);
+    if(!shown.length)L.innerHTML='<div class="out" style="border-style:solid">'+(hideDone?"Toutes les tâches affichées sont terminées !":"Aucune tâche — profitez du vide 😌")+"</div>";
     todos.forEach(function(t,i){
+      if(hideDone&&t.done)return;
       const d=document.createElement("div");d.className="todo-item"+(t.done?" done":"");
       d.innerHTML='<input type="checkbox"'+(t.done?" checked":"")+'><span></span><button class="ghost">✕</button>';
       d.querySelector("span").textContent=t.txt;
@@ -495,17 +713,27 @@ INITS.todo=function(){
   }
   $("todoAdd").addEventListener("click",add);
   $("todoIn").addEventListener("keydown",e=>{if(e.key==="Enter")add();});
+  $("todoSortDone").addEventListener("click",function(){
+    hideDone=!hideDone;this.classList.toggle("sel",hideDone);render();
+  });
+  $("todoClearDone").addEventListener("click",()=>{
+    todos=todos.filter(t=>!t.done);save();render();
+  });
   render();
 };
 
-/* ============ 7. TEXTE ============ */
+/* ============ 7. TEXTE (sauvegardé) ============ */
 INITS.text=function(){
   const ta=$("txtIn");
+  ta.value=lsGet("text_last","");
+  let t=null;
+  function persist(){clearTimeout(t);t=setTimeout(()=>lsSet("text_last",ta.value),400);}
   function stats(){
     const v=ta.value,words=(v.match(/\S+/g)||[]).length;
     $("txtStats").textContent=v.length+" caractères · "+words+" mots · "+
       ((v.match(/[.!?]+/g)||[]).length)+" phrases · "+(v?v.split("\n").length:0)+" lignes · "+
       "~"+Math.ceil(words/200)+" min de lecture";
+    persist();
   }
   ta.addEventListener("input",stats);
   $("txtUp").addEventListener("click",()=>{ta.value=ta.value.toUpperCase();stats();});
@@ -517,13 +745,19 @@ INITS.text=function(){
 
 /* ============ 8. POURCENTAGES / TVA ============ */
 INITS.pct=function(){
-  let rate=10;
-  document.querySelectorAll("#pTva .chip").forEach(c=>c.addEventListener("click",()=>{
-    document.querySelectorAll("#pTva .chip").forEach(x=>x.classList.remove("sel"));
-    c.classList.add("sel");rate=+c.dataset.v;calc();
-  }));
+  const st=lsGet("pct_state",{prix:100,disc:0,tip:0,tva:10});
+  $("pPrix").value=st.prix;$("pDisc").value=st.disc;$("pTip").value=st.tip;
+  let rate=st.tva;
+  document.querySelectorAll("#pTva .chip").forEach(c=>{
+    if(+c.dataset.v===rate){document.querySelectorAll("#pTva .chip").forEach(x=>x.classList.remove("sel"));c.classList.add("sel");}
+    c.addEventListener("click",()=>{
+      document.querySelectorAll("#pTva .chip").forEach(x=>x.classList.remove("sel"));
+      c.classList.add("sel");rate=+c.dataset.v;calc();
+    });
+  });
   function calc(){
     const p=+$("pPrix").value||0,d=+$("pDisc").value||0,t=+$("pTip").value||0;
+    lsSet("pct_state",{prix:p,disc:d,tip:t,tva:rate});
     const a=p*(1-d/100),ht=a/(1+rate/100);
     $("pOut").innerHTML=
       "Prix affiché : <b>"+fmt(p)+" €</b><br>"+
@@ -538,9 +772,12 @@ INITS.pct=function(){
 
 /* ============ 9. CRÉDIT ============ */
 INITS.credit=function(){
+  const st=lsGet("credit_state",{amt:200000,y:20,rate:3.5});
+  $("cAmt").value=st.amt;$("cYears").value=st.y;$("cRate").value=st.rate;
   $("cRate").addEventListener("input",e=>{$("cRateV").textContent=e.target.value.replace(".",",")+" %";calc();});
   function calc(){
     const P=+$("cAmt").value||0,n=(+$("cYears").value||1)*12,r=(+$("cRate").value)/100/12;
+    lsSet("credit_state",{amt:P,y:+$("cYears").value||1,rate:+$("cRate").value});
     const m=r===0?P/n:P*r/(1-Math.pow(1+r,-n)),tot=m*n;
     $("cOut").innerHTML=
       "Mensualité : <b style='color:#00a583'>"+fmt(m)+" €/mois</b><br>"+
@@ -554,6 +791,8 @@ INITS.credit=function(){
 
 /* ============ 10. BASE64 ============ */
 INITS.b64=function(){
+  $("b64In").value=lsGet("b64_last","");
+  $("b64In").addEventListener("input",()=>lsSet("b64_last",$("b64In").value));
   $("b64Enc").addEventListener("click",()=>{
     try{$("b64Out").textContent=btoa(unescape(encodeURIComponent($("b64In").value)));}
     catch(e){$("b64Out").textContent="Erreur d'encodage";}
@@ -610,8 +849,10 @@ INITS.chrono=function(){
   });
 };
 
-/* ============ 12. HASARD ============ */
+/* ============ 12. HASARD (liste sauvegardée) ============ */
 INITS.dice=function(){
+  $("rList").value=lsGet("dice_list","Pizza\nBurger\nSalade");
+  $("rList").addEventListener("input",()=>lsSet("dice_list",$("rList").value));
   $("dGo").addEventListener("click",()=>{
     const n=+$("dN").value||1,f=+$("dF").value||6;
     const rolls=Array.from({length:n},()=>1+Math.floor(Math.random()*f));
@@ -621,6 +862,374 @@ INITS.dice=function(){
     const list=$("rList").value.split("\n").map(s=>s.trim()).filter(Boolean);
     $("rOut").textContent=list.length?list[Math.floor(Math.random()*list.length)]:"Ajoutez des choix dans la liste !";
   });
+};
+
+/* ============ 13. BLOC-NOTES ============ */
+INITS.notes=function(){
+  const ta=$("notesArea");
+  ta.value=lsGet("notes","");
+  let t=null;
+  function meta(){
+    const v=ta.value,words=(v.match(/\S+/g)||[]).length;
+    $("notesMeta").textContent=fmt(v.length)+" caractères · "+words+" mots · dernière sauvegarde : "+new Date().toLocaleTimeString("fr-FR");
+  }
+  ta.addEventListener("input",()=>{
+    clearTimeout(t);
+    $("notesStatus").textContent="✍️ en cours de frappe…";
+    t=setTimeout(()=>{lsSet("notes",ta.value);$("notesStatus").textContent="💾 Sauvegardé à "+new Date().toLocaleTimeString("fr-FR");meta();},500);
+  });
+  $("notesClear").addEventListener("click",()=>{
+    if(ta.value&&confirm("Effacer tout le bloc-notes ?")){ta.value="";lsSet("notes","");meta();}
+  });
+  $("notesCopy").addEventListener("click",()=>{
+    if(navigator.clipboard)navigator.clipboard.writeText(ta.value).then(()=>alert("Copié !"));
+  });
+  meta();
+};
+
+/* ============ 14. DATES & ÂGE ============ */
+INITS.dates=function(){
+  const today=new Date().toISOString().slice(0,10);
+  $("da1").value=lsGet("date_birth","2000-01-01");
+  $("da2").value=today;
+  $("dbDate").value=today;
+  function diff(){
+    const a=new Date($("da1").value),b=new Date($("da2").value);
+    if(isNaN(a)||isNaN(b)){$("daOut").textContent="Choisissez deux dates valides.";return;}
+    lsSet("date_birth",$("da1").value);
+    const ms=b-a,days=Math.round(ms/86400000);
+    let y=b.getFullYear()-a.getFullYear(),m=b.getMonth()-a.getMonth(),d=b.getDate()-a.getDate();
+    if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();}
+    if(m<0){y--;m+=12;}
+    const start=new Date(a);start.setHours(0,0,0,0);
+    let wd=0;const tmp=new Date(start);
+    while(tmp<b){if(tmp.getDay()!==0&&tmp.getDay()!==6)wd++;tmp.setDate(tmp.getDate()+1);}
+    $("daOut").innerHTML=
+      "Écart : <b>"+y+" ans "+m+" mois "+d+" jours</b><br>"+
+      "Soit <b>"+fmt(days,0)+" jours</b> · <b>"+fmt(Math.round(days/7),0)+" semaines</b> · <b>"+fmt(days/365.25,1)+" années</b><br>"+
+      "Jours ouvrés (hors week-ends) : <b>"+fmt(wd,0)+"</b> · Heures : <b>"+fmt(days*24,0)+"</b>";
+  }
+  function addDays(){
+    const base=new Date($("dbDate").value),n=+$("dbDays").value||0;
+    if(isNaN(base)){$("dbOut").textContent="Choisissez une date de départ.";return;}
+    const r=new Date(base);r.setDate(r.getDate()+n);
+    const opts={weekday:"long",day:"numeric",month:"long",year:"numeric"};
+    $("dbOut").textContent=(n>=0?"+":"")+n+" jours → "+r.toLocaleDateString("fr-FR",opts);
+  }
+  $("daGo").addEventListener("click",diff);
+  $("dbGo").addEventListener("click",addDays);
+  ["da1","da2"].forEach(id=>$(id).addEventListener("change",diff));
+  diff();
+};
+
+/* ============ 15. DEVISES (cache 24 h) ============ */
+INITS.cur=function(){
+  const FALLBACK={EUR:1,USD:1.08,GBP:0.85,CHF:0.94,CAD:1.47,JPY:168.5,CNY:7.7,AUD:1.65,
+    MAD:10.8,DZD:145,TND:3.4,SEK:11.4,NOK:11.7,DKK:7.46,PLN:4.3,BRL:6.1,MXN:19.5,INR:90};
+  const NAMES={EUR:"Euro €",USD:"Dollar US $",GBP:"Livre £",CHF:"Franc suisse",CAD:"Dollar canadien",
+    JPY:"Yen ¥",CNY:"Yuan ¥",AUD:"Dollar australien",MAD:"Dirham marocain",DZD:"Dinar algérien",
+    TND:"Dinar tunisien",SEK:"Couronne suédoise",NOK:"Couronne norvégienne",DKK:"Couronne danoise",
+    PLN:"Zloty",BRL:"Real",MXN:"Peso",INR:"Roupie"};
+  const st=lsGet("cur_state",{val:100,from:"EUR",to:"USD"});
+  let rates=null;
+  function fillSelects(){
+    const keys=Object.keys(NAMES);
+    $("curFrom").innerHTML=keys.map(k=>"<option value='"+k+"'>"+NAMES[k]+"</option>").join("");
+    $("curTo").innerHTML=keys.map(k=>"<option value='"+k+"'>"+NAMES[k]+"</option>").join("");
+    $("curFrom").value=st.from;$("curTo").value=st.to;
+  }
+  function conv2(){
+    const v=+$("curVal").value||0,f=$("curFrom").value,t=$("curTo").value;
+    lsSet("cur_state",{val:v,from:f,to:t});
+    if(!rates){$("curOut").textContent="Chargement des taux…";return;}
+    const r=v*rates[t]/rates[f];
+    $("curOut").textContent=fmt(v,2)+" "+f+" = "+fmt(r,2)+" "+t;
+  }
+  function applyRates(data,label){
+    rates=data;
+    $("curInfo").textContent=label;
+    conv2();
+  }
+  async function loadRates(force){
+    const cache=lsGet("cur_cache",null);
+    const fresh=cache&&(Date.now()-cache.t)<86400000;
+    if(!force&&fresh){applyRates(cache.r,"Taux du cache (mis à jour "+new Date(cache.t).toLocaleString("fr-FR")+" )");return;}
+    if(!navigator.onLine){applyRates(FALLBACK,"⚠️ Hors-ligne : taux indicatifs figés");return;}
+    try{
+      const resp=await fetch("https://open.er-api.com/v6/latest/EUR");
+      if(!resp.ok)throw new Error("http");
+      const j=await resp.json();
+      if(j&&j.rates){
+        const sel={};Object.keys(NAMES).forEach(k=>{if(j.rates[k])sel[k]=j.rates[k];});
+        lsSet("cur_cache",{t:Date.now(),rates:sel});
+        applyRates(sel,"Taux en direct (open.er-api.com), mis à jour "+new Date().toLocaleTimeString("fr-FR"));
+      }else throw new Error("bad");
+    }catch(e){applyRates(FALLBACK,"⚠️ Impossible de récupérer les taux en ligne — taux indicatifs figés");}
+  }
+  $("curVal").value=st.val;
+  fillSelects();
+  $("curVal").addEventListener("input",conv2);
+  $("curFrom").addEventListener("change",conv2);
+  $("curTo").addEventListener("change",conv2);
+  $("curGo").addEventListener("click",conv2);
+  $("curRefresh").addEventListener("click",()=>loadRates(true));
+  loadRates(false);
+};
+
+/* ============ 16. BINAIRE & HEXA ============ */
+INITS.base=function(){
+  const upd=(from)=>{
+    let n;
+    if(from==="nDec")n=parseInt($("nDec").value||"0",10);
+    else if(from==="nBin")n=parseInt(($("nBin").value||"0").replace(/[^01]/g,""),2);
+    else if(from==="nHex")n=parseInt(($("nHex").value||"0").replace(/[^0-9a-fA-F]/g,""),16);
+    else n=parseInt(($("nOct").value||"0").replace(/[^0-7]/g,""),8);
+    if(isNaN(n))n=0;
+    n=Math.min(n,Number.MAX_SAFE_INTEGER);
+    if(from!=="nDec")$("nDec").value=n;
+    if(from!=="nBin")$("nBin").value=n.toString(2);
+    if(from!=="nHex")$("nHex").value=n.toString(16).toUpperCase();
+    if(from!=="nOct")$("nOct").value=n.toString(8);
+    lsSet("base_last",{d:$("nDec").value});
+  };
+  [["nDec",10],["nBin",2],["nHex",16],["nOct",8]].forEach(([id])=>
+    $(id).addEventListener("input",()=>upd(id)));
+  const last=lsGet("base_last",null);
+  if(last&&last.d)$("nDec").value=last.d;
+  upd("nDec");
+};
+
+/* ============ 17. IMC & CALORIES ============ */
+INITS.imc=function(){
+  const st=lsGet("imc_state",{sex:"h",h:175,w:70,a:25,act:"1.55"});
+  let sex=st.sex;
+  $("imcH").value=st.h;$("imcW").value=st.w;$("imcA").value=st.a;$("imcAct").value=st.act;
+  document.querySelectorAll("#imcSex .chip").forEach(c=>{
+    if(c.dataset.s===sex)c.classList.add("sel");
+    c.addEventListener("click",()=>{
+      document.querySelectorAll("#imcSex .chip").forEach(x=>x.classList.remove("sel"));
+      c.classList.add("sel");sex=c.dataset.s;calc();
+    });
+  });
+  function calc(){
+    const h=+$("imcH").value||0,w=+$("imcW").value||0,a=+$("imcA").value||0,act=+$("imcAct").value||1.55;
+    lsSet("imc_state",{sex:sex,h:h,w:w,a:a,act:act});
+    if(h<50||w<15){$("imcOut").textContent="Entrez des valeurs réalistes.";return;}
+    const imc=w/((h/100)*(h/100));
+    const idealMin=18.5*(h/100)*(h/100),idealMax=25*(h/100)*(h/100);
+    const bmr=10*w+6.25*h-5*a+(sex==="h"?5:-161);
+    const kcal=bmr*act;
+    const cat=imc<18.5?"insuffisant ⬇️":imc<25?"normal ✅":imc<30?"surpoids ⚠️":imc<40?"obésité 🔴":"obésité sévère 🔴🔴";
+    $("imcOut").innerHTML=
+      "IMC : <b style='font-size:20px'>"+imc.toFixed(1)+"</b> — "+cat+"<br>"+
+      "Poids de forme : <b>"+idealMin.toFixed(1)+" à "+idealMax.toFixed(1)+" kg</b><br>"+
+      "Métabolisme de base : <b>"+fmt(bmr,0)+" kcal/jour</b><br>"+
+      "Besoin quotidien (activité incluse) : <b style='color:#00a583'>"+fmt(kcal,0)+" kcal/jour</b><br>"+
+      "Pour perdre ~0,5 kg/semaine : ~"+fmt(kcal-500,0)+" kcal/jour · Pour prendre : ~"+fmt(kcal+300,0)+" kcal/jour";
+  }
+  ["imcH","imcW","imcA","imcAct"].forEach(id=>$(id).addEventListener("input",calc));
+  calc();
+};
+
+/* ============ 18. LOREM IPSUM ============ */
+INITS.lorem=function(){
+  const CLASSIC=["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."];
+  const FUN=["Le chat voisin a encore mangé mes croissants, c'est un scandale national.",
+    "Selon une étude rigoureuse menée sur trois canards, le mardi n'existe pas vraiment.",
+    "J'ai rangé ma chambre et maintenant je ne retrouve plus la chambre.",
+    "Le wifi de mamie est plus rapide que le TGV, c'est mathématiquement prouvé.",
+    "Mon plant de basilic m'en veut depuis l'incident du lactose, il le sent.",
+    "La quarantaine a prouvé que je peux vivre trois mois sur des pâtes et de la honte.",
+    "Chaque croissant que je ne mange pas est une insulte personnelle à la France.",
+    "Mon tél a plus de mémoire vive que mes années de lycée réunies."];
+  let mode="classic";
+  document.querySelectorAll("#page-lorem .chips .chip").forEach(c=>c.addEventListener("click",()=>{
+    document.querySelectorAll("#page-lorem .chips .chip").forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel");mode=c.dataset.m;
+  }));
+  function gen(){
+    const src=mode==="classic"?CLASSIC:FUN;
+    const n=Math.min(20,Math.max(1,+$("loN").value||3));
+    const out=[];
+    for(let i=0;i<n;i++)out.push(src[Math.floor(Math.random()*src.length)]);
+    $("loOut").textContent=out.join("\n\n");
+  }
+  $("loGo").addEventListener("click",gen);
+  $("loCopy").addEventListener("click",()=>{
+    if(navigator.clipboard)navigator.clipboard.writeText($("loOut").textContent).then(()=>alert("Copié !"));
+  });
+  gen();
+};
+
+/* ============ 19. MOYENNE PONDÉRÉE ============ */
+INITS.avg=function(){
+  const saved=lsGet("avg_rows",[{n:12,c:1},{n:15,c:2},{n:8,c:1}]);
+  function render(){
+    const box=$("avgRows");box.innerHTML="";
+    saved.forEach(function(r,i){
+      const d=document.createElement("div");d.className="row";d.style.marginTop="8px";
+      d.innerHTML='<input type="number" step="any" placeholder="Note /20" class="avgN">'+
+        '<input type="number" step="any" placeholder="Coef" class="avgC" style="max-width:110px">'+
+        '<button class="ghost" style="margin:0;max-width:44px">✕</button>';
+      const inputs=d.querySelectorAll("input");
+      inputs[0].value=r.n;inputs[1].value=r.c;
+      inputs[0].addEventListener("input",()=>{saved[i].n=+inputs[0].value||0;lsSet("avg_rows",saved);calc();});
+      inputs[1].addEventListener("input",()=>{saved[i].c=+inputs[1].value||0;lsSet("avg_rows",saved);calc();});
+      d.querySelector("button").addEventListener("click",()=>{saved.splice(i,1);lsSet("avg_rows",saved);render();calc();});
+      box.appendChild(d);
+    });
+    calc();
+  }
+  function calc(){
+    let sum=0,co=0,notes=[];
+    saved.forEach(function(r){sum+=r.n*r.c;co+=r.c;
+      if(r.c>0)notes.push(r.n);});
+    if(!co){$("avgOut").textContent="Ajoutez des lignes.";$("avgDetail").textContent="";return;}
+    const m=sum/co;
+    $("avgOut").textContent=m.toFixed(2)+" / 20";
+    const mini=Math.min.apply(null,notes),maxi=Math.max.apply(null,notes);
+    $("avgDetail").textContent=notes.length+" notes · total coefficients : "+co+
+      " · min : "+mini+" · max : "+maxi+
+      " · mention : "+(m>=16?"félicitations 🎉":m>=14?"très bien 👏":m>=12?"bien 👍":m>=10?"passable 🙂":"insuffisant 😬");
+  }
+  $("avgAdd").addEventListener("click",()=>{saved.push({n:10,c:1});lsSet("avg_rows",saved);render();});
+  $("avgGo").addEventListener("click",calc);
+  render();
+};
+
+/* ============ 20. DÉGRADÉS CSS ============ */
+INITS.grad=function(){
+  const st=lsGet("grad_state",{a:"#ff5c8a",b:"#6c5cff",ang:135});
+  $("grA").value=st.a;$("grB").value=st.b;$("grAng").value=st.ang;$("grAngV").textContent=st.ang+"°";
+  function upd(){
+    const a=$("grA").value,b=$("grB").value,ang=+$("grAng").value;
+    $("grAngV").textContent=ang+"°";
+    lsSet("grad_state",{a:a,b:b,ang:ang});
+    const css="linear-gradient("+ang+"deg, "+a+", "+b+")";
+    $("gradPrev").style.background=css;
+    $("grOut").textContent="background: "+css+";";
+  }
+  $("grA").addEventListener("input",upd);
+  $("grB").addEventListener("input",upd);
+  $("grAng").addEventListener("input",upd);
+  document.querySelectorAll("#grPresets .chip").forEach(c=>c.addEventListener("click",()=>{
+    $("grA").value=c.dataset.a;$("grB").value=c.dataset.b;upd();
+  }));
+  $("grCopy").addEventListener("click",()=>{
+    if(navigator.clipboard)navigator.clipboard.writeText("background: "+$("grOut").textContent.replace(/^background: |;$/g,"")+";")
+      .then(()=>alert("Code CSS copié !"));
+  });
+  upd();
+};
+
+/* ============ 21. VITESSE DE FRAPPE ============ */
+INITS.typing=function(){
+  const PHRASES=["Le renard rapide saute par-dessus le chien paresseux près de la rivière bleue.",
+    "Un voyage de mille lieues commence toujours par un premier pas vers l'horizon.",
+    "Les mots que nous tapons aujourd'hui construisent les histoires de demain.",
+    "La clarté du style vient surtout de la patience et d'un bon café du matin.",
+    "Quarante-deux chats noirs rôdaient silencieusement dans la vieille bibliothèque municipale."];
+  let best=lsGet("typing_best",null),startT=null,cur="";
+  if(best)$("tyBest").textContent=best+" mots/min";
+  function setPhrase(){
+    cur=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+    const ta=$("typeArea");
+    ta.innerHTML="";
+    Array.from(cur).forEach(ch=>{
+      const s=document.createElement("span");s.textContent=ch;ta.appendChild(s);
+    });
+    $("typeInput").value="";startT=null;
+    $("tyOut").textContent="Tapez la phrase dès votre première lettre…";
+  }
+  function renderTyped(){
+    const v=$("typeInput").value,spans=$("typeArea").querySelectorAll("span");
+    let ok=true;
+    spans.forEach(function(s,i){
+      s.className="";
+      if(i<v.length){
+        if(v[i]===cur[i])s.className="ok";
+        else{s.className="bad";ok=false;}
+      }
+    });
+    return ok&&v.length===cur.length;
+  }
+  $("typeInput").addEventListener("input",()=>{
+    if(!cur)return;
+    if(!startT)startT=performance.now();
+    const done=renderTyped();
+    if(done){
+      const secs=(performance.now()-startT)/1000;
+      const words=cur.split(" ").length;
+      const wpm=Math.round(words/(secs/60));
+      const prev=lsGet("typing_best",null);
+      const isRecord=!prev||wpm>prev;
+      if(isRecord)lsSet("typing_best",wpm);
+      $("tyBest").textContent=Math.max(wpm,prev||0)+" mots/min";
+      $("tyOut").innerHTML="⏱️ "+secs.toFixed(1)+" s · <b>"+wpm+" mots/min</b>"+
+        (isRecord?" · 🏆 NOUVEAU RECORD !":"");
+      cur="";$("typeInput").disabled=true;
+      setTimeout(()=>{$("typeInput").disabled=false;setPhrase();},2500);
+    }
+  });
+  $("tyStart").addEventListener("click",()=>{$("typeInput").disabled=false;setPhrase();$("typeInput").focus();});
+  setPhrase();
+};
+
+/* ============ 22. POMODORO ============ */
+INITS.pomo=function(){
+  let minutes=25,remain=minutes*60,running=false,iv=null;
+  const today=new Date().toDateString();
+  let st=lsGet("pomo_state",{day:today,count:0});
+  if(st.day!==today)st={day:today,count:0};
+  $("pomoCount").textContent=st.count;
+  function render(){
+    const m=String(Math.floor(remain/60)).padStart(2,"0"),
+          s=String(remain%60).padStart(2,"0");
+    $("pomoTime").textContent=m+":"+s;
+    document.title=running?"🍅 "+m+":"+s+" — Pomodoro":"🧰 Ma Boîte à Outils";
+  }
+  function beep(){
+    try{
+      const AC=new(window.AudioContext||window.webkitAudioContext)();
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.frequency.value=660;g.gain.value=.3;
+      o.connect(g);g.connect(AC.destination);o.start();
+      o.frequency.setValueAtTime(880,AC.currentTime+.2);
+      o.stop(AC.currentTime+.5);
+    }catch(e){}
+  }
+  function tick(){
+    remain--;
+    if(remain<=0){
+      clearInterval(iv);running=false;remain=minutes*60;
+      $("pomoStart").textContent="▶ Démarrer";
+      if(minutes===25||minutes===50){
+        st.count++;lsSet("pomo_state",st);$("pomoCount").textContent=st.count;
+        beep();alert("🍅 Session terminée ! Pause bien méritée.");
+      }else{beep();alert("☕ Pause terminée ! On repart pour du focus ?");}
+    }
+    render();
+  }
+  document.querySelectorAll("#pomoMode .chip").forEach(c=>c.addEventListener("click",()=>{
+    document.querySelectorAll("#pomoMode .chip").forEach(x=>x.classList.remove("sel"));
+    c.classList.add("sel");
+    minutes=+c.dataset.m;remain=minutes*60;render();
+  }));
+  $("pomoStart").addEventListener("click",()=>{
+    running=!running;
+    $("pomoStart").textContent=running?"⏸ Pause":"▶ Démarrer";
+    if(running)iv=setInterval(tick,1000);
+    else clearInterval(iv);
+  });
+  $("pomoReset").addEventListener("click",()=>{
+    clearInterval(iv);running=false;remain=minutes*60;
+    $("pomoStart").textContent="▶ Démarrer";render();
+  });
+  render();
 };
 </script>
 </body>
