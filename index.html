@@ -1446,7 +1446,10 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         }
         const {error}=await sb.storage.from("drive").upload(uid+"/"+f.name,blob,{upsert:true});
         if(!error){
-          await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});
+          const {error:iErr}=await sb.from("drive_files").insert({user_id:uid,name:f.name,size:blob.size});
+          if(iErr&&(iErr.message||"").indexOf("row-level security")>=0){
+            o.innerHTML="✅ Image envoyée, mais l'entrée n'a pas pu être enregistrée (RLS). Va dans <b>Supabase → SQL Editor</b> et exécute :<br><code style='display:block;white-space:pre-wrap;background:#f4f2fb;padding:8px;border-radius:8px;font-size:10px;margin-top:6px'>create table if not exists drive_files (user_id uuid not null default auth.uid() references auth.users(id) on delete cascade, name text not null, size bigint, created_at timestamptz default now(), primary key (user_id, name));\nalter table drive_files enable row level security;\ndrop policy if exists drive_own on drive_files;\ncreate policy drive_own on drive_files for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\ndrop policy if exists drive_admin on drive_files;\ncreate policy drive_admin on drive_files for select using (auth.jwt()->>'email' = '"+ADMIN_EMAIL+"');</code><br>Puis réenvoyez l'image.";
+          }
           used+=blob.size;
         }else if((error.message||"").indexOf("Bucket not found")>=0){
           try{await sb.storage.createBucket("drive",{public:true});}catch(e){}
