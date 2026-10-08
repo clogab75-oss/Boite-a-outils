@@ -19,6 +19,7 @@
   --card:rgba(255,255,255,.9);--panel:rgba(255,255,255,.88);--panelB:rgba(255,255,255,.82);
   --input:#faf9ff;--out:#faf9ff;
   --tile:#f6f4fb;--card2:#fff;--head:#2b1e63;--body:#3b3166;--bord:#e5defa;
+  --fs:15px;--bs:12px;   /* taille texte et compensation boutons */
   font-family:"Segoe UI",Inter,system-ui,sans-serif;
 }
 /* ===== THÈMES ===== */
@@ -74,7 +75,7 @@
 [data-theme="neon"] .toolToggle label{background:#251f52;border-color:rgba(154,139,255,.35)}
 [data-theme="neon"] .save-note{color:#5effc0}
 html{scroll-behavior:smooth}
-body{color:var(--txt);min-height:100vh;overflow-x:hidden}
+body{color:var(--txt);min-height:100vh;overflow-x:hidden;font-size:var(--fs,15px)}
 #bgFx{position:fixed;inset:0;z-index:-2;background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3),var(--g4));
   background-size:250% 250%;background-position:var(--mx,50%) var(--my,50%);
   transition:background-position .7s cubic-bezier(.2,.8,.3,1);
@@ -178,7 +179,7 @@ body.inTool #home{display:none}
 .tool-card .desc{color:var(--dim);font-size:12px;margin:4px 0 14px;font-weight:600}
 label{display:block;font-size:12px;color:var(--dim,#584d80);margin:12px 0 5px;font-weight:700}
 input,select,textarea{width:100%;background:var(--input);border:1.5px solid var(--bord,#e2def5);color:var(--txt);
-  padding:11px 13px;border-radius:13px;font-size:15px;outline:none;font-family:inherit;transition:.15s}
+  padding:11px 13px;border-radius:13px;font-size:calc(var(--fs) - 1px);outline:none;font-family:inherit;transition:.15s}
 input:focus,select:focus,textarea:focus{border-color:#a18cd1;background:var(--card2,#fff);box-shadow:0 0 0 3px rgba(161,140,209,.25)}
 textarea{resize:vertical;min-height:80px}
 button{background:linear-gradient(135deg,var(--btnB),var(--btnA));color:#fff;border:none;border-radius:13px;
@@ -317,13 +318,16 @@ html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:no
 .animBtn{flex:1;font-size:11px;padding:9px 4px;margin:0;text-align:center}
 .animBtn.sel{background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;border:1.5px solid transparent}
 .toolToggle{display:flex;flex-wrap:wrap;gap:6px;max-height:200px;overflow:auto;padding:4px 0}
+.rangeRow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.rangeRow input[type=range]{flex:1;margin:0}
+.rangeRow .rv{font-weight:800;min-width:52px;text-align:right;font-size:12px;color:var(--head,#2b1e63)}
 .toolToggle label{display:flex;align-items:center;gap:5px;background:var(--input,var(--tile,#f6f4fb));border:1.5px solid var(--bord,#e2def5);
   border-radius:11px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;margin:0;transition:.15s}
 .toolToggle input{width:auto;margin:0}
 .toolToggle label.off{opacity:.4;text-decoration:line-through}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<script>try{var __t=localStorage.getItem("nova_theme");if(__t)document.documentElement.dataset.theme=__t;var __a=localStorage.getItem("nova_anim")||(localStorage.getItem("nova_noanim")==="1"?"none":"");if(__a&&__a!=="full")document.documentElement.dataset.anim=__a;}catch(e){}</script>
+<script>try{var __t=localStorage.getItem("nova_theme");if(__t)document.documentElement.dataset.theme=__t;var __a=localStorage.getItem("nova_anim")||(localStorage.getItem("nova_noanim")==="1"?"none":"");if(__a&&__a!=="full")document.documentElement.dataset.anim=__a;var __fs=localStorage.getItem("nova_fs");if(__fs){document.documentElement.style.setProperty("--fs",__fs+"px");}var __bs=localStorage.getItem("nova_bs");if(__bs&&__bs!=="0"){document.documentElement.style.setProperty("--bs",__bs+"px");}}catch(e){}</script>
 </head>
 <body>
 <div id="bgFx"></div>
@@ -345,7 +349,7 @@ html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:no
     </div>
     <p id="greet"></p>
     <h2>Ma Boîte à Outils</h2>
-    <p id="heroSub">101 OUTILS · SAUVEGARDE AUTOMATIQUE · 100% HORS-LIGNE · MOBILE & PC</p>
+    <p id="heroSub">BOÎTE À OUTILS · SAUVEGARDE AUTOMATIQUE · MOBILE & PC</p>
   </div>
   <div id="searchWrap">
     <input type="text" id="search" placeholder="🔍 Rechercher un outil… (tapez et Entrée pour ouvrir)" autocomplete="off"/>
@@ -1577,7 +1581,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
         c.style.cssText="position:relative;border:1.5px dashed #d9cfe8;border-radius:10px;overflow:hidden;opacity:.75";
         c.innerHTML="<img style='width:100%;height:56px;object-fit:cover;display:block;background:var(--tile,#f4f2fb);filter:grayscale(.7)'>"+
           "<div style='padding:3px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"+esc(f.name)+"</div>"+
-          "<button class='rs' style='position:absolute;top:3px;right:3px;border:none;border-radius:7px;background:#e6f9ef;color:#00a583;font-size:10px;padding:2px 6px;cursor:pointer'>♻️</button>";
+          "<button class='rs drv-rs' style='position:absolute;top:3px;right:3px;border:none;border-radius:7px;background:var(--chipBtn2,#e6f9ef);color:var(--chipBtnTxt2,#00a583);font-size:10px;padding:2px 6px;cursor:pointer'>♻️</button>";
         c.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
         c.querySelector(".rs").addEventListener("click",async()=>{
           await sb.from("drive_files").update({deleted:false}).eq("name",f.name).eq("user_id",uid);
@@ -1602,7 +1606,7 @@ calcTool("mcrs","🔴","Redstone : délais","Répéteurs → secondes","fun","Co
           "<div style='padding:0 7px 6px;font-size:9px;color:var(--dim,#6b6489)'>"+human(f.size||0)+"</div>"+
           "<div style='position:absolute;top:4px;right:4px;display:flex;gap:4px'>"+
           "<button class='dl' title='Télécharger' style='border:none;border-radius:8px;background:var(--card2,#fff);padding:3px 6px;cursor:pointer'>⬇️</button>"+
-          "<button class='rm' title='Supprimer' style='border:none;border-radius:8px;background:#ffe6ee;padding:3px 6px;cursor:pointer'>🗑</button></div>";
+          "<button class='rm drv-del' title='Supprimer' style='border:none;border-radius:8px;background:var(--chipBtn3,#ffe6ee);padding:3px 6px;cursor:pointer'>🗑</button></div>";
         cell.querySelector("img").src=sb.storage.from("drive").getPublicUrl(uid+"/"+f.name).data.publicUrl;
         cell.querySelector(".dl").addEventListener("click",async()=>{
           const {data}=await sb.storage.from("drive").download(uid+"/"+f.name);
@@ -1689,6 +1693,76 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
   [["l","Consommation (L/100km)",6]],
   v=>fmt(v.l)+" L/100km = <b style='color:#00a583'>"+fmt(235.215/v.l,1)+" mpg US</b> · <b>"+fmt(282.481/v.l,1)+" mpg UK</b> · <b>"+fmt(100/v.l,1)+" km/L</b>");
 
+/* ===== YouTube : télécharger une vidéo ou son audio ===== */
+(function(){
+  const meta={id:"ytdl",ico:"📺",name:"YouTube Télécharger",desc:"Vidéo MP4 ou audio MP3",cat:"dev",cls:nextCls(),
+    brief:"Collez un lien YouTube et choisissez vidéo (MP4) ou audio (MP3). Utilisez-le seulement pour du contenu dont vous avez les droits (vos vidéos, contenu libre de droits).",
+    html:'<label>Lien YouTube</label>'+
+      '<input id="yt_url" placeholder="https://www.youtube.com/watch?v=…">'+
+      '<div class="row" style="margin-top:12px"><button class="green" id="yt_mp4">🎬 Vidéo MP4</button><button id="yt_mp3">🎵 Audio MP3</button></div>'+
+      '<div class="out" id="yt_o">⏳ Le traitement se fait côté serveur public (cobalt) — si le service est saturé, la méthode manuelle s\u2019affichera.</div>'+
+      '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (fonctionne toujours)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button><div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Installez yt-dlp sur un PC puis collez cette commande dans un terminal. C\u2019est gratuit et illimité.</div></div>'};
+  GEN.push({meta:meta,init:function(){
+    const o=$("yt_o"),m=$("yt_manual"),cmd=$("yt_cmd");
+    function manual(u){
+      cmd.textContent='yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "'+u+'"';
+      m.style.display="";
+    }
+    async function go(audio){
+      const u=$("yt_url").value.trim();
+      if(!u||u.indexOf("http")!==0)return o.innerHTML="⚠️ Collez d'abord un lien valide.";
+      manual(u);
+      o.innerHTML="⏳ Préparation du téléchargement…";
+      try{
+        const r=await fetch("https://api.cobalt.tools/json",{method:"POST",
+          headers:{"Content-Type":"application/json","Accept":"application/json"},
+          body:JSON.stringify({url:u,aFormat:"mp3",vQuality:"720",filenameStyle:"basic"})});
+        const j=await r.json();
+        if(j.status==="redirect"||j.status==="stream"||j.status==="tunnel"){
+          o.innerHTML="✅ Prêt ! <a href='"+j.url+"' target='_blank' rel='noopener' style='color:#00a583;font-weight:800'>👉 Cliquez ici pour télécharger</a>";
+        }else if(j.status==="picker"){
+          o.innerHTML="✅ Choisissez le format : "+(j.audio||[]).map(a=>"<a href='"+a+"' style='color:#00a583'>audio</a>").join(" · ");
+        }else{
+          o.innerHTML="ℹ️ Le service public est saturé — utilisez la méthode manuelle ci-dessous.";
+        }
+      }catch(e){
+        o.innerHTML="ℹ️ Service public indisponible — utilisez la méthode manuelle ci-dessous.";
+      }
+    }
+    $("yt_mp4").addEventListener("click",()=>go(false));
+    $("yt_mp3").addEventListener("click",()=>go(true));
+    $("yt_copy").addEventListener("click",()=>{try{navigator.clipboard.writeText(cmd.textContent);}catch(e){}});
+  }});
+})();
+
+/* ===== Générateur de QR codes ===== */
+(function(){
+  const meta={id:"qr",ico:"🔳",name:"QR Code",desc:"Créer et télécharger",cat:"dev",cls:nextCls(),
+    brief:"Transformez n\u2019importe quel texte ou lien en QR code, puis téléchargez-le en PNG.",
+    html:'<label>Texte ou lien à encoder</label>'+
+      '<textarea id="qr_in" placeholder="https://… ou n\u2019importe quel texte"></textarea>'+
+      '<div class="row" style="margin-top:12px"><button class="green" id="qr_gen">✔ Générer</button><button id="qr_dl" style="display:none">⬇️ Télécharger PNG</button></div>'+
+      '<div style="text-align:center;margin-top:16px"><img id="qr_img" alt="QR code" style="display:none;max-width:240px;background:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 24px rgba(80,50,160,.2)"></div>'+
+      '<div class="out" id="qr_o">—</div>'};
+  GEN.push({meta:meta,init:function(){
+    let url="";
+    $("qr_gen").addEventListener("click",()=>{
+      const t=$("qr_in").value.trim();
+      if(!t)return $("qr_o").textContent="⚠️ Écrivez d'abord un texte.";
+      url="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data="+encodeURIComponent(t);
+      const im=$("qr_img");
+      im.onload=()=>{im.style.display="inline-block";$("qr_dl").style.display="";$("qr_o").textContent="✅ QR code généré !";};
+      im.onerror=()=>{$("qr_o").textContent="⚠️ Impossible de générer (vérifiez la connexion).";};
+      im.src=url;
+    });
+    $("qr_dl").addEventListener("click",()=>{
+      if(!url)return;
+      const a=document.createElement("a");a.href=url;a.download="qr-code.png";a.target="_blank";a.rel="noopener";
+      document.body.appendChild(a);a.click();a.remove();
+    });
+  }});
+})();
+
 /* ============================================================
    MENU + PAGES + RECHERCHE
    ============================================================ */
@@ -1700,7 +1774,7 @@ ALL.forEach(a=>{if(CATS.indexOf(a.meta.cat)<0)CATS.push(a.meta.cat);});
 const CATLABEL={image:"🎨 Image",securite:"🔐 Sécurité",mesure:"📏 Mesures",maths:"🧮 Maths",argent:"💶 Argent",
   temps:"⏰ Temps",texte:"📝 Texte",dev:"💻 Développement",quotidien:"🏠 Quotidien",sante:"💪 Santé",
   maison:"🏠 Travaux",voyage:"🧳 Voyage",fun:"🎮 Fun"};
-$("heroSub").textContent=ALL.length+" OUTILS · SAUVEGARDE AUTOMATIQUE · 100% HORS-LIGNE · MOBILE & PC";
+$("heroSub").textContent=ALL.length+" OUTILS · SAUVEGARDE AUTOMATIQUE · SYNCHRO CLOUD · MOBILE & PC";
 
 /* ===== Algorithme : les outils que tu utilises le plus remontent ===== */
 const ADMIN_EMAIL="clogab75@gmail.com";
@@ -2802,6 +2876,12 @@ INITS.pomo=function(){
       '<button class="ghost animBtn" data-a="low">🎞️ Réduites</button>'+
       '<button class="ghost animBtn" data-a="none">🚫 Aucune</button></div>'+
       '<div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Complètes : tous les effets · Réduites : fond discret, pas de cascade · Aucune : tout est figé</div></div>'+
+    '<div class="set-sec"><label>🔠 Taille du texte</label>'+
+      '<div class="rangeRow"><input type="range" id="setFS" min="12" max="22" step="1"><span class="rv" id="fsVal"></span></div>'+
+      '<div style="font-size:10px;color:var(--dim,#6b6489);margin-top:4px">12 = compact · 15 = normal · 22 = très grand</div></div>'+
+    '<div class="set-sec"><label>🔘 Taille des boutons</label>'+
+      '<div class="rangeRow"><input type="range" id="setBS" min="-4" max="10" step="1"><span class="rv" id="bsVal"></span></div>'+
+      '<div style="font-size:10px;color:var(--dim,#6b6489);margin-top:4px">−4 = petits · 0 = normaux · +10 = très grands</div></div>'+
     '<div class="set-sec"><label>🧰 Outils affichés <span style="font-weight:400;color:var(--dim,#6b6489)">(décocher pour masquer)</span></label>'+
     '<div class="toolToggle" id="setTools" style="margin-top:8px">'+toolBoxes+'</div>'+
     '<button class="ghost" id="setAllTools" style="font-size:11px;padding:7px 12px;margin-top:8px">Tout afficher</button></div>'+
@@ -2815,6 +2895,26 @@ INITS.pomo=function(){
     document.querySelectorAll(".animBtn").forEach(b=>b.classList.toggle("sel",b.dataset.a===a));
   }
   setAnimLvl(curAnim());
+  /* tailles texte & boutons */
+  function applySizes(){
+    let fs=15,bs=0;
+    try{fs=+localStorage.getItem("nova_fs")||15;bs=+localStorage.getItem("nova_bs")||0;}catch(e){}
+    const de=document.documentElement;
+    de.style.setProperty("--fs",fs+"px");
+    de.style.setProperty("--bs",bs+"px");
+    const f=$("setFS"),b2=$("setBS");
+    if(f){f.value=fs;$("fsVal").textContent=fs+" px";}
+    if(b2){b2.value=bs;$("bsVal").textContent=(bs>0?"+":"")+bs;}
+  }
+  applySizes();
+  $("setFS").addEventListener("input",e=>{
+    try{localStorage.setItem("nova_fs",e.target.value);}catch(err){}
+    applySizes();
+  });
+  $("setBS").addEventListener("input",e=>{
+    try{localStorage.setItem("nova_bs",e.target.value);}catch(err){}
+    applySizes();
+  });
   const HID=()=>{try{return new Set(JSON.parse(localStorage.getItem("nova_hidden")||"[]"));}catch(e){return new Set();}};
   function syncToolBoxes(){$("setTools").querySelectorAll("label").forEach(l=>{
     const off=HID().has(l.dataset.id);l.querySelector("input").checked=!off;l.classList.toggle("off",off);});}
