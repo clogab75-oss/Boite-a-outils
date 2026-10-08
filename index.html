@@ -1701,7 +1701,11 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
       '<input id="yt_url" placeholder="https://www.youtube.com/watch?v=…">'+
       '<div class="row" style="margin-top:12px"><button class="green" id="yt_mp4">🎬 Vidéo MP4</button><button id="yt_mp3">🎵 Audio MP3</button></div>'+
       '<div class="out" id="yt_o">⏳ Collez un lien, choisissez MP4 ou MP3 — le site essaie automatiquement plusieurs serveurs gratuits, aucun réglage à faire.</div>'+
-      '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (fonctionne toujours)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button><div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Installez yt-dlp sur un PC puis collez cette commande dans un terminal. C\u2019est gratuit et illimité.</div></div>'};
+      '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (fonctionne toujours)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button><div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Installez yt-dlp sur un PC puis collez cette commande dans un terminal. C\u2019est gratuit et illimité.</div></div>'+
+      '<div class="out" id="yt_colab" style="display:none"><b>☁️ Méthode Google Colab (aucune installation, marche sur Chromebook)</b>'+
+      '<div style="font-size:11px;margin-top:6px">1. Ouvrez <a href="https://colab.research.google.com" target="_blank" rel="noopener" style="color:#00a583;font-weight:800">colab.research.google.com</a> (compte Google requis) → « Nouveau notebook »<br>2. Cliquez sur la cellule, collez le code ci-dessous<br>3. Menu Exécution → « Tout exécuter » — le fichier apparaît dans l\u2019icône 📁 à gauche, clic droit → Télécharger</div>'+
+      '<div id="yt_ccode" style="font-family:monospace;font-size:10px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div>'+
+      '<button class="ghost" id="yt_ccopy" style="font-size:11px;padding:7px 12px">📋 Copier le code Colab</button></div>'};
   GEN.push({meta:meta,init:function(){
     const o=$("yt_o"),m=$("yt_manual"),cmd=$("yt_cmd");
     /* plusieurs services publics essayés à la suite — le 1er qui répond gagne */
@@ -1709,6 +1713,8 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
     function manual(u,mp3){
       cmd.textContent=(mp3?'yt-dlp -x --audio-format mp3 "':'yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "')+u+'"';
       m.style.display="";
+      $("yt_ccode").textContent="# Double-clic sur cette cellule puis Ctrl+V, et Exécution > Tout exécuter\n!pip -q install yt-dlp\n"+(mp3?'!yt-dlp -x --audio-format mp3 "':'!yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "')+u+'"\nfrom google.colab import files\nimport glob,os\nfor f in glob.glob("*.mp3")+glob.glob("*.mp4"):\n    print("Téléchargement de",f)\n    files.download(f)';
+      $("yt_colab").style.display="";
     }
     function linkCard(url){
       return "✅ Prêt ! <a href='"+url+"' target='_blank' rel='noopener' style='color:#00a583;font-weight:800;font-size:16px'>👉 Cliquer ici pour enregistrer le fichier</a>"+
@@ -1741,38 +1747,78 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
         }catch(e){/* service suivant */}
       }
       manual(u,mp3);
-      o.innerHTML="ℹ️ Tous les services publics sont saturés pour l'instant (souvent temporaire). Deux options :<br>1. <b>Réessayez dans quelques minutes</b> — réessayez le bouton.<br>2. <b>Méthode manuelle ci-dessous</b> — fonctionne toujours, sur PC.";
+      o.innerHTML="ℹ️ Tous les services publics sont saturés pour l'instant (souvent temporaire). Deux options :<br>1. <b>Réessayez dans quelques minutes</b> — re-cliquez sur le bouton.<br>2. <b>Google Colab ci-dessous</b> — marche sur Chromebook, sans rien installer (juste un compte Google).";
     }
     $("yt_mp4").addEventListener("click",()=>go(false));
     $("yt_mp3").addEventListener("click",()=>go(true));
     $("yt_copy").addEventListener("click",()=>{try{navigator.clipboard.writeText(cmd.textContent);}catch(e){}});
+    $("yt_ccopy").addEventListener("click",()=>{try{navigator.clipboard.writeText($("yt_ccode").textContent);}catch(e){}});
   }});
 })();
 
 /* ===== Générateur de QR codes ===== */
 (function(){
   const meta={id:"qr",ico:"🔳",name:"QR Code",desc:"Créer et télécharger",cat:"dev",cls:nextCls(),
-    brief:"Transformez n\u2019importe quel texte ou lien en QR code, puis téléchargez-le en PNG.",
+    brief:"Transformez n\u2019importe quel texte ou lien en QR code, ajoutez si vous voulez une image au milieu (logo, photo…), puis téléchargez-le en PNG.",
     html:'<label>Texte ou lien à encoder</label>'+
       '<textarea id="qr_in" placeholder="https://… ou n\u2019importe quel texte"></textarea>'+
+      '<label>🖼️ Image au centre (facultatif) — logo, photo, avatar…</label>'+
+      '<input type="file" id="qr_logo" accept="image/*">'+
       '<div class="row" style="margin-top:12px"><button class="green" id="qr_gen">✔ Générer</button><button id="qr_dl" style="display:none">⬇️ Télécharger PNG</button></div>'+
-      '<div style="text-align:center;margin-top:16px"><img id="qr_img" alt="QR code" style="display:none;max-width:240px;background:#fff;padding:12px;border-radius:14px;box-shadow:0 8px 24px rgba(80,50,160,.2)"></div>'+
+      '<div style="text-align:center;margin-top:16px"><canvas id="qr_cv" width="340" height="340" style="display:none;max-width:240px;background:#fff;padding:0;border-radius:14px;box-shadow:0 8px 24px rgba(80,50,160,.2)"></canvas></div>'+
       '<div class="out" id="qr_o">—</div>'};
   GEN.push({meta:meta,init:function(){
-    let url="";
+    let logoImg=null;
+    $("qr_logo").addEventListener("change",e=>{
+      const f=e.target.files&&e.target.files[0];
+      if(!f)return;
+      const r=new FileReader();
+      r.onload=()=>{const im=new Image();im.onload=()=>{logoImg=im;$("qr_o").textContent="🖼️ Image ajoutée ! Cliquez sur Générer.";};im.src=r.result;};
+      r.readAsDataURL(f);
+    });
     $("qr_gen").addEventListener("click",()=>{
       const t=$("qr_in").value.trim();
       if(!t)return $("qr_o").textContent="⚠️ Écrivez d'abord un texte.";
-      url="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=2&data="+encodeURIComponent(t);
-      const im=$("qr_img");
-      im.onload=()=>{im.style.display="inline-block";$("qr_dl").style.display="";$("qr_o").textContent="✅ QR code généré !";};
-      im.onerror=()=>{$("qr_o").textContent="⚠️ Impossible de générer (vérifiez la connexion).";};
-      im.src=url;
+      const url="https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=2&ecc=M&data="+encodeURIComponent(t);
+      const qr=new Image();
+      qr.crossOrigin="anonymous";
+      $("qr_o").textContent="⏳ Génération…";
+      qr.onload=()=>{
+        const cv=$("qr_cv"),ctx=cv.getContext("2d");
+        cv.width=600;cv.height=600;
+        ctx.fillStyle="#fff";ctx.fillRect(0,0,600,600);
+        ctx.drawImage(qr,0,0,600,600);
+        if(logoImg){
+          /* pastille blanche + image au centre (≈21% de la largeur, lisible avec ECC M) */
+          const s=126,cx=(600-s)/2;
+          ctx.fillStyle="#fff";
+          ctx.beginPath();ctx.arc(300,300,s/2+10,0,7);ctx.fill();
+          /* image découpée en cercle */
+          ctx.save();
+          ctx.beginPath();ctx.arc(300,300,s/2,0,7);ctx.clip();
+          const r=Math.max(s/logoImg.width,s/logoImg.height);
+          const w=logoImg.width*r,h=logoImg.height*r;
+          ctx.drawImage(logoImg,300-w/2,300-h/2,w,h);
+          ctx.restore();
+        }
+        cv.style.display="inline-block";
+        $("qr_dl").style.display="";
+        $("qr_o").textContent="✅ QR code généré !"+(logoImg?" (avec votre image au centre)":"");
+      };
+      qr.onerror=()=>{$("qr_o").textContent="⚠️ Impossible de générer (vérifiez la connexion).";};
+      qr.src=url;
     });
     $("qr_dl").addEventListener("click",()=>{
-      if(!url)return;
-      const a=document.createElement("a");a.href=url;a.download="qr-code.png";a.target="_blank";a.rel="noopener";
-      document.body.appendChild(a);a.click();a.remove();
+      const cv=$("qr_cv");
+      if(cv.style.display==="none")return;
+      try{
+        const a=document.createElement("a");
+        a.href=cv.toDataURL("image/png");
+        a.download="qr-code.png";
+        document.body.appendChild(a);a.click();a.remove();
+      }catch(e){
+        $("qr_o").innerHTML="⚠️ Téléchargement bloqué par le navigateur — clic droit sur le QR code → « Enregistrer l\u2019image sous… »";
+      }
     });
   }});
 })();
