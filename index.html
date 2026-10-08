@@ -1701,20 +1701,26 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
       '<input id="yt_url" placeholder="https://www.youtube.com/watch?v=…">'+
       '<div class="row" style="margin-top:12px"><button class="green" id="yt_mp4">🎬 Vidéo MP4</button><button id="yt_mp3">🎵 Audio MP3</button></div>'+
       '<div class="out" id="yt_o">⏳ Collez un lien, choisissez MP4 ou MP3 — le site essaie automatiquement plusieurs serveurs gratuits, aucun réglage à faire.</div>'+
-      '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (fonctionne toujours)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button><div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Installez yt-dlp sur un PC puis collez cette commande dans un terminal. C\u2019est gratuit et illimité.</div></div>'+
-      '<div class="out" id="yt_colab" style="display:none"><b>☁️ Méthode Google Colab (aucune installation, marche sur Chromebook)</b>'+
-      '<div style="font-size:11px;margin-top:6px">1. Ouvrez <a href="https://colab.research.google.com" target="_blank" rel="noopener" style="color:#00a583;font-weight:800">colab.research.google.com</a> (compte Google requis) → « Nouveau notebook »<br>2. Cliquez sur la cellule, collez le code ci-dessous<br>3. Menu Exécution → « Tout exécuter » — le fichier apparaît dans l\u2019icône 📁 à gauche, clic droit → Télécharger</div>'+
-      '<div id="yt_ccode" style="font-family:monospace;font-size:10px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div>'+
-      '<button class="ghost" id="yt_ccopy" style="font-size:11px;padding:7px 12px">📋 Copier le code Colab</button></div>'};
+      '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (sur un PC perso)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button></div>'+
+      '<div class="out" id="yt_sites" style="display:none"><b>🌐 Sites de téléchargement sans compte (aucune connexion requise)</b>'+
+      '<div style="font-size:11px;margin-top:6px">Si les serveurs automatiques sont saturés, ouvrez un de ces sites dans un nouvel onglet et collez votre lien dedans :</div>'+
+      '<div id="yt_link" style="font-family:monospace;font-size:11px;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px;word-break:break-all"></div>'+
+      '<div class="row" style="margin-top:8px">'+
+      '<a href="https://loader.to" target="_blank" rel="noopener" class="ghost" style="display:flex;align-items:center;justify-content:center;text-decoration:none;flex:1;min-width:130px">loader.to</a>'+
+      '<a href="https://notube.net" target="_blank" rel="noopener" class="ghost" style="display:flex;align-items:center;justify-content:center;text-decoration:none;flex:1;min-width:130px">notube.net</a>'+
+      '<a href="https://tuberipper.com" target="_blank" rel="noopener" class="ghost" style="display:flex;align-items:center;justify-content:center;text-decoration:none;flex:1;min-width:130px">tuberipper</a>'+
+      '</div>'+
+      '<button class="ghost" id="yt_copy2" style="font-size:11px;padding:7px 12px">📋 Copier le lien YouTube</button>'+
+      '<div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">⚠️ Ces sites affichent des publicités : ne cliquez que sur les vrais boutons de téléchargement, ne cliquez JAMAIS sur les pubs, et fermez les pop-ups.</div></div>'};
   GEN.push({meta:meta,init:function(){
     const o=$("yt_o"),m=$("yt_manual"),cmd=$("yt_cmd");
     /* plusieurs services publics essayés à la suite — le 1er qui répond gagne */
-    const APIS=["https://api.cobalt.tools/","https://cobalt-api.kwiatekmiki.com/","https://co.wombo.org/"];
+    const APIS=["https://api.cobalt.tools/","https://cobalt-api.kwiatekmiki.com/","https://co.wombo.org/","https://cobalt-api.meowing.de/","https://api.cobalt.best/"];
     function manual(u,mp3){
       cmd.textContent=(mp3?'yt-dlp -x --audio-format mp3 "':'yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "')+u+'"';
       m.style.display="";
-      $("yt_ccode").textContent="# Double-clic sur cette cellule puis Ctrl+V, et Exécution > Tout exécuter\n!pip -q install yt-dlp\n"+(mp3?'!yt-dlp -x --audio-format mp3 "':'!yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "')+u+'"\nfrom google.colab import files\nimport glob,os\nfor f in glob.glob("*.mp3")+glob.glob("*.mp4"):\n    print("Téléchargement de",f)\n    files.download(f)';
-      $("yt_colab").style.display="";
+      $("yt_link").textContent=u;
+      $("yt_sites").style.display="";
     }
     function linkCard(url){
       return "✅ Prêt ! <a href='"+url+"' target='_blank' rel='noopener' style='color:#00a583;font-weight:800;font-size:16px'>👉 Cliquer ici pour enregistrer le fichier</a>"+
@@ -1747,12 +1753,12 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
         }catch(e){/* service suivant */}
       }
       manual(u,mp3);
-      o.innerHTML="ℹ️ Tous les services publics sont saturés pour l'instant (souvent temporaire). Deux options :<br>1. <b>Réessayez dans quelques minutes</b> — re-cliquez sur le bouton.<br>2. <b>Google Colab ci-dessous</b> — marche sur Chromebook, sans rien installer (juste un compte Google).";
+      o.innerHTML="ℹ️ Les serveurs automatiques sont saturés pour l'instant. Deux options sans compte Google :<br>1. <b>Réessayez dans quelques minutes</b> — re-cliquez sur le bouton (les serveurs se libèrent souvent).<br>2. <b>Sites sans compte ci-dessous</b> — ouvrez-en un, collez le lien, téléchargez.";
     }
     $("yt_mp4").addEventListener("click",()=>go(false));
     $("yt_mp3").addEventListener("click",()=>go(true));
     $("yt_copy").addEventListener("click",()=>{try{navigator.clipboard.writeText(cmd.textContent);}catch(e){}});
-    $("yt_ccopy").addEventListener("click",()=>{try{navigator.clipboard.writeText($("yt_ccode").textContent);}catch(e){}});
+    $("yt_copy2").addEventListener("click",()=>{try{navigator.clipboard.writeText($("yt_link").textContent);}catch(e){}});
   }});
 })();
 
