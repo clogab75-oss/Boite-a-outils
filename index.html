@@ -349,12 +349,11 @@ html[data-anim="none"] .page.show,html[data-anim="none"] .page.outL{animation:no
       <svg width="48" height="48" viewBox="0 0 64 64"><rect x="4" y="20" width="56" height="36" rx="8" fill="white"/><rect x="22" y="10" width="20" height="12" rx="4" fill="none" stroke="white" stroke-width="5"/><rect x="4" y="30" width="56" height="6" fill="rgba(0,0,0,.15)"/><circle cx="32" cy="42" r="7" fill="none" stroke="#ff5c8a" stroke-width="4"/><rect x="10" y="28" width="8" height="14" rx="3" fill="#ff5c8a"/><rect x="46" y="28" width="8" height="14" rx="3" fill="#a18cd1"/></svg>
     </div>
     <h2>Mon compte</h2>
-    <div class="sub">Connectez-vous pour synchroniser vos données sur tous vos appareils. ☁️<br>Sans compte, tout fonctionne aussi (données locales).</div>
+    <div class="sub">Connectez-vous ou créez un compte pour accéder à la boîte à outils et synchroniser vos données sur tous vos appareils. ☁️</div>
     <input type="email" id="sb_mail" placeholder="📧 Adresse e-mail" autocomplete="email">
     <input type="password" id="sb_pass" placeholder="🔒 Mot de passe (6 caractères min.)" autocomplete="current-password">
     <button class="btn btnP" id="sb_login">Se connecter</button>
     <button class="btn btnG" id="sb_signup">Pas encore de compte ? Créer un compte</button>
-    <button class="btn btnG" id="sb_skip">Continuer sans compte →</button>
     <div id="sb_msg"></div>
   </div>
 </div>
@@ -1882,8 +1881,9 @@ window.__loadScript=src=>new Promise(res=>{
   window.__loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js")
     .then(function(ok){
       if(!ok||!window.supabase){
-        say("⚠️ Connexion au cloud impossible — mode local activé.");
-        document.body.classList.remove("locked");
+        say("⚠️ Connexion au cloud impossible — vérifiez votre connexion internet puis rechargez la page.");
+        $("authGate").classList.add("open");
+        document.body.classList.add("locked");
         return;
       }
       initAuth(window.supabase.createClient(SB_URL,SB_KEY));
@@ -1973,16 +1973,19 @@ window.__loadScript=src=>new Promise(res=>{
       }
       booted=true;
     }else{
-      /* pas connecté : accès libre quand même, juste sans synchro cloud */
+      /* pas connecté : portail de connexion obligatoire */
       window.__email=null;
       buildMenu();
       document.body.classList.remove("authed");
       $("sb_email").textContent="Non connecté";
-      $("sb_chpw").style.display="";
+      $("sb_chpw").style.display="none";
       $("sb_logout2").style.display="none";
+      $("authGate").classList.add("open");
+      document.body.classList.add("locked");
     }
   }
   sb.auth.onAuthStateChange(()=>{onSessionChange();});
+  onSessionChange();
   sb.channel("rt-sync").on("postgres_changes",{event:"*",schema:"public",table:"tool_data"},p=>{
     const row=p.new;
     if(!row||!row.key)return;
@@ -2012,7 +2015,6 @@ window.__loadScript=src=>new Promise(res=>{
   const quit=async()=>{await sb.auth.signOut();location.reload();};
   $("sb_logout2").addEventListener("click",quit);
   $("sb_chpw").addEventListener("click",()=>{$("authGate").classList.add("open");});
-  $("sb_skip").addEventListener("click",()=>{$("authGate").classList.remove("open");});
   $("sb_pass").addEventListener("keydown",e=>{if(e.key==="Enter")$("sb_login").click();});
   onSessionChange();
   }
