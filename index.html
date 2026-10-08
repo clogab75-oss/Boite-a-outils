@@ -1700,34 +1700,48 @@ calcTool("conso","🛢️","Consommation","L/100km ↔ mpg","voyage","Équivalen
     html:'<label>Lien YouTube</label>'+
       '<input id="yt_url" placeholder="https://www.youtube.com/watch?v=…">'+
       '<div class="row" style="margin-top:12px"><button class="green" id="yt_mp4">🎬 Vidéo MP4</button><button id="yt_mp3">🎵 Audio MP3</button></div>'+
-      '<div class="out" id="yt_o">⏳ Le traitement se fait côté serveur public (cobalt) — si le service est saturé, la méthode manuelle s\u2019affichera.</div>'+
+      '<div class="out" id="yt_o">⏳ Collez un lien, choisissez MP4 ou MP3 — le site essaie automatiquement plusieurs serveurs gratuits, aucun réglage à faire.</div>'+
       '<div class="out" id="yt_manual" style="display:none"><b>🛠 Méthode manuelle (fonctionne toujours)</b><div id="yt_cmd" style="font-family:monospace;font-size:11px;white-space:pre-wrap;background:var(--tile,#f4f2fb);padding:8px;border-radius:8px;margin-top:6px"></div><button class="ghost" id="yt_copy" style="font-size:11px;padding:7px 12px">📋 Copier la commande</button><div style="font-size:10px;color:var(--dim,#6b6489);margin-top:6px">Installez yt-dlp sur un PC puis collez cette commande dans un terminal. C\u2019est gratuit et illimité.</div></div>'};
   GEN.push({meta:meta,init:function(){
     const o=$("yt_o"),m=$("yt_manual"),cmd=$("yt_cmd");
-    function manual(u){
-      cmd.textContent='yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "'+u+'"';
+    /* plusieurs services publics essayés à la suite — le 1er qui répond gagne */
+    const APIS=["https://api.cobalt.tools/","https://cobalt-api.kwiatekmiki.com/","https://co.wombo.org/"];
+    function manual(u,mp3){
+      cmd.textContent=(mp3?'yt-dlp -x --audio-format mp3 "':'yt-dlp -f "bv*+ba/b" --merge-output-format mp4 "')+u+'"';
       m.style.display="";
     }
-    async function go(audio){
+    function linkCard(url){
+      return "✅ Prêt ! <a href='"+url+"' target='_blank' rel='noopener' style='color:#00a583;font-weight:800;font-size:16px'>👉 Cliquer ici pour enregistrer le fichier</a>"+
+        "<div style='font-size:10px;color:var(--dim,#6b6489);margin-top:6px'>Astuce : clic droit → « Enregistrer la cible du lien sous… » si le navigateur lit au lieu de télécharger.</div>";
+    }
+    async function tryApi(base,u,mp3){
+      const r=await fetch(base,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({url:u,aFormat:mp3?"mp3":"best",vQuality:"720",filenameStyle:"basic",downloadMode:mp3?"audio":"auto"})});
+      const j=await r.json().catch(()=>null);
+      if(!j)return null;
+      if(j.status==="redirect"||j.status==="stream"||j.status==="tunnel")return j.url;
+      if(j.status==="picker"&&j.audio&&j.audio[0])return j.audio[0];
+      return null;
+    }
+    async function go(mp3){
       const u=$("yt_url").value.trim();
       if(!u||u.indexOf("http")!==0)return o.innerHTML="⚠️ Collez d'abord un lien valide.";
-      manual(u);
-      o.innerHTML="⏳ Préparation du téléchargement…";
-      try{
-        const r=await fetch("https://api.cobalt.tools/json",{method:"POST",
-          headers:{"Content-Type":"application/json","Accept":"application/json"},
-          body:JSON.stringify({url:u,aFormat:"mp3",vQuality:"720",filenameStyle:"basic"})});
-        const j=await r.json();
-        if(j.status==="redirect"||j.status==="stream"||j.status==="tunnel"){
-          o.innerHTML="✅ Prêt ! <a href='"+j.url+"' target='_blank' rel='noopener' style='color:#00a583;font-weight:800'>👉 Cliquez ici pour télécharger</a>";
-        }else if(j.status==="picker"){
-          o.innerHTML="✅ Choisissez le format : "+(j.audio||[]).map(a=>"<a href='"+a+"' style='color:#00a583'>audio</a>").join(" · ");
-        }else{
-          o.innerHTML="ℹ️ Le service public est saturé — utilisez la méthode manuelle ci-dessous.";
-        }
-      }catch(e){
-        o.innerHTML="ℹ️ Service public indisponible — utilisez la méthode manuelle ci-dessous.";
+      o.innerHTML="⏳ Recherche d'un serveur disponible… (essai de "+APIS.length+" services)";
+      for(let i=0;i<APIS.length;i++){
+        o.innerHTML="⏳ Essai du service "+(i+1)+"/"+APIS.length+"…";
+        try{
+          const url=await tryApi(APIS[i],u,mp3);
+          if(url){
+            o.innerHTML=linkCard(url);
+            m.style.display="none";
+            return;
+          }
+        }catch(e){/* service suivant */}
       }
+      manual(u,mp3);
+      o.innerHTML="ℹ️ Tous les services publics sont saturés pour l'instant (souvent temporaire). Deux options :<br>1. <b>Réessayez dans quelques minutes</b> — réessayez le bouton.<br>2. <b>Méthode manuelle ci-dessous</b> — fonctionne toujours, sur PC.";
     }
     $("yt_mp4").addEventListener("click",()=>go(false));
     $("yt_mp3").addEventListener("click",()=>go(true));
