@@ -106,7 +106,7 @@ body.locked{overflow:hidden}
 .btnG{background:none;color:var(--dim,#6b6489)}
 .btnG:hover{background:rgba(161,140,209,.12)}
 #sb_msg{margin-top:14px;font-size:13px;font-weight:600;color:var(--body,#3a2f6b);min-height:18px}
-#acctChip{display:flex;margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
+#acctChip{display:flex;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
   border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:700;color:var(--body,#3a2f6b);
   align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
 #acctChip button{border:none;background:#ffe0ea;color:#e0306a;font-size:10px;font-weight:800;
@@ -114,6 +114,7 @@ body.locked{overflow:hidden}
 #topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
   padding:12px 16px;background:var(--panel);
   border-bottom:1px solid rgba(255,255,255,.6)}
+#topbar>h1{margin-right:auto}
 #topbar h1{font-size:17px;font-weight:900;letter-spacing:.5px;color:var(--head,#2b1e63);white-space:nowrap;background:linear-gradient(90deg,#e0306a,#7c5cd6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 #btnHome{display:none;background:linear-gradient(135deg,var(--btnA),var(--btnB));color:#fff;border:none;
   border-radius:14px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(161,140,209,.5)}
@@ -2001,16 +2002,26 @@ window.__loadScript=src=>new Promise(res=>{
     const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
     if(!m||p.length<6)return say("E-mail + mot de passe (6 caractères min.) requis.");
     say("Connexion…");
-    const {error}=await sb.auth.signInWithPassword({email:m,password:p});
-    if(!error)$("authGate").classList.remove("open");
-    say(error?("⚠️ "+(error.message||"Échec de connexion")):"✅ Bienvenue !");
+    try{
+      const {error}=await sb.auth.signInWithPassword({email:m,password:p});
+      if(error){
+        say("⚠️ "+(error.message||"Échec de connexion"));
+        return;
+      }
+      say("✅ Bienvenue !");
+      await onSessionChange();
+      $("authGate").classList.remove("open");
+      document.body.classList.remove("locked");
+    }catch(e){say("⚠️ Erreur : "+(e.message||String(e)));}
   });
   $("sb_signup").addEventListener("click",async()=>{
     const m=$("sb_mail").value.trim(),p=$("sb_pass").value;
     if(!m||p.length<6)return say("E-mail + mot de passe (6 caractères min.) requis.");
     say("Création du compte…");
-    const {error}=await sb.auth.signUp({email:m,password:p});
-    say(error?("⚠️ "+error.message):"✅ Compte créé ! Vérifiez votre boîte mail si un e-mail de confirmation est demandé, puis connectez-vous.");
+    try{
+      const {error}=await sb.auth.signUp({email:m,password:p});
+      say(error?("⚠️ "+error.message):"✅ Compte créé ! Vérifiez votre boîte mail si un e-mail de confirmation est demandé, puis connectez-vous.");
+    }catch(e){say("⚠️ Erreur : "+(e.message||String(e)));}
   });
   const quit=async()=>{await sb.auth.signOut();location.reload();};
   $("sb_logout2").addEventListener("click",quit);
